@@ -1,0 +1,6 @@
+{
+  "name": "Baterías Maresa Ecuador",
+  "description": "Distribuidor oficial de Baterías Maresa en Ecuador con respaldo de Corporación Maresa. Garantía nacional, catálogo vehicular y escuela técnica.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

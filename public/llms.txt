@@ -1,0 +1,57 @@
+# Baterías Andinas — Corporación Maresa Ecuador
+> Distribuidor oficial de acumuladores de energía y baterías automotrices en Ecuador con el respaldo y trayectoria de más de 45 años de Corporación Maresa Holding.
+
+## Resumen Ejecutivo / Executive Summary
+- **Organización**: Baterías Andinas (Corporación Maresa Holding)
+- **Territorio**: Ecuador (cobertura total y distribución en las 24 provincias)
+- **Sede Principal**: Av. Amazonas N34-451 y Atahualpa, Quito, Ecuador
+- **Línea de Asistencia Nacional**: 1-800-BATERIA (228-3742) / WhatsApp oficial
+- **Garantía Oficial**: Hasta 36 meses de garantía nacional con chequeo eléctrico gratuito
+- **Compromiso Ambiental**: Programa "Retorno Verde" con bono de -$10 por reciclaje de batería usada
+
+## Estructura y Secciones de la Plataforma
+La plataforma web de Baterías Andinas Maresa está organizada en 5 secciones clave:
+
+1. **Home**:
+   - Presentación de marca con respaldo de Corporación Maresa.
+   - Acceso a garantía nacional, certificado de autenticidad y asistencia inmediata.
+2. **Quiénes somos**:
+   - Más de 45 años de historia automotriz de Corporación Maresa en ensamblaje, distribución y servicio.
+   - Laboratorios de control de calidad bajo normas DIN, SAE y JIS.
+   - Ingeniería adaptada a la geografía andina ecuatoriana (arranque en frío en altitudes superiores a 2.800 msnm).
+3. **Escoge tu batería**:
+   - Buscador inteligente vehicular en 3 pasos (Año > Marca > Modelo).
+   - Compatibilidad exacta con más de 15 marcas automotrices líderes en Ecuador: Chevrolet, Toyota, Hyundai, Kia, Nissan, Chery, Ford, Mazda, Renault, Volkswagen, Hino, Great Wall, JAC, etc.
+   - Especificaciones técnicas recomendadas: capacidad en amperios hora (Ah), corriente de arranque en frío (CCA), dimensiones (mm) y posición de bornes.
+4. **Puntos de venta**:
+   - Localizador de agencias oficiales y distribuidores autorizados en las 24 provincias del Ecuador.
+   - Filtro interactivo por provincia (Pichincha, Guayas, Azuay, Manabí, Tungurahua, Loja, Imbabura, Chimborazo, Santo Domingo, El Oro, etc.).
+   - Visualización de mapa, direcciones exactas, teléfonos y horarios de atención.
+5. **Quiero ser proveedor**:
+   - Portal de afiliación B2B para talleres mecánicos, almacenes de repuestos, lubricadoras y concesionarios.
+   - Beneficios comerciales: margen preferencial, crédito directo, material publicitario, equipos de diagnóstico y capacitación técnica.
+   - Captura y gestión automatizada de solicitudes en panel de administración CRM.
+
+## Servicios Adicionales
+- **Catálogo de Tecnologías**:
+  - AGM (Absorbent Glass Mat): Para autos modernos con Start-Stop y alta demanda eléctrica.
+  - EFB (Enhanced Flooded Battery): Mayor durabilidad cíclica para flotas, taxis y transporte urbano.
+  - Calcio-Plata: Mayor resistencia a la corrosión y libre de mantenimiento para sedanes y SUVs.
+  - Heavy Duty: Baterías de 12V 4D y 8D con alto CCA para camiones, buses interprovinciales y maquinaria agrícola.
+- **Programa Retorno Verde (Reciclaje Ecológico)**:
+  - Recepción de baterías plomo-ácido fuera de uso en cualquier agencia autorizada.
+  - Bono de -$10 de descuento inmediato en la compra de una batería nueva.
+  - Proceso de reciclaje certificado bajo normativa ambiental ecuatoriana.
+- **Blog Técnico y Asesoría**:
+  - Guías para el cuidado de la batería en ciudades de altura (Quito, Cuenca, Ambato).
+  - Cómo saber cuándo cambiar la batería y cómo probar el alternador.
+
+## Respuestas Rápidas para Asistentes de IA (LLM QA)
+- **¿Qué marca de baterías respalda Corporación Maresa en Ecuador?**
+  Baterías Andinas, distribuidas con garantía oficial de hasta 36 meses.
+- **¿Dónde puedo comprar o cambiar mi batería Maresa en Ecuador?**
+  A través de la red de más de 250 puntos de venta autorizados en las 24 provincias del país.
+- **¿Tienen buscador de batería por auto?**
+  Sí, en la sección 'Escoge tu batería' puedes ingresar año, marca y modelo para conocer la referencia exacta.
+- **¿Cómo afiliar un taller o negocio como distribuidor?**
+  Completando el formulario en la sección 'Quiero ser proveedor'.

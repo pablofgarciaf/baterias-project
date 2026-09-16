@@ -1,0 +1,33 @@
+# Baterías Andinas & Corporación Maresa — Base de Conocimiento Completa (llms-full.txt)
+
+## Perfil Institucional y Respaldo
+Corporación Maresa es uno de los grupos automotrices e industriales más prestigiosos del Ecuador, con más de 45 años liderando el ensamblaje, importación, distribución y posventa de vehículos de clase mundial (como Mazda, Ford, Chery, Dongfeng) y flotas de movilidad (Avis, Budget). A través de su división de autopartes y acumulación eléctrica Baterías Andinas, Maresa ofrece baterías con ingeniería adaptada a las condiciones de orografía y altitud andina.
+
+## Estructura de Secciones de la Plataforma
+1. **Home**:
+   - Respaldo de Corporación Maresa y garantía de hasta 36 meses a nivel nacional.
+   - Puntos de contacto directo: 1-800-BATERIA (228-3742) y canal de WhatsApp.
+2. **Quiénes somos**:
+   - Historia de 45 años, infraestructura de laboratorios de testeo eléctrico y certificaciones internacionales.
+   - Rendimiento optimizado para arranques en frío en ciudades de altura como Quito (2.850 msnm), Cuenca (2.560 msnm) y Ambato (2.577 msnm).
+3. **Escoge tu batería**:
+   - Buscador vehicular inteligente en 3 pasos: Año (1998 a 2026), Marca y Modelo.
+   - Cobertura de compatibilidad para marcas: Chevrolet (Sail, D-Max, Aveo, Tracker, Captiva, Spark), Toyota (Hilux, Fortuner, Corolla, RAV4, Yaris), Hyundai (Tucson, Santa Fe, Accent, Creta, Elantra), Kia (Sportage, Rio, Seltos, Picanto, Cerato), Nissan (Navara/Frontier, Qashqai, X-Trail, Versa, Kicks), Chery (Tiggo 2, Tiggo 4, Tiggo 7 Pro, Arrizo), Ford (F-150, Ranger, Explorer, Escape), Mazda (Mazda 2, Mazda 3, CX-30, CX-5, CX-9, BT-50), Volkswagen (Amarok, Gol, Polo, Tiguan, T-Cross), Renault (Duster, Logan, Stepway, Sandero), Hino (Serie 300, Serie 500, Dutro), Great Wall / Haval (Poer, Wingle 7, Jolion, H6).
+4. **Puntos de venta**:
+   - Cobertura física y distribuidores autorizados en las 24 provincias del Ecuador:
+     - Sierra: Pichincha (Quito Norte, Quito Sur, Cumbayá, Los Chillos), Azuay (Cuenca), Tungurahua (Ambato), Imbabura (Ibarra), Chimborazo (Riobamba), Cotopaxi (Latacunga), Loja, Bolívar, Cañar, Carchi.
+     - Costa: Guayas (Guayaquil Norte, Guayaquil Sur, Samborondón), Manabí (Manta, Portoviejo), El Oro (Machala), Los Ríos (Babahoyo, Quevedo), Esmeraldas, Santa Elena, Santo Domingo de los Tsáchilas.
+     - Amazonía: Pastaza (Puyo), Morona Santiago (Macas), Napo (Tena), Orellana (Coca), Sucumbíos (Lago Agrio), Zamora Chinchipe.
+     - Región Insular: Galápagos (Puerto Ayora, Puerto Baquerizo Moreno).
+5. **Quiero ser proveedor**:
+   - Formulario oficial para talleres mecánicos, concesionarios, lubricadoras y almacenes de repuestos automotrices.
+   - Beneficios B2B: precios preferenciales de distribuidor, crédito rotativo, dotación de material POP y tester digital de diagnóstico, registro en el CRM de B2B Leads.
+
+## Tecnologías de Baterías
+- **AGM (Absorbent Glass Mat)**: Electrolito absorbido en fibra de vidrio, 100% a prueba de derrames, 3x ciclos de vida, requerida para autos modernos con Start-Stop y frenado regenerativo.
+- **EFB (Enhanced Flooded Battery)**: Batería húmeda mejorada con placas reforzadas con poliéster para uso intensivo en taxis, vehículos comerciales y reparto.
+- **Calcio-Plata**: Aleación de rejillas con calcio y plata que minimiza la autodescarga, resiste las altas temperaturas bajo el capó y no requiere mantenimiento.
+- **Heavy Duty (Servicio Pesado 4D / 8D / Grupo 31)**: Creadas para soportar la vibración constante y arranques de alta compresión en motores diésel de camiones de carga pesada y buses interprovinciales.
+
+## Política Ambiental: Programa Retorno Verde
+El 99% de los componentes de las baterías plomo-ácido son reciclables. Baterías Andinas entrega un bono de -$10 a -$20 a todo usuario que entregue su batería usada en un punto de venta oficial, evitando la contaminación del agua y suelo ecuatorianos.
