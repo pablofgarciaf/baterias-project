@@ -1081,8 +1081,8 @@ export default function AdminPage({ onBackToSite }: AdminPageProps) {
                             const matchFilter = 
                               leadsFilter === 'Todos' ? true :
                               leadsFilter === 'Aplica' ? (l.status === 'Aprobado') :
-                              leadsFilter === 'No Aplica' ? (l.status === 'Rechazado') :
-                              (l.status === leadsFilter);
+                              leadsFilter === 'No Aplica' ? (l.status === 'Descartado') :
+                              (l.status === leadsFilter as any);
                             const matchSearch = 
                               l.companyName.toLowerCase().includes(leadsSearch.toLowerCase()) ||
                               l.city.toLowerCase().includes(leadsSearch.toLowerCase()) ||
