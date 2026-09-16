@@ -1127,21 +1127,21 @@ export default function AdminPage({ onBackToSite }: AdminPageProps) {
                               <td className="p-3.5 text-right">
                                 <div className="flex items-center justify-end gap-1.5">
                                   <button
-                                    onClick={() => handleUpdateLeadStatus(lead.id, 'Aplica')}
+                                    onClick={() => handleUpdateLeadStatus(lead.id!, 'Aplica')}
                                     className="px-2.5 py-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600 text-emerald-300 hover:text-white font-bold text-[11px] transition-colors cursor-pointer"
                                     title="Aprobar prospecto"
                                   >
                                     Aplica
                                   </button>
                                   <button
-                                    onClick={() => handleUpdateLeadStatus(lead.id, 'No Aplica')}
+                                    onClick={() => handleUpdateLeadStatus(lead.id!, 'No Aplica')}
                                     className="px-2.5 py-1 rounded-lg bg-red-600/30 hover:bg-red-600 text-red-300 hover:text-white font-bold text-[11px] transition-colors cursor-pointer"
                                     title="Rechazar prospecto"
                                   >
                                     No Aplica
                                   </button>
                                   <button
-                                    onClick={() => handleUpdateLeadStatus(lead.id, 'Contactado')}
+                                    onClick={() => handleUpdateLeadStatus(lead.id!, 'Contactado')}
                                     className="px-2.5 py-1 rounded-lg bg-blue-600/30 hover:bg-blue-600 text-blue-300 hover:text-white font-bold text-[11px] transition-colors cursor-pointer"
                                     title="Marcar como contactado"
                                   >
