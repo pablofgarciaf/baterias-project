@@ -1,12 +1,35 @@
+/**
+ * ═══════════════════════════════════════════════════════════════
+ * 📄 ARCHITECTURE MAP — Header.tsx
+ * ═══════════════════════════════════════════════════════════════
+ * 📁 Path: src/components/Header.tsx
+ * 🏷️ Type: Client Component
+ * 📦 Module: Public Site
+ * ─────────────────────────────────────────────────────────────
+ * 🔍 STRUCTURE:
+ *   L024-L035  → Imports & dependencies (React, icons, motion, ThemeContext)
+ *   L037-L039  → Type definitions / interfaces (HeaderProps)
+ *   L041-L041  → Component function start (Header)
+ *   L042-L044  → State & hooks (mobileOpen, theme)
+ *   L046-L053  → Constants / static data (navLinks)
+ *   L055-L152  → JSX: Desktop header bar (Brand logo, nav links, actions)
+ *   L154-L207  → JSX: Mobile menu drawer (AnimatePresence, links, CTA)
+ * ─────────────────────────────────────────────────────────────
+ * 📝 LAST UPDATED: 2026-09-16
+ * ═══════════════════════════════════════════════════════════════
+ */
+
+'use client';
+
 import { useState } from 'react';
 import { 
   Battery, 
   Menu, 
   X, 
   Sun, 
-  Moon,
-  PhoneCall,
-  GraduationCap
+  Moon, 
+  PhoneCall, 
+  GraduationCap 
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useTheme } from '@/context/ThemeContext';

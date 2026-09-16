@@ -1,8 +1,35 @@
+# dependencies
 node_modules/
+package-lock.json
+
+# Next.js
+.next/
+out/
+
+# build
 build/
 dist/
 coverage/
-.DS_Store
-*.log
+
+# env files (never commit secrets)
 .env*
 !.env.example
+
+# architecture map (local dev reference only)
+.architecture.md
+
+# OS
+.DS_Store
+Thumbs.db
+
+# debug
+*.log
+npm-debug.log*
+
+# IDE
+.vscode/
+.idea/
+
+# misc
+*.tsbuildinfo
+next-env.d.ts

@@ -1,3 +1,26 @@
+/**
+ * ═══════════════════════════════════════════════════════════════
+ * 📄 ARCHITECTURE MAP — B2BLeadCapture.tsx
+ * ═══════════════════════════════════════════════════════════════
+ * 📁 Path: src/components/B2BLeadCapture.tsx
+ * 🏷️ Type: Client Component
+ * 📦 Module: Public Site
+ * ─────────────────────────────────────────────────────────────
+ * 🔍 STRUCTURE:
+ *   L024-L043  → Imports & dependencies
+ *   L044-L056  → Component function start & initial form state
+ *   L057-L065  → UI states (submission progress, success, error) & theme
+ *   L066-L091  → Form submission handler (Firebase CRM integration)
+ *   L093-L173  → JSX render: commercial proposition & distributor benefits
+ *   L175-L431  → JSX render: B2B lead capture form & success feedback
+ *   L433-L437  → Section close & component export end
+ * ─────────────────────────────────────────────────────────────
+ * 📝 LAST UPDATED: 2026-09-16
+ * ═══════════════════════════════════════════════════════════════
+ */
+
+'use client';
+
 import { useState, FormEvent } from 'react';
 import { 
   Building2, 

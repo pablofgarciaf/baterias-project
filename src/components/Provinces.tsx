@@ -1,3 +1,28 @@
+/**
+ * ═══════════════════════════════════════════════════════════════
+ * 📄 ARCHITECTURE MAP — Provinces.tsx
+ * ═══════════════════════════════════════════════════════════════
+ * 📁 Path: src/components/Provinces.tsx
+ * 🏷️ Type: Client Component
+ * 📦 Module: Public Site
+ * ─────────────────────────────────────────────────────────────
+ * 🔍 STRUCTURE:
+ *   L026-L033  → Imports & dependencies
+ *   L035-L035  → Constants / static data (regions)
+ *   L037-L039  → Component function start & state declarations
+ *   L041-L055  → Computed state (filtered provinces & regionCounts)
+ *   L057-L070  → JSX render: section header & national coverage banner
+ *   L071-L107  → JSX render: search input & regional filter buttons
+ *   L109-L119  → JSX render: region summary cards (colors & descriptions)
+ *   L121-L162  → JSX render: 24 provinces grid & empty results state
+ *   L163-L166  → Section close & component export end
+ * ─────────────────────────────────────────────────────────────
+ * 📝 LAST UPDATED: 2026-09-16
+ * ═══════════════════════════════════════════════════════════════
+ */
+
+'use client';
+
 import { useState } from 'react';
 import { MapPin, Search, Building2, Users } from 'lucide-react';
 import {

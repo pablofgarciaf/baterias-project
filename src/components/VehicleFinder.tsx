@@ -1,3 +1,27 @@
+/**
+ * ═══════════════════════════════════════════════════════════════
+ * 📄 ARCHITECTURE MAP — VehicleFinder.tsx
+ * ═══════════════════════════════════════════════════════════════
+ * 📁 Path: src/components/VehicleFinder.tsx
+ * 🏷️ Type: Client Component
+ * 📦 Module: Public Site
+ * ─────────────────────────────────────────────────────────────
+ * 🔍 STRUCTURE:
+ *   L025-L044  → Imports & dependencies
+ *   L045-L048  → Type definitions / interfaces (VehicleFinderProps)
+ *   L050-L060  → Component function start & state declarations
+ *   L062-L081  → Memoized selectors (availableBrands, availableModels)
+ *   L082-L106  → Event handlers (handleSearch, handleReset)
+ *   L108-L279  → JSX render: cascade vehicle selectors (year, brand, model)
+ *   L281-L415  → JSX render: battery compatibility result card & actions
+ *   L416-L419  → Section close & component export end
+ * ─────────────────────────────────────────────────────────────
+ * 📝 LAST UPDATED: 2026-09-16
+ * ═══════════════════════════════════════════════════════════════
+ */
+
+'use client';
+
 import { useState, useMemo } from 'react';
 import { 
   Search, 

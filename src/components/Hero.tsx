@@ -1,11 +1,37 @@
+/**
+ * ═══════════════════════════════════════════════════════════════
+ * 📄 ARCHITECTURE MAP — Hero.tsx
+ * ═══════════════════════════════════════════════════════════════
+ * 📁 Path: src/components/Hero.tsx
+ * 🏷️ Type: Client Component
+ * 📦 Module: Public Site
+ * ─────────────────────────────────────────────────────────────
+ * 🔍 STRUCTURE:
+ *   L027-L030  → Imports & dependencies
+ *   L032-L035  → Type definitions / interfaces (HeroProps)
+ *   L037-L037  → Component function start (Hero)
+ *   L038-L041  → State & hooks (useSiteContent, useTheme)
+ *   L043-L047  → Constants / static data (stats array)
+ *   L049-L057  → Event handlers (scrollToVehicleFinder, scrollToStoreLocator)
+ *   L059-L086  → JSX: Section container & background visuals (Image, glow)
+ *   L088-L151  → JSX: Hero copy & trust badges (Badge, title, subtitle, points)
+ *   L153-L179  → JSX: Call to action buttons (Vehicle Finder, Store Locator)
+ *   L181-L216  → JSX: Trust statistics bento grid
+ * ─────────────────────────────────────────────────────────────
+ * 📝 LAST UPDATED: 2026-09-16
+ * ═══════════════════════════════════════════════════════════════
+ */
+
+'use client';
+
 import { ShieldCheck, Truck, Award, Search, MapPin, ArrowRight, Zap, CheckCircle2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useSiteContent } from '@/context/SiteContentContext';
 import { useTheme } from '@/context/ThemeContext';
 
 interface HeroProps {
-  selectedProvince: string | null;
-  onProvinceChange: (province: string) => void;
+  selectedProvince?: string | null;
+  onProvinceChange?: (province: string | null) => void;
 }
 
 export default function Hero({ selectedProvince, onProvinceChange }: HeroProps) {

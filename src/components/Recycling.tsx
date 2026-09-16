@@ -1,3 +1,25 @@
+/**
+ * ═══════════════════════════════════════════════════════════════
+ * 📄 ARCHITECTURE MAP — Recycling.tsx
+ * ═══════════════════════════════════════════════════════════════
+ * 📁 Path: src/components/Recycling.tsx
+ * 🏷️ Type: Client Component
+ * 📦 Module: Public Site
+ * ─────────────────────────────────────────────────────────────
+ * 🔍 STRUCTURE:
+ *   L023-L026  → Imports & dependencies
+ *   L028-L028  → Component function start
+ *   L029-L032  → State & hooks (useSiteContent, useTheme)
+ *   L034-L039  → Constants / static data (metrics)
+ *   L041-L160  → JSX render (editorial story, benefits list, metrics grid)
+ *   L028-L028  → Export default Recycling
+ * ─────────────────────────────────────────────────────────────
+ * 📝 LAST UPDATED: 2026-09-16
+ * ═══════════════════════════════════════════════════════════════
+ */
+
+'use client';
+
 import { Recycle, Leaf, ArrowRight, MapPin, Sparkles, CheckCircle2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useSiteContent } from '@/context/SiteContentContext';

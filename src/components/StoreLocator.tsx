@@ -1,3 +1,28 @@
+/**
+ * ═══════════════════════════════════════════════════════════════
+ * 📄 ARCHITECTURE MAP — StoreLocator.tsx
+ * ═══════════════════════════════════════════════════════════════
+ * 📁 Path: src/components/StoreLocator.tsx
+ * 🏷️ Type: Client Component
+ * 📦 Module: Public Site
+ * ─────────────────────────────────────────────────────────────
+ * 🔍 STRUCTURE:
+ *   L026-L047  → Imports & dependencies
+ *   L048-L050  → Type definitions / interfaces (StoreLocatorProps)
+ *   L052-L061  → Component function start & state declarations
+ *   L063-L078  → Lifecycle hooks & data loading (Firebase & province sync)
+ *   L080-L090  → Memoized distributor filtering (province & query)
+ *   L092-L163  → JSX render: header & search / province filter controls
+ *   L165-L320  → JSX render: agency directory listing cards (call, WhatsApp, GPS)
+ *   L322-L395  → JSX render: interactive OpenStreetMap iframe & agency detail
+ *   L397-L401  → Section close & component export end
+ * ─────────────────────────────────────────────────────────────
+ * 📝 LAST UPDATED: 2026-09-16
+ * ═══════════════════════════════════════════════════════════════
+ */
+
+'use client';
+
 import { useState, useMemo, useEffect } from 'react';
 import { 
   MapPin, 

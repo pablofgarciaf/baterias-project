@@ -1,3 +1,27 @@
+/**
+ * ═══════════════════════════════════════════════════════════════
+ * 📄 ARCHITECTURE MAP — AdminPage.tsx
+ * ═══════════════════════════════════════════════════════════════
+ * 📁 Path: src/components/AdminPage.tsx
+ * 🏷️ Type: Client Component
+ * 📦 Module: Admin
+ * ─────────────────────────────────────────────────────────────
+ * 🔍 STRUCTURE:
+ *   L025-L070  → Imports & dependencies (Lucide icons, XLSX, Firebase, types)
+ *   L071-L076  → Type definitions & interfaces (AdminPageProps, tabs)
+ *   L078-L078  → Component function start
+ *   L079-L127  → State & hooks (auth, draft content, CRM, distributors)
+ *   L129-L149  → Data loading & lifecycle effects (loadAllData)
+ *   L151-L260  → Event handlers (auth, CRM updates, Excel export, distributors)
+ *   L262-L1233 → JSX render (header, login screen, editor, CRM, catalog)
+ *   L078-L078  → Export default AdminPage
+ * ─────────────────────────────────────────────────────────────
+ * 📝 LAST UPDATED: 2026-09-16
+ * ═══════════════════════════════════════════════════════════════
+ */
+
+'use client';
+
 import { useState, useEffect, FormEvent } from 'react';
 import { 
   Lock, 
@@ -9,7 +33,7 @@ import {
   LogOut, 
   Plus, 
   Check, 
-  X,
+  X, 
   Trash2, 
   Search, 
   Filter, 

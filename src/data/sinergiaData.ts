@@ -1,3 +1,22 @@
+/**
+ * ═══════════════════════════════════════════════════════════════
+ * 📄 ARCHITECTURE MAP — sinergiaData.ts
+ * ═══════════════════════════════════════════════════════════════
+ * 📁 Path: src/data/sinergiaData.ts
+ * 🏷️ Type: Data / Constants
+ * 📦 Module: Shared
+ * ─────────────────────────────────────────────────────────────
+ * 🔍 STRUCTURE:
+ *   L020-L020  → Imports (Sinergia type definitions)
+ *   L022-L022  → Filter years array (vehicleYears)
+ *   L024-L326  → Vehicle-to-battery compatibility catalog (vehicleCatalog)
+ *   L328-L638  → Maresa nationwide distributor locations (defaultDistributors)
+ *   L640-L683  → Initial sample B2B commercial leads (initialB2BLeads)
+ * ─────────────────────────────────────────────────────────────
+ * 📝 LAST UPDATED: 2026-09-16
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { VehicleBatteryMatch, DistributorLocation, BatteryProduct, B2BLead } from '@/types/sinergia';
 
 export const vehicleYears = [2026, 2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015, 2014, 2013, 2012, 2010, 2008];

@@ -1,3 +1,22 @@
+/**
+ * ═══════════════════════════════════════════════════════════════
+ * 📄 ARCHITECTURE MAP — GeoQuickAnswer.tsx
+ * ═══════════════════════════════════════════════════════════════
+ * 📁 Path: src/components/GeoQuickAnswer.tsx
+ * 🏷️ Type: Server Component
+ * 📦 Module: Public Site
+ * ─────────────────────────────────────────────────────────────
+ * 🔍 STRUCTURE:
+ *   L020-L020  → Imports & dependencies (Lucide icons)
+ *   L022-L022  → Component function start (GeoQuickAnswer)
+ *   L023-L059  → JSX render — SEO & AI key takeaways banner
+ *   L029-L037  → Brand summary & nationwide coverage statement
+ *   L039-L055  → Trust badges (Warranty, recycling, phone CTA)
+ * ─────────────────────────────────────────────────────────────
+ * 📝 LAST UPDATED: 2026-09-16
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { ShieldCheck, MapPin, Zap, RefreshCw, PhoneCall } from 'lucide-react';
 
 export default function GeoQuickAnswer() {

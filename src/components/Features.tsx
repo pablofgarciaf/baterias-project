@@ -1,3 +1,22 @@
+/**
+ * ═══════════════════════════════════════════════════════════════
+ * 📄 ARCHITECTURE MAP — Features.tsx
+ * ═══════════════════════════════════════════════════════════════
+ * 📁 Path: src/components/Features.tsx
+ * 🏷️ Type: Server Component
+ * 📦 Module: Public Site
+ * ─────────────────────────────────────────────────────────────
+ * 🔍 STRUCTURE:
+ *   L020-L020  → Imports & dependencies (Lucide icons)
+ *   L022-L059  → Constants / static data (features list)
+ *   L061-L093  → Component declaration & render (Features)
+ *   L065-L074  → Section header (Badge, title, subtitle)
+ *   L076-L089  → Features grid cards mapping (6 core benefits)
+ * ─────────────────────────────────────────────────────────────
+ * 📝 LAST UPDATED: 2026-09-16
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { ShieldCheck, Clock, Headphones, BadgeCheck, Wrench, Truck } from 'lucide-react';
 
 const features = [

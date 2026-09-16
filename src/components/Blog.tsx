@@ -1,3 +1,28 @@
+/**
+ * ═══════════════════════════════════════════════════════════════
+ * 📄 ARCHITECTURE MAP — Blog.tsx
+ * ═══════════════════════════════════════════════════════════════
+ * 📁 Path: src/components/Blog.tsx
+ * 🏷️ Type: Client Component
+ * 📦 Module: Public Site
+ * ─────────────────────────────────────────────────────────────
+ * 🔍 STRUCTURE:
+ *   L026-L043  → Imports & dependencies
+ *   L044-L054  → Type definitions / interfaces (BlogPost)
+ *   L056-L188  → Constants / static data (blogPostsData)
+ *   L190-L209  → Component function start & state declarations
+ *   L211-L243  → Lifecycle hooks & effects (resize, sync, auto-play)
+ *   L245-L275  → Event handlers (navigation & touch swipe gestures)
+ *   L277-L488  → JSX render: header, category filter & article carousel
+ *   L490-L574  → JSX render: article reader modal dialog (AnimatePresence)
+ *   L575-L577  → Section close & component export end
+ * ─────────────────────────────────────────────────────────────
+ * 📝 LAST UPDATED: 2026-09-16
+ * ═══════════════════════════════════════════════════════════════
+ */
+
+'use client';
+
 import { useState, useEffect, useRef, type TouchEvent } from 'react';
 import { 
   ArrowRight, 

@@ -1,3 +1,27 @@
+/**
+ * ═══════════════════════════════════════════════════════════════
+ * 📄 ARCHITECTURE MAP — About.tsx
+ * ═══════════════════════════════════════════════════════════════
+ * 📁 Path: src/components/About.tsx
+ * 🏷️ Type: Client Component
+ * 📦 Module: Public Site
+ * ─────────────────────────────────────────────────────────────
+ * 🔍 STRUCTURE:
+ *   L025-L028  → Imports & dependencies
+ *   L030-L030  → Component function start (About)
+ *   L031-L034  → State & hooks (useSiteContent, useTheme)
+ *   L036-L041  → Constants / static data (pillars array)
+ *   L043-L167  → JSX render — About section container
+ *   L055-L106  → Left column: Visual asset & 45 Years badge
+ *   L108-L162  → Right column: Narrative copy & pillars grid
+ *   L139-L160  → Pillars cards mapping
+ * ─────────────────────────────────────────────────────────────
+ * 📝 LAST UPDATED: 2026-09-16
+ * ═══════════════════════════════════════════════════════════════
+ */
+
+'use client';
+
 import { Battery, Target, Eye, Users, Award, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useSiteContent } from '@/context/SiteContentContext';

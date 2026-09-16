@@ -1,3 +1,25 @@
+/**
+ * ═══════════════════════════════════════════════════════════════
+ * 📄 ARCHITECTURE MAP — firebaseStore.ts
+ * ═══════════════════════════════════════════════════════════════
+ * 📁 Path: src/lib/firebaseStore.ts
+ * 🏷️ Type: Library / Data Access Layer
+ * 📦 Module: Shared
+ * ─────────────────────────────────────────────────────────────
+ * 🔍 STRUCTURE:
+ *   L023-L034  → Imports & dependencies
+ *   L036-L072  → LocalStorage keys & offline fallback helpers
+ *   L074-L100  → B2B Leads: submitB2BLead
+ *   L102-L118  → B2B Leads: getB2BLeads
+ *   L120-L136  → B2B Leads: updateLeadStatus
+ *   L138-L154  → Distributors: getDistributors
+ *   L156-L180  → Distributors: saveDistributor
+ *   L182-L197  → Distributors: removeDistributor
+ * ─────────────────────────────────────────────────────────────
+ * 📝 LAST UPDATED: 2026-09-16
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { 
   collection, 
   getDocs, 

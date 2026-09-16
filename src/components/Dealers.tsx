@@ -1,3 +1,23 @@
+/**
+ * ═══════════════════════════════════════════════════════════════
+ * 📄 ARCHITECTURE MAP — Dealers.tsx
+ * ═══════════════════════════════════════════════════════════════
+ * 📁 Path: src/components/Dealers.tsx
+ * 🏷️ Type: Server Component
+ * 📦 Module: Public Site
+ * ─────────────────────────────────────────────────────────────
+ * 🔍 STRUCTURE:
+ *   L021-L021  → Imports & dependencies (Lucide icons)
+ *   L023-L023  → Component function start (Dealers)
+ *   L024-L031  → Constants / static data (benefits list)
+ *   L033-L095  → JSX render — B2B Dealers section container
+ *   L040-L071  → Left column: Pitch, benefits checklist, CTA button
+ *   L073-L090  → Right column: Key performance stats cards
+ * ─────────────────────────────────────────────────────────────
+ * 📝 LAST UPDATED: 2026-09-16
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import { Store, TrendingUp, Handshake, ArrowRight, Check } from 'lucide-react';
 
 export default function Dealers() {

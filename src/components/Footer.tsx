@@ -1,3 +1,25 @@
+/**
+ * ═══════════════════════════════════════════════════════════════
+ * 📄 ARCHITECTURE MAP — Footer.tsx
+ * ═══════════════════════════════════════════════════════════════
+ * 📁 Path: src/components/Footer.tsx
+ * 🏷️ Type: Client Component
+ * 📦 Module: Public Site
+ * ─────────────────────────────────────────────────────────────
+ * 🔍 STRUCTURE:
+ *   L023-L025  → Imports & dependencies
+ *   L027-L029  → Type definitions / interfaces (FooterProps)
+ *   L031-L031  → Component function start
+ *   L032-L033  → State & hooks (useTheme)
+ *   L035-L232  → JSX render (brand, tech list, contact, newsletter, provinces, legal)
+ *   L031-L031  → Export default Footer
+ * ─────────────────────────────────────────────────────────────
+ * 📝 LAST UPDATED: 2026-09-16
+ * ═══════════════════════════════════════════════════════════════
+ */
+
+'use client';
+
 import { Battery, Phone, MapPin, Facebook, Instagram, Twitter, Linkedin, Youtube, Send, ShieldCheck, Lock, PhoneCall } from 'lucide-react';
 import { provinces } from '@/data/provinces';
 import { useTheme } from '@/context/ThemeContext';

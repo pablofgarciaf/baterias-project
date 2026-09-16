@@ -1,3 +1,25 @@
+/**
+ * ═══════════════════════════════════════════════════════════════
+ * 📄 ARCHITECTURE MAP — WhatsAppFloatingButton.tsx
+ * ═══════════════════════════════════════════════════════════════
+ * 📁 Path: src/components/WhatsAppFloatingButton.tsx
+ * 🏷️ Type: Client Component
+ * 📦 Module: Public Site
+ * ─────────────────────────────────────────────────────────────
+ * 🔍 STRUCTURE:
+ *   L023-L026  → Imports & dependencies
+ *   L028-L028  → Component function start
+ *   L029-L030  → State & hooks (isOpen, useTheme)
+ *   L032-L035  → Constants / static contact URLs & phones
+ *   L037-L212  → JSX render (expanded modal, options, FAB button)
+ *   L028-L028  → Export default WhatsAppFloatingButton
+ * ─────────────────────────────────────────────────────────────
+ * 📝 LAST UPDATED: 2026-09-16
+ * ═══════════════════════════════════════════════════════════════
+ */
+
+'use client';
+
 import { useState } from 'react';
 import { Phone, MessageCircle, X, Clock, PhoneCall, ShieldCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';

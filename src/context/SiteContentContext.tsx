@@ -1,3 +1,25 @@
+/**
+ * ═══════════════════════════════════════════════════════════════
+ * 📄 ARCHITECTURE MAP — SiteContentContext.tsx
+ * ═══════════════════════════════════════════════════════════════
+ * 📁 Path: src/context/SiteContentContext.tsx
+ * 🏷️ Type: Client Component (Context & State Provider)
+ * 📦 Module: Shared
+ * ─────────────────────────────────────────────────────────────
+ * 🔍 STRUCTURE:
+ *   L023-L023  → Imports (React context & state hooks)
+ *   L025-L108  → Type definition (SiteContent interface)
+ *   L110-L195  → Default content values & storage key
+ *   L197-L205  → Context interface & initialization (ContentContext)
+ *   L207-L268  → Provider component (SiteContentProvider)
+ *   L270-L276  → Custom hook (useSiteContent)
+ * ─────────────────────────────────────────────────────────────
+ * 📝 LAST UPDATED: 2026-09-16
+ * ═══════════════════════════════════════════════════════════════
+ */
+
+'use client';
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 export interface SiteContent {

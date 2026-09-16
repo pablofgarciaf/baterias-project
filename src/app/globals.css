@@ -1,3 +1,25 @@
+/**
+ * ═══════════════════════════════════════════════════════════════
+ * 📄 ARCHITECTURE MAP — globals.css
+ * ═══════════════════════════════════════════════════════════════
+ * 📁 Path: src/app/globals.css
+ * 🏷️ Type: Global Stylesheet (Tailwind CSS v4)
+ * 📦 Module: Shared (all pages)
+ * ─────────────────────────────────────────────────────────────
+ * 🔍 STRUCTURE:
+ *   L015-L016  → Tailwind CSS v4 import
+ *   L018-L082  → @theme tokens (fonts, colors, animations)
+ *   L084-L097  → @keyframes definitions
+ *   L099-L111  → Base HTML/body styles
+ *   L113-L133  → .container-max utility
+ *   L135-L197  → Button utilities (.btn-primary, .btn-secondary, .btn-accent)
+ *   L199-L209  → .card utility
+ *   L211-L244  → Section title/subtitle typography
+ * ─────────────────────────────────────────────────────────────
+ * 📝 LAST UPDATED: 2026-09-16
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 @import "tailwindcss";
 
 @theme {
@@ -240,4 +262,3 @@ h1, h2, h3, h4, h5, h6 {
     line-height: 1.75rem;
   }
 }
-

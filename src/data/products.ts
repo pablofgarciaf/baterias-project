@@ -1,3 +1,20 @@
+/**
+ * ═══════════════════════════════════════════════════════════════
+ * 📄 ARCHITECTURE MAP — products.ts
+ * ═══════════════════════════════════════════════════════════════
+ * 📁 Path: src/data/products.ts
+ * 🏷️ Type: Data / Constants
+ * 📦 Module: Shared
+ * ─────────────────────────────────────────────────────────────
+ * 🔍 STRUCTURE:
+ *   L018-L028  → Imports (lucide-react icons)
+ *   L030-L038  → Type definition (ProductCategory interface)
+ *   L040-L129  → Dataset (productCategories array)
+ * ─────────────────────────────────────────────────────────────
+ * 📝 LAST UPDATED: 2026-09-16
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 import {
   Car,
   Truck,

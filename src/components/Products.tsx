@@ -1,3 +1,28 @@
+/**
+ * ═══════════════════════════════════════════════════════════════
+ * 📄 ARCHITECTURE MAP — Products.tsx
+ * ═══════════════════════════════════════════════════════════════
+ * 📁 Path: src/components/Products.tsx
+ * 🏷️ Type: Client Component
+ * 📦 Module: Public Site
+ * ─────────────────────────────────────────────────────────────
+ * 🔍 STRUCTURE:
+ *   L026-L045  → Imports & dependencies
+ *   L047-L064  → Type definitions / interfaces (BatteryShowcaseItem)
+ *   L066-L177  → Constants / static data (batteryCatalogItems)
+ *   L179-L195  → Component function start & state declarations
+ *   L197-L230  → Lifecycle hooks & effects (resize, sync, auto-play)
+ *   L232-L262  → Event handlers (navigation & touch swipe gestures)
+ *   L264-L544  → JSX render: header, filter tabs & product carousel
+ *   L546-L643  → JSX render: technical specs modal dialog
+ *   L644-L646  → Section close & component export end
+ * ─────────────────────────────────────────────────────────────
+ * 📝 LAST UPDATED: 2026-09-16
+ * ═══════════════════════════════════════════════════════════════
+ */
+
+'use client';
+
 import { useState, useEffect, useRef, type TouchEvent } from 'react';
 import { 
   Zap, 

@@ -1,3 +1,24 @@
+/**
+ * ═══════════════════════════════════════════════════════════════
+ * 📄 ARCHITECTURE MAP — ThemeContext.tsx
+ * ═══════════════════════════════════════════════════════════════
+ * 📁 Path: src/context/ThemeContext.tsx
+ * 🏷️ Type: Client Component (Theme Context & Provider)
+ * 📦 Module: Shared
+ * ─────────────────────────────────────────────────────────────
+ * 🔍 STRUCTURE:
+ *   L022-L022  → Imports (React hooks & context)
+ *   L024-L030  → Type definitions (Theme, ThemeContextType)
+ *   L032-L032  → Context creation (ThemeContext)
+ *   L034-L072  → ThemeProvider component (state, DOM class sync, handlers)
+ *   L074-L080  → Custom hook (useTheme)
+ * ─────────────────────────────────────────────────────────────
+ * 📝 LAST UPDATED: 2026-09-16
+ * ═══════════════════════════════════════════════════════════════
+ */
+
+'use client';
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 type Theme = 'light' | 'dark';

@@ -1,3 +1,21 @@
+/**
+ * ═══════════════════════════════════════════════════════════════
+ * 📄 ARCHITECTURE MAP — provinces.ts
+ * ═══════════════════════════════════════════════════════════════
+ * 📁 Path: src/data/provinces.ts
+ * 🏷️ Type: Data / Constants
+ * 📦 Module: Shared
+ * ─────────────────────────────────────────────────────────────
+ * 🔍 STRUCTURE:
+ *   L019-L028  → Type definitions (Region, Province interface)
+ *   L030-L055  → Dataset: Ecuador provinces list (provinces)
+ *   L057-L062  → Styling mapping: regionColors
+ *   L064-L069  → Description mapping: regionDescriptions
+ * ─────────────────────────────────────────────────────────────
+ * 📝 LAST UPDATED: 2026-09-16
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 export type Region = 'Sierra' | 'Costa' | 'Oriente' | 'Insular';
 
 export interface Province {

@@ -1,3 +1,23 @@
+/**
+ * ═══════════════════════════════════════════════════════════════
+ * 📄 ARCHITECTURE MAP — maresa.ts
+ * ═══════════════════════════════════════════════════════════════
+ * 📁 Path: src/types/maresa.ts
+ * 🏷️ Type: Type Definitions
+ * 📦 Module: Shared
+ * ─────────────────────────────────────────────────────────────
+ * 🔍 STRUCTURE:
+ *   L021-L032  → Interface: SiteSection (CMS section content)
+ *   L034-L040  → Interface: Brand (automotive manufacturer)
+ *   L042-L050  → Interface: Vehicle (vehicle models)
+ *   L052-L061  → Interface: Part (parts & batteries schema)
+ *   L063-L074  → Interface: ServiceCenter (dealers & workshops)
+ *   L076-L085  → Interface: InventoryRow (stock per center)
+ * ─────────────────────────────────────────────────────────────
+ * 📝 LAST UPDATED: 2026-09-16
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 export interface SiteSection {
   id: string;
   section_key: string;

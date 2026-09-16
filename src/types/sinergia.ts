@@ -1,3 +1,21 @@
+/**
+ * ═══════════════════════════════════════════════════════════════
+ * 📄 ARCHITECTURE MAP — sinergia.ts
+ * ═══════════════════════════════════════════════════════════════
+ * 📁 Path: src/types/sinergia.ts
+ * 🏷️ Type: Type Definitions
+ * 📦 Module: Shared
+ * ─────────────────────────────────────────────────────────────
+ * 🔍 STRUCTURE:
+ *   L019-L036  → Interface: VehicleBatteryMatch (compatibility match)
+ *   L038-L052  → Interface: DistributorLocation (stores & workshops)
+ *   L054-L067  → Interface: B2BLead (commercial lead applications)
+ *   L069-L085  → Interface: BatteryProduct (product specifications)
+ * ─────────────────────────────────────────────────────────────
+ * 📝 LAST UPDATED: 2026-09-16
+ * ═══════════════════════════════════════════════════════════════
+ */
+
 export interface VehicleBatteryMatch {
   id: string;
   year: number;
