@@ -29,6 +29,7 @@ export interface SiteContent {
     titleHighlight: string;
     subtitle: string;
     ctaButtonText: string;
+    secondaryButtonText: string;
     ctaButtonColor: string;
     backgroundImage: string;
     stat1Value: string;
@@ -114,6 +115,7 @@ export const defaultSiteContent: SiteContent = {
     titleHighlight: 'para cada kilómetro',
     subtitle: 'Baterías para autos, camiones, motos, lanchas y maquinaria. Distribución directa a las 24 provincias del Ecuador con garantía y soporte técnico.',
     ctaButtonText: 'Buscar batería',
+    secondaryButtonText: 'Puntos de venta',
     ctaButtonColor: '#e11d48',
     backgroundImage: 'https://images.pexels.com/photos/37177070/pexels-photo-37177070.jpeg?auto=compress&cs=tinysrgb&w=1920',
     stat1Value: '70+',
