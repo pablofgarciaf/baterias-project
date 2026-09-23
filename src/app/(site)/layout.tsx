@@ -34,7 +34,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
       {/* Sticky Header — shared across all public routes */}
       <Header />
 
-      <main id="main-content">
+      <main id="main-content" className="pt-14 lg:pt-16">
         {children}
       </main>
 

@@ -7,38 +7,28 @@
  * 📦 Module: Public Site
  * ─────────────────────────────────────────────────────────────
  * 🔍 STRUCTURE:
- *   L027-L030  → Imports & dependencies
- *   L032-L035  → Type definitions / interfaces (HeroProps)
- *   L037-L037  → Component function start (Hero)
- *   L038-L041  → State & hooks (useSiteContent, useTheme)
- *   L043-L047  → Constants / static data (stats array)
- *   L049-L057  → Event handlers (scrollToVehicleFinder, scrollToStoreLocator)
- *   L059-L086  → JSX: Section container & background visuals (Image, glow)
- *   L088-L151  → JSX: Hero copy & trust badges (Badge, title, subtitle, points)
- *   L153-L179  → JSX: Call to action buttons (Vehicle Finder, Store Locator)
- *   L181-L216  → JSX: Trust statistics bento grid
+ *   L024-L029  → Imports & dependencies
+ *   L031-L041  → State, hooks, constants
+ *   L043-L150  → JSX: Hero ~75vh with bg image, light overlay, Apple-clean layout
  * ─────────────────────────────────────────────────────────────
- * 📝 LAST UPDATED: 2026-09-16
+ * ⚠️ Images: replace /hero-desktop.webp and /hero-mobile.webp in public/
+ * ─────────────────────────────────────────────────────────────
+ * 📝 LAST UPDATED: 2026-09-23
  * ═══════════════════════════════════════════════════════════════
  */
 
 'use client';
 
-import { ShieldCheck, Truck, Award, Search, MapPin, ArrowRight, Zap, CheckCircle2 } from 'lucide-react';
+import { ShieldCheck, Truck, Award, Search, MapPin, ArrowRight, Zap, RefreshCw, PhoneCall } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useSiteContent } from '@/context/SiteContentContext';
 import { useTheme } from '@/context/ThemeContext';
+import Link from 'next/link';
 
-interface HeroProps {
-  selectedProvince?: string | null;
-  onProvinceChange?: (province: string | null) => void;
-}
-
-export default function Hero({ selectedProvince, onProvinceChange }: HeroProps) {
+export default function Hero() {
   const { content } = useSiteContent();
   const { theme } = useTheme();
   const heroContent = content.hero;
-  const isDark = theme === 'dark';
 
   const stats = [
     { icon: ShieldCheck, value: heroContent.stat1Value, label: heroContent.stat1Label },
@@ -46,175 +36,140 @@ export default function Hero({ selectedProvince, onProvinceChange }: HeroProps) 
     { icon: Award, value: heroContent.stat3Value, label: heroContent.stat3Label },
   ];
 
-  const scrollToVehicleFinder = () => {
-    const el = document.getElementById('escoge-tu-bateria');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const scrollToStoreLocator = () => {
-    const el = document.getElementById('puntos-de-venta');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
-  };
-
   return (
-    <section 
-      className={`relative py-16 sm:py-24 lg:py-28 overflow-hidden transition-colors duration-300 ${
-        isDark ? 'bg-slate-950 text-white' : 'bg-gradient-to-b from-slate-50 via-white to-blue-50/40 text-slate-900'
-      }`}
-    >
-      {/* Background Graphic & Atmosphere */}
-      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+    <section className="relative h-screen min-h-[600px] flex items-end overflow-hidden -mt-14 lg:-mt-16">
+
+      {/* Background Image */}
+      <picture className="absolute inset-0 z-0">
+        <source media="(max-width: 767px)" srcSet="/hero-movile.webp" type="image/webp" />
+        <source media="(min-width: 768px)" srcSet="/hero-desktop.webp" type="image/webp" />
         <img
-          src={heroContent.backgroundImage}
-          alt="Baterías Andinas Corporación Maresa Ecuador"
-          width={1920}
-          height={1080}
-          className={`w-full h-full object-cover transition-opacity duration-500 ${
-            isDark ? 'opacity-30' : 'opacity-15'
-          } scale-105`}
+          src="/hero-desktop.webp"
+          alt="Baterías Maresa — energía confiable para tu vehículo en Ecuador"
+          className="w-full h-full object-cover"
+          loading="eager"
+          fetchPriority="high"
         />
-        <div 
-          className={`absolute inset-0 transition-colors duration-300 ${
-            isDark 
-              ? 'bg-gradient-to-r from-slate-950 via-slate-950/90 to-slate-900/60' 
-              : 'bg-gradient-to-r from-white via-white/95 to-slate-50/80'
-          }`} 
-        />
-        
-        {/* Soft radial glow */}
-        <div className="absolute top-10 right-10 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
-      </div>
+      </picture>
 
-      <div className="container-max relative z-10 w-full">
-        <div className="max-w-3xl">
-          
-          {/* Official Maresa Badge with Motion */}
-          <motion.div 
-            initial={{ opacity: 0, y: -10 }}
+      {/* Subtle gradient — lets image breathe */}
+      <div className="absolute inset-0 z-[1] bg-gradient-to-t from-black/70 via-black/20 to-black/10" />
+
+      {/* Content — bottom-aligned, Apple-clean */}
+      <div className="container-max relative z-10 pb-10 sm:pb-14 w-full">
+        <div className="max-w-2xl">
+
+          {/* Eyebrow */}
+          <motion.span
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full backdrop-blur-md mb-6 border shadow-sm ${
-              isDark 
-                ? 'bg-blue-500/15 border-blue-400/30 text-blue-200' 
-                : 'bg-blue-50 border-blue-200 text-blue-800'
-            }`}
+            transition={{ duration: 0.4 }}
+            className="inline-block text-[11px] sm:text-xs font-semibold uppercase tracking-[0.2em] text-white/70 mb-3"
           >
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-xs sm:text-sm font-bold tracking-wide uppercase">
-              {heroContent.badgeText}
-            </span>
-          </motion.div>
+            {heroContent.badgeText}
+          </motion.span>
 
-          {/* H1 Heading */}
-          <motion.h1 
-            initial={{ opacity: 0, y: 15 }}
+          {/* H1 — editorial, large */}
+          <motion.h1
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className={`text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight ${
-              isDark ? 'text-white' : 'text-slate-950'
-            }`}
+            transition={{ duration: 0.5, delay: 0.08 }}
+            className="text-3xl sm:text-4xl lg:text-5xl xl:text-[3.5rem] font-display font-bold tracking-tight leading-[1.05] text-white"
           >
             {heroContent.titleMain}{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-sky-500 to-indigo-600 dark:from-blue-400 dark:via-sky-300 dark:to-indigo-300">
+            <span className="text-primary-300">
               {heroContent.titleHighlight}
             </span>
           </motion.h1>
 
-          <motion.p 
-            initial={{ opacity: 0, y: 15 }}
+          {/* Subtitle */}
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className={`mt-5 text-base sm:text-lg max-w-2xl leading-relaxed ${
-              isDark ? 'text-slate-300' : 'text-slate-600'
-            }`}
+            transition={{ duration: 0.5, delay: 0.15 }}
+            className="mt-3 text-sm sm:text-base text-white/70 max-w-lg leading-relaxed"
           >
             {heroContent.subtitle}
           </motion.p>
 
-          {/* Quick trust points */}
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="mt-5 flex flex-wrap items-center gap-y-2 gap-x-5 text-xs sm:text-sm font-medium"
-          >
-            <span className="inline-flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
-              <CheckCircle2 className="w-4 h-4" /> Chequeo computarizado gratis
-            </span>
-            <span className="inline-flex items-center gap-1.5 text-blue-600 dark:text-blue-400">
-              <CheckCircle2 className="w-4 h-4" /> Instalación en 24 provincias
-            </span>
-            <span className="inline-flex items-center gap-1.5 text-amber-600 dark:text-amber-400">
-              <CheckCircle2 className="w-4 h-4" /> Bono -$10 por tu batería vieja
-            </span>
-          </motion.div>
-
-          {/* Call to Action Buttons with Motion */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
+          {/* CTAs — Apple style: pill buttons, clean */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.35 }}
-            className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-4"
+            transition={{ duration: 0.5, delay: 0.22 }}
+            className="mt-6 flex flex-wrap items-center gap-3"
           >
-            <button
-              onClick={scrollToVehicleFinder}
-              className="px-7 py-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm sm:text-base flex items-center justify-center gap-2.5 shadow-xl shadow-blue-600/30 transition-all duration-200 active:scale-95 hover:-translate-y-0.5 cursor-pointer"
+            <Link
+              href="/buscador"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white text-slate-950 text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-200 active:scale-[0.97] hover:-translate-y-px"
             >
-              <Search className="w-5 h-5" />
-              <span>{heroContent.ctaButtonText}</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+              <Search className="w-4 h-4" />
+              {heroContent.ctaButtonText}
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
 
-            <button
-              onClick={scrollToStoreLocator}
-              className={`px-7 py-4 rounded-xl font-bold text-sm sm:text-base flex items-center justify-center gap-2 border transition-all duration-200 active:scale-95 cursor-pointer ${
-                isDark 
-                  ? 'bg-slate-900/80 hover:bg-slate-800 text-white border-slate-700' 
-                  : 'bg-white hover:bg-slate-100 text-slate-800 border-slate-300 shadow-sm'
-              }`}
+            <Link
+              href="/agencias"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 backdrop-blur-md text-white text-sm font-semibold border border-white/20 hover:bg-white/20 transition-all duration-200 active:scale-[0.97]"
             >
-              <MapPin className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-              <span>{heroContent.secondaryButtonText}</span>
-            </button>
+              <MapPin className="w-4 h-4" />
+              {heroContent.secondaryButtonText}
+            </Link>
           </motion.div>
+        </div>
 
-          {/* Responsive Trust Badges Bento */}
-          <motion.div 
-            initial={{ opacity: 0, y: 25 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.45 }}
-            className={`mt-12 pt-8 border-t grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 ${
-              isDark ? 'border-slate-800/80' : 'border-slate-200'
-            }`}
-          >
-            {stats.map((stat, i) => (
-              <div
-                key={i}
-                className={`flex items-center gap-3.5 p-3.5 sm:p-4 rounded-2xl border transition-all duration-300 hover:-translate-y-0.5 ${
-                  isDark 
-                    ? 'bg-slate-900/60 border-slate-800 hover:border-slate-700 text-white' 
-                    : 'bg-white border-slate-200/90 shadow-sm hover:shadow-md text-slate-900'
-                }`}
-              >
-                <div className="w-12 h-12 rounded-xl bg-blue-600/15 dark:bg-blue-600/20 border border-blue-500/20 flex items-center justify-center shrink-0">
-                  <stat.icon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+        {/* Stats — floating row, right side on desktop */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="mt-8 lg:absolute lg:bottom-14 lg:right-8 xl:right-12 inline-flex items-center gap-6 sm:gap-8 bg-white/10 backdrop-blur-xl rounded-2xl px-6 py-3 border border-white/15"
+        >
+          {stats.map((stat, i) => (
+            <div key={i} className="flex items-center gap-2.5">
+              <stat.icon className="w-4 h-4 text-primary-300" />
+              <div>
+                <div className="text-lg sm:text-xl font-bold text-white leading-none tracking-tight">
+                  {stat.value}
                 </div>
-                <div>
-                  <div className={`text-xl sm:text-2xl font-extrabold tracking-tight ${
-                    isDark ? 'text-white' : 'text-slate-950'
-                  }`}>
-                    {stat.value}
-                  </div>
-                  <div className={`text-xs font-semibold ${
-                    isDark ? 'text-slate-400' : 'text-slate-500'
-                  }`}>
-                    {stat.label}
-                  </div>
+                <div className="text-[10px] text-white/50 font-medium uppercase tracking-wider">
+                  {stat.label}
                 </div>
               </div>
-            ))}
-          </motion.div>
+              {i < stats.length - 1 && (
+                <div className="w-px h-8 bg-white/10 ml-3 sm:ml-5" />
+              )}
+            </div>
+          ))}
+        </motion.div>
+      </div>
 
+      {/* GeoQuickAnswer bar — integrated at hero bottom */}
+      <div className="absolute bottom-0 left-0 right-0 z-10 bg-slate-950/80 backdrop-blur-md border-t border-white/10 py-2.5 px-4 text-xs text-slate-100">
+        <div className="container-max flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-600/30 text-blue-300 font-semibold border border-blue-500/30 text-[11px] tracking-wide uppercase">
+              <Zap className="w-3 h-3 text-amber-400" />
+              Corporación Maresa
+            </span>
+            <span className="text-slate-300">
+              <strong>Baterías Andinas:</strong> Distribución oficial en 24 provincias. Desde $65 con garantía hasta 36 meses.
+            </span>
+          </div>
+          <div className="flex items-center gap-4 text-slate-400 flex-wrap">
+            <span className="flex items-center gap-1 hover:text-white transition-colors">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              Garantía Oficial
+            </span>
+            <span className="flex items-center gap-1 hover:text-white transition-colors">
+              <RefreshCw className="w-3.5 h-3.5 text-blue-400" />
+              Reciclaje -$10
+            </span>
+            <a href="tel:1800228374" className="flex items-center gap-1 text-blue-400 hover:text-blue-300 font-medium transition-colors">
+              <PhoneCall className="w-3 h-3" />
+              1-800-BATERIA
+            </a>
+          </div>
         </div>
       </div>
     </section>

@@ -32,19 +32,19 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>(() => {
-    if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem('maresa_theme') as Theme | null;
-      if (savedTheme === 'light' || savedTheme === 'dark') {
-        return savedTheme;
-      }
-      // If user system prefers dark, check, but default to 'light' per customer feedback
-      return 'light';
-    }
-    return 'light';
-  });
+  const [theme, setThemeState] = useState<Theme>('light');
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    const savedTheme = localStorage.getItem('maresa_theme') as Theme | null;
+    if (savedTheme === 'light' || savedTheme === 'dark') {
+      setThemeState(savedTheme);
+    }
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
     const root = document.documentElement;
     if (theme === 'dark') {
       root.classList.add('dark');
@@ -54,7 +54,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       root.classList.add('light');
     }
     localStorage.setItem('maresa_theme', theme);
-  }, [theme]);
+  }, [theme, mounted]);
 
   const toggleTheme = () => {
     setThemeState((prev) => (prev === 'light' ? 'dark' : 'light'));

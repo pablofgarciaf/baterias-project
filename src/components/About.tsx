@@ -62,7 +62,7 @@ export default function About() {
           >
             <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800">
               <img
-                src={about.aboutImage}
+                src="/quienes-somos-section-landing.webp"
                 alt="Instalaciones de Corporación Maresa Ecuador"
                 className="w-full h-[420px] sm:h-[500px] object-cover hover:scale-105 transition-transform duration-700 ease-out"
                 loading="lazy"

@@ -91,9 +91,9 @@ export default function B2BLeadCapture() {
   };
 
   return (
-    <section 
-      id="quiero-ser-proveedor" 
-      className={`py-20 sm:py-28 relative overflow-hidden transition-colors duration-300 border-t ${
+    <section
+      id="quiero-ser-proveedor"
+      className={`py-12 sm:py-16 relative overflow-hidden transition-colors duration-300 border-t ${
         isDark 
           ? 'bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950/40 text-white border-slate-800' 
           : 'bg-gradient-to-br from-slate-50 via-white to-blue-50/50 text-slate-900 border-slate-200'
@@ -104,10 +104,10 @@ export default function B2BLeadCapture() {
       <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="container-max relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
           {/* Left Column: Commercial Proposition */}
-          <div className="lg:col-span-6">
+          <div className="lg:col-span-5">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/15 border border-blue-400/30 text-blue-600 dark:text-blue-300 text-xs sm:text-sm font-bold uppercase tracking-wider mb-6">
               <TrendingUp className="w-4 h-4 text-blue-600 dark:text-blue-400" />
               {b2b.badge}
@@ -173,8 +173,8 @@ export default function B2BLeadCapture() {
           </div>
 
           {/* Right Column: Lead Form */}
-          <div className="lg:col-span-6">
-            <div className={`rounded-3xl p-6 sm:p-8 shadow-2xl border transition-colors ${
+          <div className="lg:col-span-7">
+            <div className={`rounded-2xl p-5 sm:p-6 shadow-2xl border transition-colors ${
               isDark 
                 ? 'bg-slate-900/90 border-slate-700 text-white' 
                 : 'bg-white border-slate-200 text-slate-900 shadow-slate-900/10'
@@ -199,7 +199,7 @@ export default function B2BLeadCapture() {
                   </button>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-3">
                   <div>
                     <h3 className={`text-xl font-extrabold ${isDark ? 'text-white' : 'text-slate-950'}`}>
                       Formulario de Postulación de Distribuidor
@@ -399,7 +399,7 @@ export default function B2BLeadCapture() {
                       Comentarios adicionales (Opcional)
                     </label>
                     <textarea
-                      rows={2}
+                      rows={1}
                       placeholder="Indícanos marcas con las que trabajas actualmente o requerimientos especiales..."
                       value={formData.notes}
                       onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
@@ -414,7 +414,7 @@ export default function B2BLeadCapture() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full py-4 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-xl shadow-blue-600/30 flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
+                    className="w-full py-3 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-xl shadow-blue-600/30 flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
                   >
                     <Send className="w-4 h-4" />
                     <span>{isSubmitting ? 'Registrando en CRM Maresa...' : 'Enviar Solicitud de Distribuidor'}</span>
