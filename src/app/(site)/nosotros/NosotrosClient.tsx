@@ -181,38 +181,49 @@ export default function NosotrosClient() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            {values.map((item, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.08 }}
-                className={`p-6 sm:p-8 rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 ${
-                  isDark
-                    ? "bg-slate-950/60 border-slate-800 hover:border-slate-700"
-                    : "bg-white border-slate-200 hover:border-primary-200 shadow-sm"
-                }`}
-              >
-                <div className="w-11 h-11 rounded-xl bg-primary-600/15 border border-primary-500/20 flex items-center justify-center mb-4">
-                  <item.icon
-                    className={`w-5 h-5 ${isDark ? "text-primary-400" : "text-primary-600"}`}
-                  />
-                </div>
-                <h3
-                  className={`text-lg font-bold mb-2 ${isDark ? "text-white" : "text-slate-950"}`}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 relative z-10">
+              {/* Background ambient glow behind the grid */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg h-[400px] bg-primary-500/10 rounded-full blur-[100px] pointer-events-none -z-10" />
+              
+              {values.map((item, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 24, scale: 0.98 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ delay: i * 0.1, duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  className={`group relative p-8 sm:p-10 rounded-[32px] border backdrop-blur-2xl overflow-hidden transition-all duration-500 hover:-translate-y-1.5 ${
+                    isDark
+                      ? "bg-slate-900/40 border-white/10 hover:bg-slate-800/60 hover:shadow-[0_0_40px_rgba(37,99,235,0.15)] hover:border-white/20"
+                      : "bg-white/60 border-white/80 hover:bg-white/90 hover:shadow-[0_20px_40px_rgb(0,0,0,0.06)] hover:border-white"
+                  }`}
                 >
-                  {item.title}
-                </h3>
-                <p
-                  className={`text-sm leading-relaxed ${isDark ? "text-slate-400" : "text-slate-500"}`}
-                >
-                  {item.text}
-                </p>
-              </motion.div>
-            ))}
-          </div>
+                  <div className="absolute inset-0 bg-gradient-to-br from-transparent to-primary-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  
+                  <div className="relative z-10">
+                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-inner ${
+                      isDark 
+                        ? "bg-slate-800/80 border border-white/10 text-primary-400 shadow-black/50" 
+                        : "bg-gradient-to-br from-white to-primary-50 border border-primary-100 text-primary-600 shadow-primary-500/10"
+                    }`}>
+                      <item.icon className="w-6 h-6 drop-shadow-sm" />
+                    </div>
+                    
+                    <h3 className={`text-xl font-extrabold mb-3 tracking-tight transition-colors duration-300 ${
+                      isDark ? "text-white group-hover:text-primary-300" : "text-slate-950 group-hover:text-primary-700"
+                    }`}>
+                      {item.title}
+                    </h3>
+                    
+                    <p className={`text-[15px] leading-relaxed transition-colors duration-300 ${
+                      isDark ? "text-slate-400 group-hover:text-slate-300" : "text-slate-600 group-hover:text-slate-700"
+                    }`}>
+                      {item.text}
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
         </div>
       </section>
 

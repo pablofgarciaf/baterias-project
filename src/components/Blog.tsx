@@ -310,35 +310,7 @@ export default function Blog() {
             </p>
           </div>
 
-          {/* Carousel Navigation Arrows & Counter */}
-          <div className="flex items-center gap-3 self-start md:self-end">
-            <span className={`text-xs font-mono font-bold px-3 py-1.5 rounded-lg border ${
-              isDark 
-                ? 'bg-slate-800 text-slate-300 border-slate-700' 
-                : 'bg-slate-50 text-slate-700 border-slate-200 shadow-sm'
-            }`}>
-              {String(currentIndex + 1).padStart(2, '0')} / {String(maxIndex + 1).padStart(2, '0')}
-            </span>
 
-            <button
-              onClick={handlePrev}
-              aria-label="Artículo anterior"
-              className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all active:scale-95 cursor-pointer border ${
-                isDark 
-                  ? 'bg-slate-800 hover:bg-slate-700 text-white border-slate-700' 
-                  : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-200 shadow-sm'
-              }`}
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <button
-              onClick={handleNext}
-              aria-label="Artículo siguiente"
-              className="w-11 h-11 rounded-xl bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-all active:scale-95 cursor-pointer shadow-lg shadow-blue-600/30"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </button>
-          </div>
         </div>
 
         {/* Category Filter Pills */}
@@ -370,13 +342,37 @@ export default function Blog() {
           })}
         </div>
 
+        {/* Mobile Controls (below tabs, aligned right) */}
+        <div className="flex md:hidden items-center justify-end gap-3 mb-6">
+            <span className={`text-xs font-mono font-bold px-3 py-1.5 rounded-lg border ${
+              isDark ? 'bg-slate-800 text-slate-300 border-slate-700' : 'bg-slate-50 text-slate-700 border-slate-200 shadow-sm'
+            }`}>
+              {String(currentIndex + 1).padStart(2, '0')} / {String(maxIndex + 1).padStart(2, '0')}
+            </span>
+            <button onClick={handlePrev} className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all active:scale-95 cursor-pointer border ${isDark ? 'bg-slate-800 hover:bg-slate-700 text-white border-slate-700' : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-200 shadow-sm'}`}>
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <button onClick={handleNext} className="w-10 h-10 rounded-xl bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-all active:scale-95 cursor-pointer shadow-lg shadow-blue-600/30">
+              <ChevronRight className="w-5 h-5" />
+            </button>
+        </div>
+
         {/* Fluid Responsive Carousel Track with Touch Swipe */}
-        <div 
-          className="relative overflow-hidden cursor-grab active:cursor-grabbing select-none"
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-        >
+        <div className="relative group">
+          {/* Desktop Controls (flanking) */}
+          <button onClick={handlePrev} className={`hidden md:flex absolute -left-5 lg:-left-12 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full items-center justify-center transition-all active:scale-95 cursor-pointer border shadow-lg ${isDark ? 'bg-slate-800 hover:bg-slate-700 text-white border-slate-700' : 'bg-white hover:bg-slate-50 text-slate-800 border-slate-200'}`}>
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+          <button onClick={handleNext} className="hidden md:flex absolute -right-5 lg:-right-12 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-blue-600 hover:bg-blue-700 text-white items-center justify-center transition-all active:scale-95 cursor-pointer shadow-xl shadow-blue-600/30">
+            <ChevronRight className="w-6 h-6" />
+          </button>
+
+          <div 
+            className="relative overflow-hidden cursor-grab active:cursor-grabbing select-none -mx-4 px-4 sm:mx-0 sm:px-0"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
           <div 
             className="flex transition-transform duration-500 ease-out"
             style={{
@@ -468,6 +464,7 @@ export default function Blog() {
             ))}
           </div>
         </div>
+      </div>
 
         {/* Carousel Indicators */}
         <div className="flex items-center justify-center gap-2 mt-8">
