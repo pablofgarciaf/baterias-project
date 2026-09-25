@@ -109,7 +109,7 @@ export default function AgenciasClient() {
   };
 
   return (
-    <div className={`min-h-screen pt-28 pb-20 ${isDark ? 'bg-slate-950' : 'bg-slate-50'}`}>
+    <div className={`min-h-screen pt-20 lg:pt-20 pb-20 ${isDark ? 'bg-slate-950' : 'bg-slate-50'}`}>
       {/* Background Decor */}
       <div className="absolute top-0 left-0 w-full h-[500px] pointer-events-none overflow-hidden -z-10">
         <div className="absolute inset-0 bg-gradient-to-b from-blue-600/5 to-transparent dark:from-blue-900/10" />
@@ -127,7 +127,7 @@ export default function AgenciasClient() {
                 Puntos de Venta
               </span>
             </div>
-            <h1 className={`text-3xl sm:text-4xl font-extrabold tracking-tight mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+            <h1 className={`text-4xl sm:text-5xl font-extrabold tracking-tight mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
               Agencias y Distribuidores
             </h1>
             <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
@@ -176,12 +176,12 @@ export default function AgenciasClient() {
         </div>
 
         {/* Map & List Unified Block - Shorter Map Height */}
-        <div className={`rounded-[32px] border flex flex-col lg:flex-row overflow-hidden h-[800px] lg:h-[550px] shadow-2xl transition-all ${
+        <div className={`rounded-[32px] border flex flex-col lg:flex-row overflow-hidden h-[600px] lg:h-[450px] shadow-2xl transition-all ${
           isDark ? 'bg-slate-900/50 border-white/5 shadow-[0_0_40px_rgba(0,0,0,0.5)] backdrop-blur-xl' : 'bg-white/80 border-slate-200 shadow-[0_20px_40px_rgba(0,0,0,0.06)] backdrop-blur-xl'
         }`}>
           
           {/* List Sidebar */}
-          <div className={`w-full lg:w-[400px] flex flex-col h-[350px] lg:h-full border-b lg:border-b-0 lg:border-r ${
+          <div className={`w-full lg:w-[400px] flex flex-col h-[250px] lg:h-full border-b lg:border-b-0 lg:border-r ${
             isDark ? 'border-white/5' : 'border-slate-200'
           }`}>
             <div className={`p-4 border-b text-[10px] font-bold uppercase tracking-widest flex items-center justify-between ${
@@ -268,7 +268,7 @@ export default function AgenciasClient() {
           {/* Map Area */}
           <div 
             ref={mapRef}
-            className="flex-1 relative h-[450px] lg:h-full bg-slate-200 dark:bg-slate-900"
+            className="flex-1 relative h-[350px] lg:h-full bg-slate-200 dark:bg-slate-900"
             onClick={() => setIsMapInteractive(true)}
             onMouseLeave={() => setIsMapInteractive(false)}
           >
@@ -299,8 +299,17 @@ export default function AgenciasClient() {
                   marginHeight={0}
                   marginWidth={0}
                   src={`https://www.openstreetmap.org/export/embed.html?bbox=${selectedDistributor.longitude - 0.015}%2C${selectedDistributor.latitude - 0.01}%2C${selectedDistributor.longitude + 0.015}%2C${selectedDistributor.latitude + 0.01}&layer=mapnik&marker=${selectedDistributor.latitude}%2C${selectedDistributor.longitude}`}
-                  className={`w-full h-full transition-all ${isDark ? 'filter contrast-125 saturate-50 invert' : ''} ${!isMapInteractive ? 'pointer-events-none' : ''}`}
+                  className={`w-full h-full transition-all ${''} ${!isMapInteractive ? 'pointer-events-none' : ''}`}
                 />
+                <a
+                  href={`https://www.google.com/maps/dir/?api=1&destination=${selectedDistributor.latitude},${selectedDistributor.longitude}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="absolute bottom-6 right-6 z-30 px-5 py-3 bg-white text-slate-900 rounded-full font-bold shadow-xl flex items-center gap-2 hover:bg-slate-50 transition-transform hover:scale-105 active:scale-95 border border-slate-200"
+                >
+                  <Navigation className="w-5 h-5 text-blue-600" />
+                  <span>Abrir en Google Maps</span>
+                </a>
               </>
             ) : (
               <div className="absolute inset-0 flex items-center justify-center text-sm opacity-50">

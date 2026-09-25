@@ -243,11 +243,17 @@ export default function Blog() {
   }, [isPaused, maxIndex]);
 
   const handlePrev = () => {
-    setCurrentIndex(prev => (prev <= 0 ? maxIndex : prev - 1));
+    const track = document.getElementById('blog-carousel-track');
+    if (track) {
+      track.scrollBy({ left: -340, behavior: 'smooth' });
+    }
   };
 
   const handleNext = () => {
-    setCurrentIndex(prev => (prev >= maxIndex ? 0 : prev + 1));
+    const track = document.getElementById('blog-carousel-track');
+    if (track) {
+      track.scrollBy({ left: 340, behavior: 'smooth' });
+    }
   };
 
   // Touch gesture handlers

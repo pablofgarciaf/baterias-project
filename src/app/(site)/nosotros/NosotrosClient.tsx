@@ -92,30 +92,48 @@ export default function NosotrosClient() {
 
   return (
     <>
-      {/* Hero 100vh con imagen de fondo y stats */}
-      <section className="relative h-screen min-h-[600px] flex items-end overflow-hidden -mt-14 lg:-mt-16">
-        <picture className="absolute inset-0 z-0">
-          <source
-            media="(max-width: 767px)"
-            srcSet="/quienes-somos-hero-movile.webp"
-            type="image/webp"
-          />
-          <source
-            media="(min-width: 768px)"
-            srcSet="/quienes-somos-hero-desktop.webp"
-            type="image/webp"
-          />
-          <img
-            src="/quienes-somos-hero-desktop.webp"
-            alt="Corporación Maresa — Quiénes Somos"
-            className="w-full h-full object-cover"
-            loading="eager"
-            fetchPriority="high"
-          />
-        </picture>
-        <div className="absolute inset-0 z-[1] bg-gradient-to-t from-black/80 via-black/30 to-black/10" />
+      {/* Hero - Split on mobile, full on desktop */}
+      <section className="relative flex flex-col lg:h-screen lg:min-h-[600px] lg:flex-row lg:items-end overflow-hidden -mt-14 lg:-mt-16 bg-slate-950">
+        
+        {/* Mobile Text (Top) */}
+        <div className="lg:hidden container-max pt-32 pb-8 z-10 w-full relative">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="max-w-3xl"
+          >
+            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider mb-4 border bg-amber-500/20 border-amber-400/30 text-amber-300">
+              <Award className="w-3 h-3" />
+              {about.badge}
+            </span>
+            <h1 className="text-3xl font-extrabold tracking-tight leading-tight text-white mb-4">
+              {about.title}
+            </h1>
+            <p className="text-sm leading-relaxed text-white/70">
+              {about.paragraph1}
+            </p>
+          </motion.div>
+        </div>
 
-        <div className="container-max relative z-10 pb-10 sm:pb-14 w-full">
+        {/* Image */}
+        <div className="relative w-full h-[300px] lg:absolute lg:inset-0 lg:h-full lg:z-0">
+          <picture className="absolute inset-0">
+            <source media="(max-width: 767px)" srcSet="/quienes-somos-section-landing.webp" type="image/webp" />
+            <source media="(min-width: 768px)" srcSet="/quienes-somos-hero-desktop.webp" type="image/webp" />
+            <img
+              src="/quienes-somos-hero-desktop.webp"
+              alt="Corporación Maresa – Quiénes Somos"
+              className="w-full h-full object-cover"
+              loading="eager"
+              fetchPriority="high"
+            />
+          </picture>
+          <div className="absolute inset-0 z-[1] bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent lg:from-black/80 lg:via-black/30 lg:to-black/10" />
+        </div>
+
+        {/* Desktop Text (Bottom overlay) */}
+        <div className="hidden lg:block container-max relative z-10 pb-14 w-full">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -126,33 +144,33 @@ export default function NosotrosClient() {
               <Award className="w-3.5 h-3.5" />
               {about.badge}
             </span>
-
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.05] text-white">
+            <h1 className="text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.05] text-white">
               {about.title}
             </h1>
-
-            <p className="mt-6 text-lg sm:text-xl leading-relaxed max-w-2xl text-white/70">
+            <p className="mt-6 text-xl leading-relaxed max-w-2xl text-white/70">
               {about.paragraph1}
             </p>
           </motion.div>
-
-          {/* Stats dentro del hero */}
+        </div>
+        
+        {/* Stats */}
+        <div className="container-max relative z-10 lg:absolute lg:bottom-14 lg:right-0 w-full lg:w-auto pb-10 lg:pb-0">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.15 }}
-            className="mt-8 grid grid-cols-2 lg:grid-cols-4 gap-3"
+            className="grid grid-cols-2 lg:flex gap-3"
           >
             {stats.map((stat, i) => (
               <div
                 key={i}
-                className="p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 text-center"
+                className="p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 text-center lg:w-32"
               >
-                <stat.icon className="w-5 h-5 mx-auto mb-2 text-primary-300" />
-                <div className="text-3xl font-extrabold tracking-tight text-white">
+                <stat.icon className="w-5 h-5 mx-auto mb-2 text-blue-400" />
+                <div className="text-2xl font-extrabold tracking-tight text-white">
                   {stat.value}
                 </div>
-                <div className="text-xs font-medium mt-1 text-white/60">
+                <div className="text-[10px] font-medium mt-1 text-white/60">
                   {stat.label}
                 </div>
               </div>
@@ -175,9 +193,13 @@ export default function NosotrosClient() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 max-w-4xl mx-auto">
               {values.map((item, i) => (
-                <div
+                <motion.div
                   key={i}
-                  className="relative bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col transition-shadow hover:shadow-md"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  className="relative bg-white dark:bg-slate-800 rounded-[20px] shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col transition-all hover:shadow-xl hover:-translate-y-1"
                 >
                   <div className="p-10 flex-1 flex flex-col items-center text-center">
                     <div className="w-16 h-16 rounded-full bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex items-center justify-center mb-6">
@@ -192,7 +214,7 @@ export default function NosotrosClient() {
                   </div>
                   {/* Bottom Ribbon */}
                   <div className={`h-3 w-full ${i % 2 === 0 ? 'bg-amber-500' : 'bg-primary-600'}`} />
-                </div>
+                </motion.div>
               ))}
             </div>
         </div>

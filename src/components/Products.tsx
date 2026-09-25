@@ -355,14 +355,14 @@ export default function Products() {
 
           <div 
             id="products-carousel-track"
-            className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-8 pt-4 -mx-4 px-4 sm:mx-0 sm:px-2 no-scrollbar scroll-smooth"
+            className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-8 pt-4 -mx-4 px-4 sm:-mx-8 sm:px-8 no-scrollbar scroll-smooth"
           >
             {filteredItems.map((item) => {
               const IconComp = item.icon;
               return (
                 <div
                   key={item.id}
-                  className="shrink-0 snap-center w-[300px] sm:w-[340px] md:w-[360px]"
+                  className="shrink-0 snap-center w-[280px] sm:w-[300px] md:w-[320px]"
                 >
                   <div 
                     className={`h-full flex flex-col rounded-3xl overflow-hidden border transition-all duration-300 hover:-translate-y-1.5 ${

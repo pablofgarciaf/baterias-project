@@ -112,10 +112,10 @@ export default function HeroReciclaje() {
           >
             <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
               {/* Row 1: 2 buttons */}
-              <div className="flex flex-wrap items-center gap-3 w-full mt-4">
+              <div className="flex flex-col sm:flex-row flex-wrap items-center gap-3 w-full mt-4">
               <Link
                 href="#puntos-de-venta"
-                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-200 active:scale-[0.97] hover:-translate-y-px"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold shadow-lg hover:shadow-xl transition-all duration-200 active:scale-[0.97]"
               >
                 <Leaf className="w-4 h-4" />
                 {rec.ctaButtonText}
@@ -124,7 +124,7 @@ export default function HeroReciclaje() {
 
               <Link
                 href="/contacto-b2b"
-                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-white/10 backdrop-blur-md text-white text-sm font-semibold border border-white/20 hover:bg-white/20 transition-all duration-200 active:scale-[0.97]"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-white/10 backdrop-blur-md text-white text-sm font-bold border border-white/20 hover:bg-white/20 transition-all duration-200 active:scale-[0.97]"
               >
                 <MapPin className="w-4 h-4" />
                 {rec.secondaryButtonText || 'Puntos de Venta'}
@@ -132,7 +132,7 @@ export default function HeroReciclaje() {
 
               <Link
                 href="tel:1800228374"
-                className="inline-flex sm:hidden items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-200 active:scale-[0.97]"
+                className="w-full sm:hidden inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold shadow-lg hover:shadow-xl transition-all duration-200 active:scale-[0.97]"
               >
                 <PhoneCall className="w-4 h-4" />
                 1-800-BATERIA

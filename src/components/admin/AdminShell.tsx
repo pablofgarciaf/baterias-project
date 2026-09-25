@@ -138,7 +138,7 @@ export default function AdminShell() {
   return (
     <div
       className={`h-screen flex flex-col font-sans transition-colors overflow-hidden ${
-        darkMode ? 'bg-[#0B121A] text-slate-100' : 'bg-[#F8FAFC] text-slate-900'
+        darkMode ? 'bg-[#090C15] text-slate-100' : 'bg-[#F8FAFC] text-slate-900'
       }`}
     >
       {/* ─────────────────────────────────────────────────────────────
@@ -147,13 +147,13 @@ export default function AdminShell() {
       <header
         className={`h-14 border-b flex items-center justify-between px-4 sm:px-6 z-30 transition-all ${
           isSidebarOpen ? 'md:ml-56 lg:ml-60' : 'md:ml-16 lg:ml-20'
-        } ${darkMode ? 'bg-[#080D14]/90 border-slate-800' : 'bg-white/90 border-slate-200'} backdrop-blur-xl`}
+        } ${darkMode ? 'bg-[#06080F] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-900/20 via-[#06080F] to-[#06080F]/90 border-indigo-500/20' : 'bg-white/90 border-slate-200'} backdrop-blur-xl`}
       >
         {/* Left: Mobile hamburger + Active module title */}
         <div className="flex items-center gap-3 min-w-0">
           <button
             onClick={() => setIsMobileDrawerOpen(true)}
-            className="md:hidden p-2 -ml-1 rounded-xl hover:bg-slate-800/40 text-slate-400 hover:text-white transition-colors"
+            className="md:hidden p-2 -ml-1 rounded-xl hover:bg-indigo-950/40/40 text-slate-400 hover:text-white transition-colors"
             aria-label="Abrir menú"
           >
             <Menu className="w-5 h-5" />
@@ -165,7 +165,7 @@ export default function AdminShell() {
             </span>
             <span
               className={`hidden sm:inline-block text-[11px] px-2 py-0.5 rounded-full border ${
-                darkMode ? 'bg-slate-800 text-slate-400 border-slate-700' : 'bg-slate-100 text-slate-600 border-slate-200'
+                darkMode ? 'bg-indigo-950/40 text-slate-400 border-indigo-500/30' : 'bg-slate-100 text-slate-600 border-slate-200'
               }`}
             >
               Maresa Admin
@@ -241,7 +241,7 @@ export default function AdminShell() {
           3. SIDEBAR (Fixed on desktop, Slide-over Drawer on mobile)
       ───────────────────────────────────────────────────────────── */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 flex flex-col transition-all duration-300 border-r border-white/5 bg-[#0B121A] text-slate-100 ${
+        className={`fixed top-0 bottom-0 left-0 z-50 flex flex-col transition-all duration-300 border-r border-white/5 bg-[#090C15] text-slate-100 ${
           // Mobile state: off-canvas drawer
           isMobileDrawerOpen ? 'translate-x-0 w-64 shadow-2xl' : '-translate-x-full'
         } ${
@@ -251,7 +251,7 @@ export default function AdminShell() {
       >
         {/* Branding Top */}
         <div
-          className="h-14 px-4 flex items-center justify-between border-b border-slate-800"
+          className="h-14 px-4 flex items-center justify-between border-b border-indigo-500/20"
         >
           <div className="flex items-center gap-2.5 min-w-0">
             <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center shrink-0 shadow-md shadow-blue-600/20">
@@ -272,7 +272,7 @@ export default function AdminShell() {
           {/* Close button inside mobile drawer */}
           <button
             onClick={() => setIsMobileDrawerOpen(false)}
-            className="md:hidden p-1.5 rounded-lg opacity-60 hover:opacity-100 hover:bg-slate-800/40"
+            className="md:hidden p-1.5 rounded-lg opacity-60 hover:opacity-100 hover:bg-indigo-950/40/40"
           >
             <X className="w-4 h-4" />
           </button>
@@ -323,7 +323,7 @@ export default function AdminShell() {
                         ? 'bg-white/20 text-white'
                         : item.highlight
                         ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                        : 'bg-slate-800 text-slate-400'
+                        : 'bg-indigo-950/40 text-slate-400'
                     }`}
                   >
                     {item.badge}
@@ -336,7 +336,7 @@ export default function AdminShell() {
 
         {/* Sidebar Footer User info */}
         <div
-          className="p-3 border-t border-slate-800 text-[11px] text-slate-500"
+          className="p-3 border-t border-indigo-500/20 text-[11px] text-slate-500"
         >
           {(isSidebarOpen || isMobileDrawerOpen) && (
             <div className="flex items-center gap-2 px-1">
