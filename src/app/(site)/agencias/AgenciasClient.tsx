@@ -1,24 +1,25 @@
 'use client';
 
 import { useTheme } from '@/context/ThemeContext';
+import { useSiteContent } from '@/context/SiteContentContext';
 import { MapPin } from 'lucide-react';
 import StoreLocator from '@/components/StoreLocator';
-import Provinces from '@/components/Provinces';
 
 export default function AgenciasClient() {
   const { theme } = useTheme();
+  const { content } = useSiteContent();
   const isDark = theme === 'dark';
 
   return (
     <>
       {/* Hero Banner con imagen */}
       <section className="relative h-[40vh] min-h-[280px] max-h-[400px] flex items-end overflow-hidden -mt-14 lg:-mt-16">
-        <picture className="absolute inset-0 z-0">
-          <source media="(max-width: 767px)" srcSet="/agencias-hero.webp" type="image/webp" />
-          <source media="(min-width: 768px)" srcSet="/agencias-hero.webp" type="image/webp" />
-          <img
-            src="/agencias-hero.webp"
-            alt="Red de distribuidores Baterías Maresa en Ecuador"
+        <picture className="absolute inset-0 z-0" suppressHydrationWarning>
+          <source suppressHydrationWarning media="(max-width: 767px)" srcSet={content.storeLocator.heroMobile || '/hero-agencias-mobile.webp'} type="image/webp" />
+          <source suppressHydrationWarning media="(min-width: 768px)" srcSet={content.storeLocator.heroDesktop || '/hero-agencias-desktop.webp'} type="image/webp" />
+          <img suppressHydrationWarning
+            src={content.storeLocator.heroDesktop || '/hero-agencias-desktop.webp'}
+            alt="Red de distribuidores Baterias Maresa en Ecuador"
             className="w-full h-full object-cover"
             loading="eager"
           />
@@ -33,13 +34,12 @@ export default function AgenciasClient() {
             Agencias y Distribuidores
           </h1>
           <p className="mt-2 text-sm sm:text-base text-white/70 max-w-lg">
-            Encuentra tu agencia más cercana en las 24 provincias del Ecuador.
+            Encuentra tu agencia mas cercana en las 24 provincias del Ecuador.
           </p>
         </div>
       </section>
 
       <StoreLocator />
-      <Provinces />
     </>
   );
 }

@@ -83,10 +83,10 @@ export const metadata: Metadata = {
     locale: 'es_EC',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?q=80&w=1200&auto=format&fit=crop',
-        width: 1200,
-        height: 630,
-        alt: 'Baterías Maresa Ecuador',
+        url: '/hero-desktop.webp',
+        width: 1920,
+        height: 800,
+        alt: 'Baterías Maresa Ecuador — Energía confiable para cada kilómetro',
       },
     ],
   },
@@ -95,9 +95,11 @@ export const metadata: Metadata = {
     title: 'Baterías Maresa | Corporación Maresa Ecuador',
     description:
       'Baterías Maresa oficiales en Ecuador. Garantía nacional hasta 36 meses, catálogo vehicular, agencias en 24 provincias y escuela técnica automotriz.',
-    images: [
-      'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?q=80&w=1200&auto=format&fit=crop',
-    ],
+    images: ['/hero-desktop.webp'],
+  },
+  icons: {
+    icon: '/icon.svg',
+    apple: '/icon.svg',
   },
 };
 

@@ -49,6 +49,7 @@ export interface DistributorLocation {
   services: string[];
   isAuthorized: boolean;
   rating: number;
+  mapsIframe?: string;
 }
 
 export interface B2BLead {

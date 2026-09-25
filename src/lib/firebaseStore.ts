@@ -40,9 +40,9 @@ const LOCAL_STORAGE_KEY_DISTRIBUTORS = 'maresa_distributors';
 const getLocalLeads = (): B2BLead[] => {
   try {
     const data = localStorage.getItem(LOCAL_STORAGE_KEY_LEADS);
-    return data ? JSON.parse(data) : initialB2BLeads;
+    return data ? JSON.parse(data) : [];
   } catch {
-    return initialB2BLeads;
+    return [];
   }
 };
 
@@ -57,9 +57,9 @@ const saveLocalLeads = (leads: B2BLead[]) => {
 const getLocalDistributors = (): DistributorLocation[] => {
   try {
     const data = localStorage.getItem(LOCAL_STORAGE_KEY_DISTRIBUTORS);
-    return data ? JSON.parse(data) : defaultDistributors;
+    return data ? JSON.parse(data) : [];
   } catch {
-    return defaultDistributors;
+    return [];
   }
 };
 

@@ -32,12 +32,17 @@ export interface SiteContent {
     secondaryButtonText: string;
     ctaButtonColor: string;
     backgroundImage: string;
+    mobileImage?: string;
     stat1Value: string;
     stat1Label: string;
     stat2Value: string;
     stat2Label: string;
     stat3Value: string;
     stat3Label: string;
+    badgeColor?: string;
+    titleColor?: string;
+    highlightColor?: string;
+    subtitleColor?: string;
   };
   about: {
     badge: string;
@@ -55,6 +60,8 @@ export interface SiteContent {
     teamText: string;
     awardsTitle: string;
     awardsText: string;
+    badgeColor?: string;
+    titleColor?: string;
   };
   vehicleFinder: {
     badge: string;
@@ -64,6 +71,8 @@ export interface SiteContent {
     technicalHelpSubtitle: string;
     whatsappButtonText: string;
     whatsappButtonColor: string;
+    badgeColor?: string;
+    titleColor?: string;
   };
   storeLocator: {
     badge: string;
@@ -71,6 +80,10 @@ export interface SiteContent {
     subtitle: string;
     searchPlaceholder: string;
     whatsappCtaText: string;
+    heroDesktop?: string;
+    heroMobile?: string;
+    badgeColor?: string;
+    titleColor?: string;
   };
   b2b: {
     badge: string;
@@ -86,6 +99,9 @@ export interface SiteContent {
     benefit4Desc: string;
     submitButtonText: string;
     submitButtonColor: string;
+    benefits?: any[];
+    badgeColor?: string;
+    titleColor?: string;
   };
   recycling: {
     badge: string;
@@ -99,7 +115,10 @@ export interface SiteContent {
     point2Text: string;
     point3Text: string;
     ctaButtonText: string;
+    secondaryButtonText: string;
     ctaButtonColor: string;
+    titleColor?: string;
+    titleColor2?: string;
   };
   blog: {
     badge: string;
@@ -128,15 +147,15 @@ export const defaultSiteContent: SiteContent = {
   about: {
     badge: 'Sobre Nosotros',
     title: 'Cuatro décadas energizando el país',
-    paragraph1: 'Baterías Andinas nació en Quito en 1985 con una misión simple: llevar baterías confiables a cada esquina del Ecuador. Hoy somos el distribuidor líder del país, con cobertura en las 24 provincias y más de 150 puntos de venta.',
-    paragraph2: 'Trabajamos con tecnología de punta y procesos certificados para entregar productos que aguantan la altitud de los Andes, el calor de la Costa, la humedad de la Amazonía y la salinidad de Galápagos.',
+    paragraph1: 'Baterías Andinas nació en Quito en 1985 con una misión simple: llevar baterías confiables a cada esquina del Ecuador. Hoy contamos con una amplia red de distribución nacional, con cobertura en las 24 provincias y más de 150 puntos de venta.',
+    paragraph2: 'Trabajamos con tecnología comprobada y procesos certificados para entregar productos que aguantan la altitud de los Andes, el calor de la Costa, la humedad de la Amazonía y la salinidad de Galápagos.',
     yearsBadge: 'Desde 1985',
     yearsSubtext: 'Energizando el Ecuador',
     aboutImage: 'https://images.pexels.com/photos/18589218/pexels-photo-18589218.jpeg?auto=compress&cs=tinysrgb&w=1200',
     missionTitle: 'Misión',
     missionText: 'Proveer energía confiable a cada ecuatoriano, sin importar dónde esté.',
     visionTitle: 'Visión',
-    visionText: 'Ser la marca de baterías más confiable y sostenible del país.',
+    visionText: 'Ser una marca de baterías confiable y comprometida con el medio ambiente en el país.',
     teamTitle: 'Equipo',
     teamText: 'Más de 500 colaboradores comprometidos con la calidad.',
     awardsTitle: 'Reconocimientos',
@@ -156,12 +175,14 @@ export const defaultSiteContent: SiteContent = {
     title: 'Puntos de Venta y Red de Distribuidores',
     subtitle: 'Localiza el centro de instalación y distribuidor autorizado más cercano con stock inmediato en las 24 provincias de Ecuador.',
     searchPlaceholder: 'Buscar por ciudad, local o dirección...',
-    whatsappCtaText: 'Contactar por WhatsApp'
+    whatsappCtaText: 'Contactar por WhatsApp',
+    heroDesktop: '/hero-agencias-desktop.webp',
+    heroMobile: '/hero-agencias-mobile.webp'
   },
   b2b: {
     badge: 'Módulo B2B • Expansión Comercial Ecuador',
     title: 'Únete a la Red de Distribuidores Maresa',
-    subtitle: 'Multiplica la rentabilidad de tu taller, lubricadora o repuestera con el respaldo de la marca líder en baterías automotrices, pesadas e industriales.',
+    subtitle: 'Multiplica la rentabilidad de tu taller, lubricadora o repuestera con el respaldo de una marca de confianza en baterías automotrices, pesadas e industriales.',
     benefit1Title: 'Márgenes de ganancia preferenciales',
     benefit1Desc: 'Precios mayoristas competitivos con escalas por volumen y bonificaciones.',
     benefit2Title: 'Logística y despacho en 24-48 horas',
@@ -185,6 +206,7 @@ export const defaultSiteContent: SiteContent = {
     point2Text: 'Puntos de entrega en las 24 provincias',
     point3Text: 'Hasta 99% de los materiales son reutilizados',
     ctaButtonText: 'Encuentra un punto de reciclaje',
+    secondaryButtonText: 'Contactar B2B',
     ctaButtonColor: '#059669'
   },
   blog: {

@@ -166,7 +166,7 @@ export default function VehicleFinder({ onLocateStore }: VehicleFinderProps) {
                   setSelectedModel('');
                   setResult(null);
                 }}
-                className={`w-full min-h-[48px] px-4 py-3 rounded-xl font-medium border focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 outline-none transition-all cursor-pointer ${
+                className={`w-full min-h-[48px] px-4 pr-10 py-3 rounded-xl font-medium border focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 outline-none transition-all cursor-pointer ${
                   isDark 
                     ? 'bg-slate-900 text-white border-slate-700' 
                     : 'bg-slate-50 text-slate-900 border-slate-300'
@@ -195,7 +195,7 @@ export default function VehicleFinder({ onLocateStore }: VehicleFinderProps) {
                   setSelectedModel('');
                   setResult(null);
                 }}
-                className={`w-full min-h-[48px] px-4 py-3 rounded-xl font-medium border focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 outline-none transition-all cursor-pointer ${
+                className={`w-full min-h-[48px] px-4 pr-10 py-3 rounded-xl font-medium border focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 outline-none transition-all cursor-pointer ${
                   isDark 
                     ? 'bg-slate-900 text-white border-slate-700' 
                     : 'bg-slate-50 text-slate-900 border-slate-300'
@@ -223,7 +223,7 @@ export default function VehicleFinder({ onLocateStore }: VehicleFinderProps) {
                 onChange={(e) => {
                   setSelectedModel(e.target.value);
                 }}
-                className={`w-full min-h-[48px] px-4 py-3 rounded-xl font-medium border focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 outline-none transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${
+                className={`w-full min-h-[48px] px-4 pr-10 py-3 rounded-xl font-medium border focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 outline-none transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${
                   isDark 
                     ? 'bg-slate-900 text-white border-slate-700' 
                     : 'bg-slate-50 text-slate-900 border-slate-300'

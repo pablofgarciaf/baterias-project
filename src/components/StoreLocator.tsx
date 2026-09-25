@@ -100,23 +100,6 @@ export default function StoreLocator({ initialProvince }: StoreLocatorProps) {
     >
       <div className="container-max">
         
-        {/* Section Header */}
-        <div className="max-w-3xl mb-12">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/15 border border-blue-400/30 text-blue-600 dark:text-blue-300 text-xs sm:text-sm font-bold uppercase tracking-wider mb-4">
-            <Navigation className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-            {slContent.badge}
-          </div>
-          <h2 className={`text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight ${
-            isDark ? 'text-white' : 'text-slate-950'
-          }`}>
-            {slContent.title}
-          </h2>
-          <p className={`mt-3 text-sm sm:text-base leading-relaxed ${
-            isDark ? 'text-slate-300' : 'text-slate-600'
-          }`}>
-            {slContent.subtitle}
-          </p>
-        </div>
 
         {/* Filter Controls */}
         <div className={`p-4 sm:p-6 rounded-2xl border mb-8 grid grid-cols-1 sm:grid-cols-12 gap-4 items-center shadow-lg transition-colors ${

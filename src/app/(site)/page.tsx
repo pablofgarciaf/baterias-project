@@ -43,21 +43,7 @@ import {
 
 /* ─── Teaser Section Data ─── */
 const teaserSections = [
-  {
-    id: 'escoge-tu-bateria',
-    title: 'Escoge tu Batería',
-    subtitle: 'Encuentra la batería perfecta para tu vehículo en 3 simples pasos',
-    description:
-      'Selecciona año, marca y modelo de tu auto y nuestro sistema inteligente te recomienda la batería ideal con especificaciones técnicas, precio y disponibilidad inmediata.',
-    href: '/buscador',
-    cta: 'Buscar Mi Batería',
-    icon: Car,
-    accentIcon: Search,
-    gradient: 'from-primary-600 to-primary-800',
-    lightBg: 'from-primary-50 via-white to-blue-50/30',
-    darkBg: 'from-slate-900 via-slate-900/95 to-primary-950/40',
-    highlights: ['Compatible con +50 marcas', 'Resultado en segundos', 'Precio al instante'],
-  },
+
   {
     id: 'catalogo',
     title: 'Catálogo de Baterías',
@@ -88,21 +74,7 @@ const teaserSections = [
     darkBg: 'from-slate-900 via-slate-900/95 to-accent-950/30',
     highlights: ['Mapa interactivo', '150+ distribuidores', 'WhatsApp directo'],
   },
-  {
-    id: 'quiero-ser-proveedor',
-    title: 'Quiero ser Proveedor',
-    subtitle: 'Únete a nuestra red de distribuidores autorizados',
-    description:
-      'Crece tu negocio con la marca de baterías más confiable del Ecuador. Márgenes competitivos, capacitación técnica gratuita y soporte logístico nacional.',
-    href: '/contacto-b2b',
-    cta: 'Solicitar Información B2B',
-    icon: Handshake,
-    accentIcon: Star,
-    gradient: 'from-purple-600 to-indigo-700',
-    lightBg: 'from-purple-50/30 via-white to-indigo-50/20',
-    darkBg: 'from-slate-900 via-slate-900/95 to-purple-950/30',
-    highlights: ['Margen competitivo', 'Capacitación gratuita', 'Crédito directo'],
-  },
+
   {
     id: 'reciclaje',
     title: 'Reciclaje Ecológico',
@@ -184,7 +156,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 overflow-x-auto md:overflow-visible snap-x snap-mandatory scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0 pb-2">
+          <div className="flex md:grid md:grid-cols-2 gap-5 sm:gap-6 overflow-x-auto md:overflow-visible snap-x snap-mandatory scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0 pb-2">
             {teaserSections.map((section, idx) => (
               <motion.div
                 key={section.id}
@@ -285,48 +257,55 @@ export default function HomePage() {
       <Features />
 
       {/* 7. CTA Distribuidores (links to /contacto-b2b) */}
-      <section
-        className="py-16 sm:py-20 bg-gradient-to-br from-primary-950 via-primary-900 to-gray-900 relative overflow-hidden"
-      >
-        <div className="absolute top-0 right-0 w-80 h-80 bg-primary-500/15 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-accent-500/10 rounded-full blur-3xl" />
-
-        <div className="container-max relative z-10 text-center">
+      <section className="py-12 sm:py-16">
+        <div className="container-max">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
+            className={`relative overflow-hidden rounded-3xl p-8 sm:p-12 border ${
+              isDark
+                ? 'bg-slate-900/60 border-slate-800'
+                : 'bg-white border-slate-200 shadow-xl shadow-blue-900/5'
+            }`}
           >
-            <span className="inline-block px-4 py-1.5 rounded-full bg-white/10 text-primary-200 text-xs font-bold uppercase tracking-widest mb-4 border border-white/15">
-              Oportunidad de Negocio
-            </span>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight">
-              ¿Quieres ser{' '}
-              <span className="bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent">
-                Distribuidor Autorizado
-              </span>
-              ?
-            </h2>
-            <p className="mt-4 text-base sm:text-lg text-gray-300 max-w-2xl mx-auto">
-              Únete a la red de más de 150 distribuidores en todo el Ecuador. Márgenes competitivos,
-              capacitación gratuita y soporte logístico nacional.
-            </p>
-            <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
-              <Link
-                href="/contacto-b2b"
-                className="btn-accent inline-flex items-center gap-2"
-              >
-                Solicitar Información
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link
-                href="/agencias"
-                className="btn-secondary inline-flex items-center gap-2"
-              >
-                Ver Red de Agencias
-                <MapPin className="w-4 h-4" />
-              </Link>
+            {/* Background elements */}
+            <div className={`absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl opacity-20 pointer-events-none ${isDark ? 'bg-primary-500' : 'bg-primary-200'}`} />
+            
+            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+              <div className="text-center md:text-left flex-1 max-w-2xl">
+                <div className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4 border ${isDark ? 'bg-slate-800 text-primary-400 border-slate-700' : 'bg-primary-50 text-primary-700 border-primary-100'}`}>
+                  <Star className="w-3.5 h-3.5" />
+                  Oportunidad de Negocio
+                </div>
+                <h2 className={`text-2xl sm:text-3xl font-extrabold tracking-tight mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                  Únete a nuestra red de{' '}
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-accent-500">
+                    distribuidores autorizados
+                  </span>
+                </h2>
+                <p className={`text-sm sm:text-base ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                  Márgenes competitivos, capacitación técnica y soporte logístico a nivel nacional.
+                </p>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto shrink-0">
+                <Link
+                  href="/contacto-b2b"
+                  className="px-6 py-3.5 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-bold text-sm shadow-lg hover:shadow-xl shadow-primary-600/20 transition-all active:scale-95 flex items-center justify-center gap-2"
+                >
+                  Solicitar Información
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+                <Link
+                  href="/agencias"
+                  className={`px-6 py-3.5 rounded-xl border font-bold text-sm transition-colors flex items-center justify-center gap-2 ${isDark ? 'border-slate-700 hover:bg-slate-800 text-slate-300' : 'border-slate-200 hover:bg-slate-50 text-slate-700'}`}
+                >
+                  Ver Agencias
+                  <MapPin className="w-4 h-4" />
+                </Link>
+              </div>
             </div>
           </motion.div>
         </div>

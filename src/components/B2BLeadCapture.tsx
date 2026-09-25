@@ -107,7 +107,7 @@ export default function B2BLeadCapture() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
           {/* Left Column: Commercial Proposition */}
-          <div className="lg:col-span-5">
+          <motion.div initial={{opacity: 0, filter: "blur(10px)", x: -20}} whileInView={{opacity: 1, filter: "blur(0px)", x: 0}} viewport={{once: true}} transition={{duration: 0.6}} className="lg:col-span-5">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/15 border border-blue-400/30 text-blue-600 dark:text-blue-300 text-xs sm:text-sm font-bold uppercase tracking-wider mb-6">
               <TrendingUp className="w-4 h-4 text-blue-600 dark:text-blue-400" />
               {b2b.badge}
@@ -126,38 +126,29 @@ export default function B2BLeadCapture() {
             </p>
 
             <div className="mt-8 space-y-4">
-              {[
-                {
-                  icon: Percent,
-                  title: b2b.benefit1Title,
-                  desc: b2b.benefit1Desc
-                },
-                {
-                  icon: Truck,
-                  title: b2b.benefit2Title,
-                  desc: b2b.benefit2Desc
-                },
-                {
-                  icon: PackageCheck,
-                  title: b2b.benefit3Title,
-                  desc: b2b.benefit3Desc
-                },
-                {
-                  icon: FileSpreadsheet,
-                  title: b2b.benefit4Title,
-                  desc: b2b.benefit4Desc
-                }
-              ].map((item, idx) => (
-                <div 
-                  key={idx} 
-                  className={`flex items-start gap-3.5 p-4 rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 ${
-                    isDark 
-                      ? 'bg-slate-900/70 border-slate-800 text-white' 
-                      : 'bg-white border-slate-200 shadow-sm text-slate-900'
-                  }`}
-                >
-                  <div className="p-2.5 rounded-xl bg-blue-600/15 text-blue-600 dark:text-blue-400 shrink-0">
-                    <item.icon className="w-5 h-5" />
+              {
+                (b2b.benefits && b2b.benefits.length > 0 ? b2b.benefits : [
+                  { icon: Percent, title: b2b.benefit1Title, desc: b2b.benefit1Desc },
+                  { icon: Truck, title: b2b.benefit2Title, desc: b2b.benefit2Desc },
+                  { icon: PackageCheck, title: b2b.benefit3Title, desc: b2b.benefit3Desc },
+                  { icon: FileSpreadsheet, title: b2b.benefit4Title, desc: b2b.benefit4Desc }
+                ]).map((item: any, idx: number) => {
+                  const ItemIcon = item.icon || [Percent, Truck, PackageCheck, FileSpreadsheet][idx % 4];
+                  return (
+                  <motion.div 
+                    initial={{opacity: 0, y: 15}}
+                    whileInView={{opacity: 1, y: 0}}
+                    viewport={{once: true}}
+                    transition={{duration: 0.4, delay: idx * 0.1}}
+                    key={idx} 
+                    className={`group flex items-start gap-4 p-4 sm:p-5 rounded-2xl border transition-all duration-300 hover:scale-[1.02] cursor-default ${
+                      isDark 
+                        ? 'bg-white/5 backdrop-blur-xl border-white/10 hover:border-white/20 hover:bg-white/10' 
+                        : 'bg-white border-slate-200 hover:border-blue-200 hover:shadow-xl hover:shadow-blue-900/5'
+                    }`}
+                  >
+                  <div className="p-2.5 rounded-xl bg-blue-600/10 text-blue-600 dark:bg-white/10 dark:text-white shrink-0 group-hover:scale-110 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300 shadow-sm">
+                    <ItemIcon className="w-5 h-5" />
                   </div>
                   <div>
                     <h4 className={`text-sm font-bold ${isDark ? 'text-white' : 'text-slate-950'}`}>
@@ -167,17 +158,24 @@ export default function B2BLeadCapture() {
                       {item.desc}
                     </p>
                   </div>
-                </div>
-              ))}
-            </div>
-          </div>
+                </motion.div>
+                );
+                })}
+              </div>
+          </motion.div>
 
           {/* Right Column: Lead Form */}
-          <div className="lg:col-span-7">
-            <div className={`rounded-2xl p-5 sm:p-6 shadow-2xl border transition-colors ${
+          <motion.div 
+            initial={{opacity: 0, filter: "blur(10px)", x: 20}} 
+            whileInView={{opacity: 1, filter: "blur(0px)", x: 0}} 
+            viewport={{once: true}} 
+            transition={{duration: 0.6, delay: 0.2}} 
+            className="lg:col-span-7"
+          >
+            <div className={`rounded-3xl p-6 sm:p-8 shadow-2xl border backdrop-blur-xl transition-colors ${
               isDark 
-                ? 'bg-slate-900/90 border-slate-700 text-white' 
-                : 'bg-white border-slate-200 text-slate-900 shadow-slate-900/10'
+                ? 'bg-slate-900/50 border-white/10 text-white' 
+                : 'bg-white/80 border-slate-200 text-slate-900 shadow-slate-900/10'
             }`}>
               
               {isSuccess ? (
@@ -417,7 +415,7 @@ export default function B2BLeadCapture() {
                     className="w-full py-3 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-xl shadow-blue-600/30 flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
                   >
                     <Send className="w-4 h-4" />
-                    <span>{isSubmitting ? 'Registrando en CRM Maresa...' : 'Enviar Solicitud de Distribuidor'}</span>
+                    <span>{isSubmitting ? 'Registrando en CRM Maresa...' : b2b.submitButtonText || 'Enviar Solicitud'}</span>
                   </button>
 
                   <div className="flex items-center justify-center gap-2 text-[11px] text-slate-500 text-center pt-1">
@@ -428,7 +426,7 @@ export default function B2BLeadCapture() {
               )}
 
             </div>
-          </div>
+          </motion.div>
 
         </div>
       </div>

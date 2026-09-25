@@ -61,8 +61,8 @@ export default function About() {
             className="relative"
           >
             <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800">
-              <img
-                src="/quienes-somos-section-landing.webp"
+              <img suppressHydrationWarning
+                src={about.aboutImage || '/quienes-somos-section-landing.webp'}
                 alt="Instalaciones de Corporación Maresa Ecuador"
                 className="w-full h-[420px] sm:h-[500px] object-cover hover:scale-105 transition-transform duration-700 ease-out"
                 loading="lazy"
@@ -123,7 +123,7 @@ export default function About() {
               {about.title}
             </h2>
 
-            <p className={`mt-5 text-base sm:text-lg leading-relaxed ${
+            <p className={`mt-5 text-lg sm:text-xl leading-relaxed tracking-tight ${
               isDark ? 'text-slate-300' : 'text-slate-600'
             }`}>
               {about.paragraph1}
@@ -138,14 +138,18 @@ export default function About() {
             {/* Strategic Pillars Bento Grid */}
             <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
               {pillars.map((item, index) => (
-                <div 
-                  key={index} 
-                  className={`p-4 sm:p-5 rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 ${
-                    isDark 
-                      ? 'bg-slate-950/60 border-slate-800 hover:border-slate-700 text-white' 
-                      : 'bg-slate-50/80 border-slate-200 hover:border-blue-200 hover:bg-blue-50/30 text-slate-900 shadow-sm'
-                  }`}
-                >
+                <motion.div 
+                    initial={{opacity: 0, y: 15}}
+                    whileInView={{opacity: 1, y: 0}}
+                    viewport={{once: true}}
+                    transition={{duration: 0.4, delay: index * 0.1}}
+                    key={index} 
+                    className={`group p-6 rounded-3xl border transition-all duration-300 hover:scale-[1.03] cursor-default ${
+                      isDark 
+                        ? 'bg-white/5 backdrop-blur-xl border-white/10 hover:border-white/20 hover:bg-white/10' 
+                        : 'bg-white border-slate-200 hover:border-blue-200 hover:shadow-xl hover:shadow-blue-900/5'
+                    }`}
+                  >
                   <div className="w-10 h-10 rounded-xl bg-blue-600/15 border border-blue-500/20 flex items-center justify-center mb-3 text-blue-600 dark:text-blue-400">
                     <item.icon className="w-5 h-5" />
                   </div>
@@ -155,7 +159,7 @@ export default function About() {
                   <p className={`text-xs mt-1 leading-relaxed ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                     {item.text}
                   </p>
-                </div>
+                </motion.div>
               ))}
             </div>
 

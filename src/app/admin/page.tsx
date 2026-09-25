@@ -1,1025 +1,561 @@
 /**
  * ═══════════════════════════════════════════════════════════════
- * 📄 ARCHITECTURE MAP — AdminPage.tsx
+ * 📄 ADMIN PAGE — Authentication & Shell Gateway
  * ═══════════════════════════════════════════════════════════════
- * 📁 Path: src/components/AdminPage.tsx
+ * 📁 Path: src/app/admin/page.tsx
  * 🏷️ Type: Client Component
  * 📦 Module: Admin
  * ─────────────────────────────────────────────────────────────
- * 🔍 STRUCTURE:
- *   L025-L070  → Imports & dependencies (Lucide icons, XLSX, Firebase, types)
- *   L071-L076  → Type definitions & interfaces (AdminPageProps, tabs)
- *   L078-L078  → Component function start
- *   L079-L127  → State & hooks (auth, draft content, CRM, distributors)
- *   L129-L149  → Data loading & lifecycle effects (loadAllData)
- *   L151-L260  → Event handlers (auth, CRM updates, Excel export, distributors)
- *   L262-L1233 → JSX render (header, login screen, editor, CRM, catalog)
- *   L078-L078  → Export default AdminPage
+ * 🛡️ Firebase Auth + Firestore force password change flow
+ * 🎨 Luxury styling inspired by Vermilion & EnergyEngine
+ * 👁️ Password visibility toggle + recovery flow
  * ─────────────────────────────────────────────────────────────
- * 📝 LAST UPDATED: 2026-09-16
- * ═══════════════════════════════════════════════════════════════
  */
 
 'use client';
 
-import { useState, useEffect, useRef, FormEvent } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 import {
   Lock,
-  Users,
-  Battery,
-  MapPin,
-  Download,
-  LogOut,
-  Plus,
-  Check,
-  X,
-  Trash2,
-  Search,
+  Mail,
+  Eye,
+  EyeOff,
   KeyRound,
-  FileText,
-  Home,
-  Info,
-  Car,
-  Recycle,
-  BookOpen,
-  Briefcase,
-  Save,
-  RotateCcw,
-  Image as ImageIcon,
-  ExternalLink,
-  Sun,
-  Moon,
-  Upload
+  ShieldCheck,
+  ArrowRight,
+  Loader2,
+  CheckCircle2,
+  AlertCircle,
+  X,
 } from 'lucide-react';
-import * as XLSX from 'xlsx';
-import { B2BLead, DistributorLocation } from '@/types/sinergia';
-import { getB2BLeads, updateLeadStatus, getDistributors, saveDistributor, removeDistributor } from '@/lib/firebaseStore';
-import { provinces } from '@/data/provinces';
-import { useSiteContent } from '@/context/SiteContentContext';
-import { vehicleCatalog } from '@/data/sinergiaData';
+import AdminShell from '@/components/admin/AdminShell';
+import {
+  loginAdminUser,
+  completePasswordChange,
+  requestPasswordReset,
+  ensurePrimaryAdminSeed,
+} from '@/lib/authService';
 
-
-
-type AdminSidebarSection = 'content' | 'distributors' | 'leads' | 'catalog';
-type ContentSectionKey = 'hero' | 'about' | 'vehicleFinder' | 'storeLocator' | 'b2b' | 'recycling' | 'blog';
-
-export default function AdminRoute() {
+export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
 
+  // Form states
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [authError, setAuthError] = useState('');
+
+  // Force Password Change Modal
+  const [showChangeModal, setShowChangeModal] = useState(false);
+  const [pendingEmail, setPendingEmail] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [changeError, setChangeError] = useState('');
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+
+  // Forgot Password Modal
+  const [showForgotModal, setShowForgotModal] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotSent, setForgotSent] = useState(false);
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotError, setForgotError] = useState('');
+
   useEffect(() => {
+    ensurePrimaryAdminSeed();
     try {
       if (sessionStorage.getItem('maresa_admin_auth') === 'true') {
         setIsAuthenticated(true);
       }
     } catch {}
   }, []);
-  const [password, setPassword] = useState('');
-  const [authError, setAuthError] = useState('');
-
-  // Sidebar navigation
-  const [activeNav, setActiveNav] = useState<AdminSidebarSection>('content');
-  const [activeContentTab, setActiveContentTab] = useState<ContentSectionKey>('hero');
-
-  // Site content context
-  const { content, updateSection, resetToDefaults, isSaved } = useSiteContent();
-
-  // Local draft state for the current active section
-  const [sectionDraft, setSectionDraft] = useState<any>(content[activeContentTab]);
 
   useEffect(() => {
-    setSectionDraft(content[activeContentTab]);
-  }, [activeContentTab, content]);
-
-  // Leads CRM State
-  const [leads, setLeads] = useState<B2BLead[]>([]);
-  const [leadsFilter, setLeadsFilter] = useState<'Todos' | 'Aplica' | 'No Aplica' | 'Pendiente'>('Todos');
-  const [leadsSearch, setLeadsSearch] = useState('');
-  const [isLoadingLeads, setIsLoadingLeads] = useState(false);
-
-  // Distributors State
-  const [distributors, setDistributors] = useState<DistributorLocation[]>([]);
-  const [isAddingDistributor, setIsAddingDistributor] = useState(false);
-  const [newDistributor, setNewDistributor] = useState<Partial<DistributorLocation>>({
-    name: '',
-    province: 'Pichincha',
-    city: '',
-    address: '',
-    phone: '',
-    whatsapp: '',
-    schedule: 'Lunes a Sábado 08:00 - 18:00',
-    latitude: -0.1807,
-    longitude: -78.4678,
-    services: ['Diagnóstico gratis', 'Instalación express', 'Reciclaje con bono -$10'],
-    isAuthorized: true,
-    rating: 4.9
-  });
-
-  // Catalog search state
-  const [catalogSearch, setCatalogSearch] = useState('');
-
-  const loadAllData = async () => {
-    setIsLoadingLeads(true);
     try {
-      const [leadsData, distsData] = await Promise.all([
-        getB2BLeads(),
-        getDistributors()
-      ]);
-      setLeads(leadsData);
-      setDistributors(distsData);
+      const saved = localStorage.getItem('darkMode');
+      if (saved !== null) setDarkMode(JSON.parse(saved));
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('darkMode', JSON.stringify(darkMode));
+    if (darkMode) document.documentElement.classList.add('dark');
+    else document.documentElement.classList.remove('dark');
+  }, [darkMode]);
+
+  const handleLogin = async (e: FormEvent) => {
+    e.preventDefault();
+    setAuthError('');
+    setIsLoading(true);
+
+    try {
+      const res = await loginAdminUser(email, password);
+      if (res.success) {
+        if (res.forcePasswordChange) {
+          setPendingEmail(email.trim().toLowerCase());
+          setShowChangeModal(true);
+          setIsLoading(false);
+          return;
+        }
+        setIsAuthenticated(true);
+      } else {
+        setAuthError(res.error || 'Credenciales inválidas.');
+      }
     } catch (err) {
-      console.error('Error loading admin data:', err);
+      setAuthError('Ocurrió un error inesperado al conectar.');
     } finally {
-      setIsLoadingLeads(false);
+      setIsLoading(false);
     }
   };
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      loadAllData();
-    }
-  }, [isAuthenticated]);
-
-  const handleLogin = (e: FormEvent) => {
+  const handlePasswordUpdate = async (e: FormEvent) => {
     e.preventDefault();
-    if (password === 'maresa2026' || password === 'admin') {
-      setIsAuthenticated(true);
-      sessionStorage.setItem('maresa_admin_auth', 'true');
-      setAuthError('');
-    } else {
-      setAuthError('Contraseña incorrecta. Intenta con "maresa2026"');
+    setChangeError('');
+
+    if (newPassword.length < 6) {
+      setChangeError('La nueva contraseña debe tener al menos 6 caracteres.');
+      return;
     }
-  };
-
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    sessionStorage.removeItem('maresa_admin_auth');
-    setPassword('');
-  };
-
-  // Lead status update
-  const handleUpdateLeadStatus = async (id: string, status: B2BLead['status']) => {
-    try {
-      await updateLeadStatus(id, status);
-      setLeads(prev => prev.map(lead => lead.id === id ? { ...lead, status } : lead));
-    } catch (err) {
-      console.error('Error updating lead status:', err);
-    }
-  };
-
-  // Export leads to Excel
-  const exportLeadsToExcel = () => {
-    if (leads.length === 0) return;
-    const worksheet = XLSX.utils.json_to_sheet(leads.map(l => ({
-      'ID': l.id,
-      'Empresa': l.companyName,
-      'Contacto': l.contactName,
-      'Email': l.email,
-      'Teléfono': l.phone,
-      'Provincia': l.province,
-      'Ciudad': l.city,
-      'Tipo Negocio': l.businessType,
-      'Volumen Estimado': l.estimatedVolume,
-      'Estado CRM': l.status,
-      'Fecha Creación': new Date(l.createdAt).toLocaleDateString('es-EC'),
-      'Notas': l.notes || ''
-    })));
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Prospectos B2B Maresa');
-    XLSX.writeFile(workbook, `Prospectos_B2B_Maresa_${new Date().toISOString().split('T')[0]}.xlsx`);
-  };
-
-  // Save changes to current content section
-  const handleSaveCurrentSection = () => {
-    updateSection(activeContentTab, sectionDraft);
-  };
-
-  // Distributor actions
-  const handleSaveNewDistributor = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!newDistributor.name || !newDistributor.city || !newDistributor.address) {
-      alert('Por favor completa los campos requeridos');
+    if (newPassword !== confirmPassword) {
+      setChangeError('Las contraseñas no coinciden.');
       return;
     }
 
-    const distToSave: DistributorLocation = {
-      id: `dist-${Date.now()}`,
-      name: newDistributor.name || '',
-      province: newDistributor.province || 'Pichincha',
-      city: newDistributor.city || '',
-      address: newDistributor.address || '',
-      phone: newDistributor.phone || '(02) 225-8800',
-      whatsapp: newDistributor.whatsapp || '593998123456',
-      schedule: newDistributor.schedule || 'Lunes a Sábado 08:00 - 18:00',
-      latitude: Number(newDistributor.latitude) || -0.1807,
-      longitude: Number(newDistributor.longitude) || -78.4678,
-      services: newDistributor.services || ['Diagnóstico gratis', 'Instalación'],
-      isAuthorized: true,
-      rating: 4.9
-    };
-
+    setIsChangingPassword(true);
     try {
-      await saveDistributor(distToSave);
-      setDistributors(prev => [distToSave, ...prev]);
-      setIsAddingDistributor(false);
-      setNewDistributor({
-        name: '',
-        province: 'Pichincha',
-        city: '',
-        address: '',
-        phone: '',
-        whatsapp: '',
-        schedule: 'Lunes a Sábado 08:00 - 18:00',
-        latitude: -0.1807,
-        longitude: -78.4678,
-        services: ['Diagnóstico gratis', 'Instalación express'],
-        isAuthorized: true,
-        rating: 4.9
-      });
+      const res = await completePasswordChange(pendingEmail, newPassword);
+      if (res.success) {
+        setShowChangeModal(false);
+        setIsAuthenticated(true);
+      } else {
+        setChangeError(res.error || 'Error al actualizar contraseña.');
+      }
     } catch (err) {
-      console.error('Error saving distributor:', err);
+      setChangeError('No se pudo actualizar la contraseña.');
+    } finally {
+      setIsChangingPassword(false);
     }
   };
 
-  const handleDeleteDistributor = async (id: string) => {
-    if (!window.confirm('¿Seguro que deseas eliminar este punto de venta?')) return;
-    try {
-      await removeDistributor(id);
-      setDistributors(prev => prev.filter(d => d.id !== id));
-    } catch (err) {
-      console.error('Error deleting distributor:', err);
+  const handleForgotPassword = async (e: FormEvent) => {
+    e.preventDefault();
+    setForgotError('');
+    setForgotLoading(true);
+
+    const res = await requestPasswordReset(forgotEmail);
+    setForgotLoading(false);
+    if (res.success) {
+      setForgotSent(true);
+    } else {
+      setForgotError(res.error || 'No se pudo enviar el correo.');
     }
   };
 
-  const inputClass = `w-full px-3 py-2 rounded-lg border text-xs outline-none transition-colors ${
-    darkMode
-      ? 'bg-slate-950 border-slate-700 text-white placeholder-slate-600 focus:border-blue-500'
-      : 'bg-white border-slate-300 text-slate-900 placeholder-slate-400 focus:border-blue-500'
-  }`;
+  if (!isAuthenticated) {
+    return (
+      <div
+        className={`min-h-screen flex flex-col font-sans transition-colors relative overflow-hidden ${
+          darkMode ? 'bg-[#0B0F19] text-slate-100' : 'bg-slate-50 text-slate-900'
+        }`}
+      >
+        {/* Subtle background ambient lights (Vermilion / Luxury style) */}
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
 
-  const cardClass = `rounded-xl border ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`;
-
-  const labelClass = `block text-[11px] font-semibold uppercase tracking-wider mb-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`;
-
-  return (
-    <div className={`min-h-screen flex flex-col font-sans transition-colors ${
-      darkMode ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'
-    }`}>
-      
-      {/* Top Corporate Navigation Bar */}
-      <header className={`h-14 border-b flex items-center justify-between px-4 sm:px-8 z-20 transition-colors ${
-        darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
-      }`}>
-        <div className="flex items-center gap-2.5">
-          <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${
-            darkMode ? 'bg-blue-600' : 'bg-blue-600'
-          }`}>
-            <Battery className="w-4 h-4 text-white" />
-          </div>
-          <div className="leading-none">
-            <span className={`font-bold text-sm tracking-tight block ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-              CMS & CRM Maresa
-            </span>
-            <span className="text-[10px] text-blue-500 font-semibold block">
-              Panel Administrativo
+        {/* Top bar with theme toggle */}
+        <header
+          className={`h-14 border-b flex items-center justify-between px-6 sm:px-10 z-20 backdrop-blur-xl ${
+            darkMode
+              ? 'bg-slate-950/60 border-white/[0.06]'
+              : 'bg-white/70 border-slate-200/80 shadow-sm'
+          }`}
+        >
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center shadow-md shadow-blue-600/20">
+              <span className="font-extrabold text-[10px] text-white tracking-tighter">MBT</span>
+            </div>
+            <span
+              className={`font-semibold text-xs tracking-wider uppercase ${
+                darkMode ? 'text-slate-300' : 'text-slate-700'
+              }`}
+            >
+              Maresa <span className="text-blue-500">Security Gateway</span>
             </span>
           </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          {isAuthenticated && isSaved && (
-            <span className={`hidden sm:inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full ${
-              darkMode ? 'text-emerald-400 bg-emerald-950/60' : 'text-emerald-600 bg-emerald-50'
-            }`}>
-              <Check className="w-3 h-3" />
-              Guardado
-            </span>
-          )}
 
           <button
             onClick={() => setDarkMode(!darkMode)}
             className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors cursor-pointer ${
-              darkMode ? 'text-slate-400 hover:text-amber-400 hover:bg-white/[0.06]' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'
+              darkMode
+                ? 'text-slate-400 hover:text-amber-400 hover:bg-white/[0.06]'
+                : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100'
             }`}
             aria-label={darkMode ? 'Modo claro' : 'Modo oscuro'}
           >
-            {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            {darkMode ? (
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="5" />
+                <path
+                  d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                />
+              </svg>
+            ) : (
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                />
+              </svg>
+            )}
           </button>
+        </header>
 
-          {isAuthenticated && (
-            <>
-              <button
-                onClick={resetToDefaults}
-                className={`hidden sm:flex px-2.5 py-1.5 rounded-lg text-[11px] font-medium items-center gap-1 transition-colors cursor-pointer ${
-                  darkMode ? 'text-slate-400 hover:text-white hover:bg-white/[0.06]' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100'
+        {/* Login Screen Main */}
+        <main className="flex-1 flex items-center justify-center p-4 sm:p-6 z-10">
+          <div
+            className={`w-full max-w-md rounded-3xl p-6 sm:p-8 backdrop-blur-2xl transition-all shadow-2xl border ${
+              darkMode
+                ? 'bg-slate-900/80 border-white/[0.08] shadow-black/50'
+                : 'bg-white/90 border-slate-200 shadow-slate-900/10'
+            }`}
+          >
+            {/* Header Icon & Title */}
+            <div className="text-center mb-7">
+              <div className="w-12 h-12 rounded-2xl bg-blue-600/10 text-blue-500 border border-blue-500/20 flex items-center justify-center mx-auto mb-4 shadow-inner">
+                <ShieldCheck className="w-6 h-6" />
+              </div>
+              <h1
+                className={`text-2xl font-bold tracking-tight ${
+                  darkMode ? 'text-white' : 'text-slate-950'
                 }`}
               >
-                <RotateCcw className="w-3 h-3" />
-                Restablecer
-              </button>
-
-              <button
-                onClick={handleLogout}
-                className="px-2.5 py-1.5 rounded-lg bg-red-600/10 hover:bg-red-600 text-red-400 hover:text-white text-[11px] font-semibold transition-all flex items-center gap-1 cursor-pointer"
+                Panel Administrativo
+              </h1>
+              <p
+                className={`text-xs mt-1.5 leading-relaxed max-w-xs mx-auto ${
+                  darkMode ? 'text-slate-400' : 'text-slate-500'
+                }`}
               >
-                <LogOut className="w-3 h-3" />
-                <span className="hidden sm:inline">Salir</span>
-              </button>
-            </>
-          )}
-        </div>
-      </header>
-
-      {/* Main Container */}
-      {!isAuthenticated ? (
-        /* Login Screen */
-        <div className="flex-1 flex items-center justify-center p-6">
-          <div className={`w-full max-w-sm rounded-2xl p-8 text-center space-y-6 border shadow-xl ${
-            darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
-          }`}>
-            <div className="w-14 h-14 rounded-2xl bg-blue-600/10 text-blue-500 flex items-center justify-center mx-auto">
-              <Lock className="w-7 h-7" />
-            </div>
-
-            <div>
-              <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-                Administrador Maresa
-              </h2>
-              <p className={`text-xs mt-1.5 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                Ingresa tu clave para editar contenidos, imágenes y gestionar solicitudes B2B.
+                Ingresa con tu correo y credenciales autorizadas de Corporación Maresa.
               </p>
             </div>
 
-            <form onSubmit={handleLogin} className="space-y-3">
-              <div className="relative">
-                <KeyRound className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                <input
-                  type="password"
-                  placeholder="Contraseña"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className={`w-full pl-9 pr-4 py-2.5 rounded-xl border text-sm outline-none transition-colors ${
-                    darkMode
-                      ? 'bg-slate-950 border-slate-700 text-white focus:border-blue-500'
-                      : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-blue-500'
-                  }`}
-                />
-              </div>
-
-              {authError && (
-                <p className="text-xs text-red-400 font-medium">{authError}</p>
-              )}
-
-              <button
-                type="submit"
-                className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm shadow-md transition-all cursor-pointer active:scale-[0.98]"
-              >
-                Ingresar
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setPassword('maresa2026');
-                  setIsAuthenticated(true);
-                  sessionStorage.setItem('maresa_admin_auth', 'true');
-                }}
-                className={`w-full py-2 text-xs transition-colors cursor-pointer ${
-                  darkMode ? 'text-slate-500 hover:text-white' : 'text-slate-400 hover:text-slate-700'
-                }`}
-              >
-                Ingreso rápido (maresa2026)
-              </button>
-            </form>
-          </div>
-        </div>
-      ) : (
-        /* Full Dashboard Layout with Sidebar & Main Workspace */
-        <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
-
-          {/* Left Navigation Sidebar — fixed with scroll */}
-          <aside className={`w-full md:w-56 lg:w-60 border-r flex flex-col flex-shrink-0 md:fixed md:top-14 md:bottom-0 md:overflow-hidden ${
-            darkMode ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-200'
-          }`}>
-            <div className={`p-3.5 border-b ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}>
-              <span className={`text-[10px] font-bold uppercase tracking-wider ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>
-                Módulos
-              </span>
-            </div>
-
-            <nav className="p-2 space-y-0.5 flex-1 overflow-y-auto">
-              {([
-                { id: 'content' as const, icon: FileText, label: 'Contenidos', badge: '7' },
-                { id: 'distributors' as const, icon: MapPin, label: 'Puntos de Venta', badge: String(distributors.length) },
-                { id: 'leads' as const, icon: Users, label: 'CRM B2B', badge: `${leads.filter(l => l.status === 'Pendiente').length}`, highlight: true },
-                { id: 'catalog' as const, icon: Car, label: 'Catálogo', badge: String(vehicleCatalog.length) },
-              ]).map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => setActiveNav(item.id)}
-                  className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-[12px] font-medium transition-all cursor-pointer ${
-                    activeNav === item.id
-                      ? 'bg-blue-600 text-white'
-                      : darkMode
-                        ? 'text-slate-400 hover:bg-white/[0.05] hover:text-white'
-                        : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+            {/* Login Form */}
+            <form onSubmit={handleLogin} className="space-y-4">
+              {/* Email Input */}
+              <div>
+                <label
+                  className={`block text-[11px] font-bold uppercase tracking-wider mb-1.5 px-0.5 ${
+                    darkMode ? 'text-slate-400' : 'text-slate-600'
                   }`}
                 >
-                  <span className="flex items-center gap-2">
-                    <item.icon className="w-3.5 h-3.5" />
-                    {item.label}
-                  </span>
-                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-semibold ${
-                    activeNav === item.id
-                      ? 'bg-white/20 text-white'
-                      : item.highlight
-                        ? 'bg-blue-500 text-white'
-                        : darkMode ? 'bg-slate-800 text-slate-400' : 'bg-slate-100 text-slate-500'
-                  }`}>
-                    {item.badge}
-                  </span>
-                </button>
-              ))}
-            </nav>
-          </aside>
-
-          {/* Right Workspace */}
-          <main className={`flex-1 overflow-y-auto p-4 sm:p-8 md:ml-56 lg:ml-60 ${darkMode ? 'bg-slate-950' : 'bg-slate-50'}`}>
-            
-            {/* 1. MÓDULO: EDITOR DE CONTENIDOS DEL LANDING */}
-            {activeNav === 'content' && (
-              <div className="space-y-6 max-w-5xl mx-auto">
-                <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}>
-                  <div>
-                    <h2 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-                      Editor de Contenidos
-                    </h2>
-                    <p className={`text-xs mt-0.5 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                      Modifica textos, imágenes y CTAs del sitio web en vivo.
-                    </p>
-                  </div>
-                  <button
-                    onClick={handleSaveCurrentSection}
-                    className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer active:scale-[0.97]"
-                  >
-                    <Save className="w-3.5 h-3.5" />
-                    Guardar
-                  </button>
-                </div>
-
-                {/* Sub-tabs for each section */}
-                <div className="flex items-center gap-1 overflow-x-auto pb-2 scrollbar-none">
-                  {[
-                    { id: 'hero', label: 'Hero', icon: Home },
-                    { id: 'vehicleFinder', label: 'Buscador', icon: Car },
-                    { id: 'storeLocator', label: 'Agencias', icon: MapPin },
-                    { id: 'about', label: 'Nosotros', icon: Info },
-                    { id: 'b2b', label: 'B2B', icon: Briefcase },
-                    { id: 'recycling', label: 'Reciclaje', icon: Recycle },
-                    { id: 'blog', label: 'Blog', icon: BookOpen },
-                  ].map((tab) => (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveContentTab(tab.id as ContentSectionKey)}
-                      className={`px-3 py-1.5 rounded-lg text-[11px] font-medium whitespace-nowrap flex items-center gap-1 transition-all cursor-pointer ${
-                        activeContentTab === tab.id
-                          ? 'bg-blue-600 text-white'
-                          : darkMode
-                            ? 'text-slate-400 hover:text-white hover:bg-white/[0.05]'
-                            : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100'
-                      }`}
-                    >
-                      <tab.icon className="w-3 h-3" />
-                      {tab.label}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Content Editor Fields based on active section */}
-                <div className={`${cardClass} p-5 sm:p-6 space-y-6`}>
-                  
-                  {/* HERO TAB */}
-                  {activeContentTab === 'hero' && (
-                    <div className="space-y-4">
-                      <div>
-                        <label className={`block text-[11px] font-semibold uppercase tracking-wider mb-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                          Badge Superior
-                        </label>
-                        <input
-                          type="text"
-                          value={sectionDraft.badgeText || ''}
-                          onChange={(e) => setSectionDraft({ ...sectionDraft, badgeText: e.target.value })}
-                          className={inputClass}
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                          <label className={`block text-[11px] font-semibold uppercase tracking-wider mb-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                            Título Principal
-                          </label>
-                          <input type="text" value={sectionDraft.titleMain || ''} onChange={(e) => setSectionDraft({ ...sectionDraft, titleMain: e.target.value })} className={inputClass} />
-                        </div>
-                        <div>
-                          <label className={`block text-[11px] font-semibold uppercase tracking-wider mb-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                            Título Resaltado
-                          </label>
-                          <input type="text" value={sectionDraft.titleHighlight || ''} onChange={(e) => setSectionDraft({ ...sectionDraft, titleHighlight: e.target.value })} className={inputClass} />
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className={`block text-[11px] font-semibold uppercase tracking-wider mb-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                          Subtítulo
-                        </label>
-                        <textarea rows={2} value={sectionDraft.subtitle || ''} onChange={(e) => setSectionDraft({ ...sectionDraft, subtitle: e.target.value })} className={inputClass} />
-                      </div>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                          <label className={`block text-[11px] font-semibold uppercase tracking-wider mb-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                            Texto Botón CTA
-                          </label>
-                          <input type="text" value={sectionDraft.ctaButtonText || ''} onChange={(e) => setSectionDraft({ ...sectionDraft, ctaButtonText: e.target.value })} className={inputClass} />
-                        </div>
-                        <div>
-                          <label className={`block text-[11px] font-semibold uppercase tracking-wider mb-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                            URL Imagen de Fondo
-                          </label>
-                          <input type="text" value={sectionDraft.backgroundImage || ''} onChange={(e) => setSectionDraft({ ...sectionDraft, backgroundImage: e.target.value })} className={inputClass} />
-                        </div>
-                      </div>
-
-                      {/* Image Upload Section */}
-                      <div className={`p-4 rounded-xl border-2 border-dashed ${darkMode ? 'border-slate-700 bg-slate-950/50' : 'border-slate-300 bg-slate-100/50'}`}>
-                        <div className="flex items-center gap-3 mb-3">
-                          <ImageIcon className={`w-5 h-5 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`} />
-                          <span className={`text-xs font-semibold ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>Imágenes del Hero</span>
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          <label className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border cursor-pointer transition-colors ${
-                            darkMode ? 'border-slate-700 hover:border-blue-500 hover:bg-blue-950/20' : 'border-slate-300 hover:border-blue-500 hover:bg-blue-50'
-                          }`}>
-                            <Upload className={`w-5 h-5 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`} />
-                            <span className={`text-[11px] font-medium ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Desktop (1920×800)</span>
-                            <input type="file" accept="image/webp,image/png,image/jpeg" className="hidden" onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              if (file) setSectionDraft({ ...sectionDraft, backgroundImage: URL.createObjectURL(file), _desktopFile: file });
-                            }} />
-                          </label>
-                          <label className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border cursor-pointer transition-colors ${
-                            darkMode ? 'border-slate-700 hover:border-blue-500 hover:bg-blue-950/20' : 'border-slate-300 hover:border-blue-500 hover:bg-blue-50'
-                          }`}>
-                            <Upload className={`w-5 h-5 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`} />
-                            <span className={`text-[11px] font-medium ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Mobile (768×1024)</span>
-                            <input type="file" accept="image/webp,image/png,image/jpeg" className="hidden" onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              if (file) setSectionDraft({ ...sectionDraft, mobileImage: URL.createObjectURL(file), _mobileFile: file });
-                            }} />
-                          </label>
-                        </div>
-                        {(sectionDraft.backgroundImage || sectionDraft.mobileImage) && (
-                          <div className="mt-3 flex gap-2">
-                            {sectionDraft.backgroundImage && (
-                              <img src={sectionDraft.backgroundImage} alt="Desktop preview" className="h-16 rounded-lg object-cover" />
-                            )}
-                            {sectionDraft.mobileImage && (
-                              <img src={sectionDraft.mobileImage} alt="Mobile preview" className="h-16 rounded-lg object-cover" />
-                            )}
-                          </div>
-                        )}
-                      </div>
-
-                      <div className={`pt-4 border-t grid grid-cols-1 sm:grid-cols-3 gap-4 ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}>
-                        {[
-                          { vKey: 'stat1Value', lKey: 'stat1Label', label: 'Stat 1' },
-                          { vKey: 'stat2Value', lKey: 'stat2Label', label: 'Stat 2' },
-                          { vKey: 'stat3Value', lKey: 'stat3Label', label: 'Stat 3' },
-                        ].map((s) => (
-                          <div key={s.vKey}>
-                            <label className={`block text-[11px] font-semibold mb-1 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>{s.label}</label>
-                            <input type="text" value={sectionDraft[s.vKey] || ''} onChange={(e) => setSectionDraft({ ...sectionDraft, [s.vKey]: e.target.value })} className={inputClass + ' mb-1'} placeholder="Valor" />
-                            <input type="text" value={sectionDraft[s.lKey] || ''} onChange={(e) => setSectionDraft({ ...sectionDraft, [s.lKey]: e.target.value })} className={inputClass} placeholder="Etiqueta" />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* ABOUT TAB */}
-                  {activeContentTab === 'about' && (
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                          <label className={labelClass}>Badge</label>
-                          <input type="text" value={sectionDraft.badge || ''} onChange={(e) => setSectionDraft({ ...sectionDraft, badge: e.target.value })} className={inputClass} />
-                        </div>
-                        <div>
-                          <label className={labelClass}>Título</label>
-                          <input type="text" value={sectionDraft.title || ''} onChange={(e) => setSectionDraft({ ...sectionDraft, title: e.target.value })} className={inputClass} />
-                        </div>
-                      </div>
-                      <div>
-                        <label className={labelClass}>Párrafo 1 (Historia)</label>
-                        <textarea rows={3} value={sectionDraft.paragraph1 || ''} onChange={(e) => setSectionDraft({ ...sectionDraft, paragraph1: e.target.value })} className={inputClass} />
-                      </div>
-                      <div>
-                        <label className={labelClass}>Párrafo 2 (Calidad)</label>
-                        <textarea rows={3} value={sectionDraft.paragraph2 || ''} onChange={(e) => setSectionDraft({ ...sectionDraft, paragraph2: e.target.value })} className={inputClass} />
-                      </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                          <label className={labelClass}>Misión</label>
-                          <input type="text" value={sectionDraft.missionText || ''} onChange={(e) => setSectionDraft({ ...sectionDraft, missionText: e.target.value })} className={inputClass} />
-                        </div>
-                        <div>
-                          <label className={labelClass}>Visión</label>
-                          <input type="text" value={sectionDraft.visionText || ''} onChange={(e) => setSectionDraft({ ...sectionDraft, visionText: e.target.value })} className={inputClass} />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* B2B TAB */}
-                  {activeContentTab === 'b2b' && (
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                          <label className={labelClass}>Título B2B</label>
-                          <input type="text" value={sectionDraft.title || ''} onChange={(e) => setSectionDraft({ ...sectionDraft, title: e.target.value })} className={inputClass} />
-                        </div>
-                        <div>
-                          <label className={labelClass}>Texto Botón</label>
-                          <input type="text" value={sectionDraft.submitButtonText || ''} onChange={(e) => setSectionDraft({ ...sectionDraft, submitButtonText: e.target.value })} className={inputClass} />
-                        </div>
-                      </div>
-                      <div>
-                        <label className={labelClass}>Subtítulo B2B</label>
-                        <textarea rows={2} value={sectionDraft.subtitle || ''} onChange={(e) => setSectionDraft({ ...sectionDraft, subtitle: e.target.value })} className={inputClass} />
-                      </div>
-                    </div>
-                  )}
-
-                  {/* RECYCLING TAB */}
-                  {activeContentTab === 'recycling' && (
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                          <label className={labelClass}>Título Línea 1</label>
-                          <input type="text" value={sectionDraft.titleLine1 || ''} onChange={(e) => setSectionDraft({ ...sectionDraft, titleLine1: e.target.value })} className={inputClass} />
-                        </div>
-                        <div>
-                          <label className={labelClass}>Título Línea 2</label>
-                          <input type="text" value={sectionDraft.titleLine2 || ''} onChange={(e) => setSectionDraft({ ...sectionDraft, titleLine2: e.target.value })} className={inputClass} />
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                          <label className={labelClass}>Métrica de Impacto</label>
-                          <input type="text" value={sectionDraft.metricValue || ''} onChange={(e) => setSectionDraft({ ...sectionDraft, metricValue: e.target.value })} className={inputClass} />
-                        </div>
-                        <div>
-                          <label className={labelClass}>Descripción Métrica</label>
-                          <input type="text" value={sectionDraft.metricLabel || ''} onChange={(e) => setSectionDraft({ ...sectionDraft, metricLabel: e.target.value })} className={inputClass} />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* OTHER TABS */}
-                  {(activeContentTab === 'vehicleFinder' || activeContentTab === 'storeLocator' || activeContentTab === 'blog') && (
-                    <div className="space-y-4">
-                      <div>
-                        <label className={labelClass}>Título</label>
-                        <input type="text" value={sectionDraft.title || ''} onChange={(e) => setSectionDraft({ ...sectionDraft, title: e.target.value })} className={inputClass} />
-                      </div>
-                      <div>
-                        <label className={labelClass}>Subtítulo</label>
-                        <textarea rows={2} value={sectionDraft.subtitle || ''} onChange={(e) => setSectionDraft({ ...sectionDraft, subtitle: e.target.value })} className={inputClass} />
-                      </div>
-                    </div>
-                  )}
-
-                  <div className={`pt-4 border-t flex justify-end ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}>
-                    <button
-                      onClick={handleSaveCurrentSection}
-                      className="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs flex items-center gap-1.5 transition-all cursor-pointer active:scale-[0.97]"
-                    >
-                      <Save className="w-3.5 h-3.5" />
-                      Guardar Cambios
-                    </button>
-                  </div>
-
+                  Correo Electrónico
+                </label>
+                <div className="relative">
+                  <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="email"
+                    required
+                    placeholder="ejemplo@bateriasmaresa.ec"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className={`w-full pl-10 pr-4 py-3 rounded-xl border text-sm outline-none transition-all ${
+                      darkMode
+                        ? 'bg-slate-950/60 border-slate-800 text-white placeholder-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20'
+                        : 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15'
+                    }`}
+                  />
                 </div>
               </div>
-            )}
 
-            {/* 2. MÓDULO: PUNTOS DE VENTA MARESA */}
-            {activeNav === 'distributors' && (
-              <div className="space-y-6 max-w-5xl mx-auto">
-                <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}>
-                  <div>
-                    <h2 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-                      Puntos de Venta ({distributors.length})
-                    </h2>
-                    <p className={`text-xs mt-0.5 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                      Agencias Maresa en las 24 provincias del Ecuador.
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => setIsAddingDistributor(!isAddingDistributor)}
-                    className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs flex items-center gap-1.5 transition-colors cursor-pointer active:scale-[0.97]"
+              {/* Password Input with Eye toggle */}
+              <div>
+                <div className="flex items-center justify-between mb-1.5 px-0.5">
+                  <label
+                    className={`block text-[11px] font-bold uppercase tracking-wider ${
+                      darkMode ? 'text-slate-400' : 'text-slate-600'
+                    }`}
                   >
-                    <Plus className="w-3.5 h-3.5" />
-                    Nueva Ubicación
+                    Contraseña
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setForgotEmail(email);
+                      setShowForgotModal(true);
+                    }}
+                    className="text-[11px] font-medium text-blue-500 hover:text-blue-400 transition-colors"
+                  >
+                    ¿Olvidaste tu clave?
                   </button>
                 </div>
+                <div className="relative">
+                  <KeyRound className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    placeholder="••••••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className={`w-full pl-10 pr-11 py-3 rounded-xl border text-sm outline-none transition-all ${
+                      darkMode
+                        ? 'bg-slate-950/60 border-slate-800 text-white placeholder-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20'
+                        : 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15'
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 transition-colors p-1"
+                    aria-label={showPassword ? 'Ocultar contraseña' : 'Ver contraseña'}
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
 
-                {/* Add Distributor Form */}
-                {isAddingDistributor && (
-                  <form onSubmit={handleSaveNewDistributor} className={`${cardClass} p-5 space-y-4`}>
-                    <h3 className={`text-sm font-bold uppercase tracking-wider ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-                      Nueva Agencia
-                    </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className={labelClass}>Nombre *</label>
-                        <input type="text" required value={newDistributor.name || ''} onChange={(e) => setNewDistributor({ ...newDistributor, name: e.target.value })} placeholder="Maresa Center Norte" className={inputClass} />
-                      </div>
-                      <div>
-                        <label className={labelClass}>Provincia *</label>
-                        <select value={newDistributor.province} onChange={(e) => setNewDistributor({ ...newDistributor, province: e.target.value })} className={inputClass}>
-                          {provinces.map(p => (<option key={p.id} value={p.name}>{p.name}</option>))}
-                        </select>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className={labelClass}>Ciudad *</label>
-                        <input type="text" required value={newDistributor.city || ''} onChange={(e) => setNewDistributor({ ...newDistributor, city: e.target.value })} placeholder="Quito" className={inputClass} />
-                      </div>
-                      <div>
-                        <label className={labelClass}>Dirección *</label>
-                        <input type="text" required value={newDistributor.address || ''} onChange={(e) => setNewDistributor({ ...newDistributor, address: e.target.value })} placeholder="Av. Galo Plaza Lasso" className={inputClass} />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className={labelClass}>Teléfono</label>
-                        <input type="text" value={newDistributor.phone || ''} onChange={(e) => setNewDistributor({ ...newDistributor, phone: e.target.value })} placeholder="(02) 398-9000" className={inputClass} />
-                      </div>
-                      <div>
-                        <label className={labelClass}>WhatsApp</label>
-                        <input type="text" value={newDistributor.whatsapp || ''} onChange={(e) => setNewDistributor({ ...newDistributor, whatsapp: e.target.value })} placeholder="593998123456" className={inputClass} />
-                      </div>
-                    </div>
-                    <div className="flex justify-end gap-2 pt-2">
-                      <button type="button" onClick={() => setIsAddingDistributor(false)} className={`px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer ${darkMode ? 'bg-slate-800 text-slate-300' : 'bg-slate-100 text-slate-600'}`}>Cancelar</button>
-                      <button type="submit" className="px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold cursor-pointer active:scale-[0.97]">Guardar</button>
-                    </div>
-                  </form>
+              {/* Error Message */}
+              {authError && (
+                <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>{authError}</span>
+                </div>
+              )}
+
+              {/* Submit CTA */}
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm shadow-lg shadow-blue-600/25 transition-all cursor-pointer active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Verificando credenciales...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Iniciar Sesión</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </button>
+
+              {/* Helper quick hint for initial admin setup */}
+              <div
+                className={`mt-4 pt-4 border-t text-center text-[11px] ${
+                  darkMode ? 'border-slate-800 text-slate-500' : 'border-slate-200 text-slate-400'
+                }`}
+              >
+                Cuenta principal: <span className="font-semibold text-slate-400">pablofgarciaf@gmail.com</span>
+              </div>
+            </form>
+          </div>
+        </main>
+
+        {/* MODAL 1: Cambio Obligatorio de Clave (Primer Ingreso) */}
+        {showChangeModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-200">
+            <div
+              className={`w-full max-w-sm rounded-3xl p-6 sm:p-7 shadow-2xl border ${
+                darkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-slate-200 text-slate-900'
+              }`}
+            >
+              <div className="w-12 h-12 rounded-2xl bg-amber-500/15 text-amber-500 border border-amber-500/30 flex items-center justify-center mx-auto mb-4">
+                <Lock className="w-6 h-6" />
+              </div>
+
+              <h2 className="text-xl font-bold text-center tracking-tight">
+                Crea tu nueva contraseña
+              </h2>
+              <p
+                className={`text-xs text-center mt-1.5 mb-5 ${
+                  darkMode ? 'text-slate-400' : 'text-slate-500'
+                }`}
+              >
+                Por seguridad, debes cambiar tu clave temporal para{' '}
+                <strong className={darkMode ? 'text-white' : 'text-slate-800'}>{pendingEmail}</strong>
+              </p>
+
+              <form onSubmit={handlePasswordUpdate} className="space-y-4">
+                <div>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider mb-1 opacity-70">
+                    Nueva Contraseña
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showNewPassword ? 'text' : 'password'}
+                      required
+                      placeholder="Mínimo 6 caracteres"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      className={`w-full px-3.5 pr-10 py-2.5 rounded-xl border text-sm outline-none ${
+                        darkMode ? 'bg-slate-950 border-slate-800 text-white' : 'bg-slate-50 border-slate-300'
+                      }`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 opacity-50 hover:opacity-100"
+                    >
+                      {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider mb-1 opacity-70">
+                    Confirmar Nueva Contraseña
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      required
+                      placeholder="Repite la contraseña"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className={`w-full px-3.5 pr-10 py-2.5 rounded-xl border text-sm outline-none ${
+                        darkMode ? 'bg-slate-950 border-slate-800 text-white' : 'bg-slate-50 border-slate-300'
+                      }`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 opacity-50 hover:opacity-100"
+                    >
+                      {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                {newPassword.length > 0 && confirmPassword.length > 0 && (
+                  <div className={`text-[11px] font-semibold text-center mt-2 ${
+                    newPassword === confirmPassword ? 'text-emerald-500' : 'text-amber-500'
+                  }`}>
+                    {newPassword === confirmPassword 
+                      ? '✓ Las contraseñas coinciden' 
+                      : '⚠ Las contraseñas aún no coinciden'}
+                  </div>
                 )}
 
-                {/* Distributors Table */}
-                <div className={`${cardClass} overflow-hidden`}>
-                  <div className="overflow-x-auto">
-                    <table className={`w-full text-left text-xs ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
-                      <thead className={`uppercase text-[10px] tracking-wider border-b ${darkMode ? 'bg-slate-950 text-slate-500 border-slate-800' : 'bg-slate-50 text-slate-400 border-slate-200'}`}>
-                        <tr>
-                          <th className="p-3">Agencia</th>
-                          <th className="p-3">Ubicación</th>
-                          <th className="p-3">Dirección</th>
-                          <th className="p-3">Contacto</th>
-                          <th className="p-3 text-right">Acción</th>
-                        </tr>
-                      </thead>
-                      <tbody className={`divide-y ${darkMode ? 'divide-slate-800' : 'divide-slate-100'}`}>
-                        {distributors.map((d) => (
-                          <tr key={d.id} className={`transition-colors ${darkMode ? 'hover:bg-white/[0.02]' : 'hover:bg-slate-50'}`}>
-                            <td className={`p-3 font-semibold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{d.name}</td>
-                            <td className="p-3">
-                              <span className="text-blue-500 font-medium text-[11px]">{d.province}</span>
-                              <span className={`block text-[11px] ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>{d.city}</span>
-                            </td>
-                            <td className="p-3 max-w-xs truncate">{d.address}</td>
-                            <td className="p-3">
-                              <span className="block text-[11px]">{d.phone}</span>
-                              <span className="block text-[11px] text-emerald-500">WA: {d.whatsapp}</span>
-                            </td>
-                            <td className="p-3 text-right">
-                              <button onClick={() => handleDeleteDistributor(d.id)} className="p-1 rounded-lg text-red-400 hover:bg-red-600 hover:text-white transition-colors cursor-pointer">
-                                <Trash2 className="w-3 h-3" />
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            )}
+                {changeError && (
+                  <p className="text-xs text-red-400 font-medium text-center">{changeError}</p>
+                )}
 
-            {/* 3. MÓDULO: BANDEJA CRM PROVEEDORES B2B */}
-            {activeNav === 'leads' && (
-              <div className="space-y-6 max-w-5xl mx-auto">
-                <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}>
-                  <div>
-                    <h2 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-                      CRM Proveedores B2B ({leads.length})
-                    </h2>
-                    <p className={`text-xs mt-0.5 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                      Califica y contacta distribuidores que quieren unirse a Maresa.
-                    </p>
-                  </div>
+                <button
+                  type="submit"
+                  disabled={isChangingPassword}
+                  className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold shadow-md active:scale-95 transition-all flex items-center justify-center gap-2"
+                >
+                  {isChangingPassword ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    'Guardar y Entrar al Panel'
+                  )}
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* MODAL 2: Recuperación de Contraseña */}
+        {showForgotModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-200">
+            <div
+              className={`w-full max-w-sm rounded-3xl p-6 sm:p-7 shadow-2xl border relative ${
+                darkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-slate-200 text-slate-900'
+              }`}
+            >
+              <button
+                onClick={() => {
+                  setShowForgotModal(false);
+                  setForgotSent(false);
+                  setForgotError('');
+                }}
+                className="absolute top-4 right-4 p-1.5 rounded-full opacity-60 hover:opacity-100 transition-opacity"
+              >
+                <X className="w-4 h-4" />
+              </button>
+
+              <div className="w-12 h-12 rounded-2xl bg-blue-600/15 text-blue-500 border border-blue-500/30 flex items-center justify-center mx-auto mb-4">
+                <Mail className="w-6 h-6" />
+              </div>
+
+              <h2 className="text-xl font-bold text-center tracking-tight">
+                Recuperar Contraseña
+              </h2>
+              <p
+                className={`text-xs text-center mt-1.5 mb-5 ${
+                  darkMode ? 'text-slate-400' : 'text-slate-500'
+                }`}
+              >
+                Te enviaremos un enlace oficial de restablecimiento a tu correo.
+              </p>
+
+              {forgotSent ? (
+                <div className="text-center py-4 space-y-3">
+                  <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto" />
+                  <p className="text-sm font-semibold text-emerald-400">
+                    ¡Correo de recuperación enviado!
+                  </p>
+                  <p className="text-xs opacity-70">
+                    Revisa tu bandeja de entrada en <strong>{forgotEmail}</strong> y sigue las instrucciones.
+                  </p>
                   <button
-                    onClick={exportLeadsToExcel}
-                    className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center gap-1.5 transition-colors cursor-pointer active:scale-[0.97]"
+                    type="button"
+                    onClick={() => setShowForgotModal(false)}
+                    className="mt-4 px-6 py-2 rounded-xl bg-blue-600 text-white text-xs font-semibold"
                   >
-                    <Download className="w-3.5 h-3.5" />
-                    Exportar Excel
+                    Volver al Login
                   </button>
                 </div>
-
-                {/* Filter and Search Bar */}
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-                  <div className={`flex items-center gap-1 p-0.5 rounded-lg border w-full sm:w-auto ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-slate-100 border-slate-200'}`}>
-                    {(['Todos', 'Pendiente', 'Aplica', 'No Aplica'] as const).map((filterOpt) => (
-                      <button
-                        key={filterOpt}
-                        onClick={() => setLeadsFilter(filterOpt)}
-                        className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors cursor-pointer ${
-                          leadsFilter === filterOpt
-                            ? 'bg-blue-600 text-white'
-                            : darkMode ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
-                        }`}
-                      >
-                        {filterOpt}
-                      </button>
-                    ))}
-                  </div>
-                  <div className="relative w-full sm:w-56">
-                    <Search className="w-3 h-3 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                    <input type="text" placeholder="Buscar empresa o ciudad..." value={leadsSearch} onChange={(e) => setLeadsSearch(e.target.value)} className={`w-full pl-8 pr-3 py-1.5 rounded-lg text-xs outline-none ${
-                      darkMode ? 'bg-slate-900 border border-slate-800 text-white placeholder-slate-500' : 'bg-white border border-slate-200 text-slate-900 placeholder-slate-400'
-                    } focus:border-blue-500`} />
-                  </div>
-                </div>
-
-                {/* Leads Table */}
-                <div className={`${cardClass} overflow-hidden`}>
-                  <div className="overflow-x-auto">
-                    <table className={`w-full text-left text-xs ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
-                      <thead className={`uppercase text-[10px] tracking-wider border-b ${darkMode ? 'bg-slate-950 text-slate-500 border-slate-800' : 'bg-slate-50 text-slate-400 border-slate-200'}`}>
-                        <tr>
-                          <th className="p-3.5">Empresa & Contacto</th>
-                          <th className="p-3.5">Ubicación</th>
-                          <th className="p-3.5">Tipo & Volumen</th>
-                          <th className="p-3.5">Estado CRM</th>
-                          <th className="p-3.5 text-right">Calificación</th>
-                        </tr>
-                      </thead>
-                      <tbody className={`divide-y ${darkMode ? 'divide-slate-800' : 'divide-slate-100'}`}>
-                        {leads
-                          .filter(l => {
-                            const matchFilter = 
-                              leadsFilter === 'Todos' ? true :
-                              leadsFilter === 'Aplica' ? (l.status === 'Aprobado') :
-                              leadsFilter === 'No Aplica' ? (l.status === 'Descartado') :
-                              (l.status === leadsFilter as any);
-                            const matchSearch = 
-                              l.companyName.toLowerCase().includes(leadsSearch.toLowerCase()) ||
-                              l.city.toLowerCase().includes(leadsSearch.toLowerCase()) ||
-                              l.contactName.toLowerCase().includes(leadsSearch.toLowerCase());
-                            return matchFilter && matchSearch;
-                          })
-                          .map((lead) => (
-                            <tr key={lead.id} className={`transition-colors ${darkMode ? 'hover:bg-white/[0.02]' : 'hover:bg-slate-50'}`}>
-                              <td className="p-3">
-                                <span className={`font-semibold block ${darkMode ? 'text-white' : 'text-slate-900'}`}>{lead.companyName}</span>
-                                <span className="text-[11px] text-slate-400">{lead.contactName}</span>
-                                <div className="flex items-center gap-2 mt-1 text-[11px] text-blue-400">
-                                  <span>{lead.phone}</span>
-                                  <span>•</span>
-                                  <span className="text-slate-400">{lead.email}</span>
-                                </div>
-                              </td>
-
-                              <td className="p-3.5">
-                                <span className="font-semibold text-slate-200 block">{lead.province}</span>
-                                <span className="text-slate-400">{lead.city}</span>
-                              </td>
-
-                              <td className="p-3.5">
-                                <span className="font-medium text-slate-200 block">{lead.businessType}</span>
-                                <span className="text-[11px] text-emerald-400">{lead.estimatedVolume}</span>
-                              </td>
-
-                              <td className="p-3.5">
-                                <span className={`inline-flex px-2.5 py-1 rounded-full text-[10px] font-extrabold ${
-                                  lead.status === 'Aprobado' || lead.status === 'Aplica' ? 'bg-emerald-950 text-emerald-300 border border-emerald-800' :
-                                  lead.status === 'No Aplica' || lead.status === 'Descartado' ? 'bg-red-950 text-red-300 border border-red-800' :
-                                  lead.status === 'Contactado' ? 'bg-blue-950 text-blue-300 border border-blue-800' :
-                                  'bg-amber-950 text-amber-300 border border-amber-800'
-                                }`}>
-                                  {lead.status === 'Aprobado' || lead.status === 'Aplica' ? '✓ Aplica' :
-                                   lead.status === 'No Aplica' || lead.status === 'Descartado' ? '✕ No Aplica' :
-                                   lead.status}
-                                </span>
-                              </td>
-
-                              <td className="p-3.5 text-right">
-                                <div className="flex items-center justify-end gap-1.5">
-                                  <button
-                                    onClick={() => handleUpdateLeadStatus(lead.id!, 'Aplica')}
-                                    className="px-2.5 py-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600 text-emerald-300 hover:text-white font-bold text-[11px] transition-colors cursor-pointer"
-                                    title="Aprobar prospecto"
-                                  >
-                                    Aplica
-                                  </button>
-                                  <button
-                                    onClick={() => handleUpdateLeadStatus(lead.id!, 'No Aplica')}
-                                    className="px-2.5 py-1 rounded-lg bg-red-600/30 hover:bg-red-600 text-red-300 hover:text-white font-bold text-[11px] transition-colors cursor-pointer"
-                                    title="Rechazar prospecto"
-                                  >
-                                    No Aplica
-                                  </button>
-                                  <button
-                                    onClick={() => handleUpdateLeadStatus(lead.id!, 'Contactado')}
-                                    className="px-2.5 py-1 rounded-lg bg-blue-600/30 hover:bg-blue-600 text-blue-300 hover:text-white font-bold text-[11px] transition-colors cursor-pointer"
-                                    title="Marcar como contactado"
-                                  >
-                                    Contactado
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* 4. MÓDULO: CATÁLOGO Y ESPECIFICACIONES */}
-            {activeNav === 'catalog' && (
-              <div className="space-y-6 max-w-5xl mx-auto">
-                <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}>
+              ) : (
+                <form onSubmit={handleForgotPassword} className="space-y-4">
                   <div>
-                    <h2 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-                      Catálogo Vehicular ({vehicleCatalog.length})
-                    </h2>
-                    <p className={`text-xs mt-0.5 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                      CCA, tecnología y PVP oficial Ecuador.
-                    </p>
+                    <label className="block text-[11px] font-bold uppercase tracking-wider mb-1 opacity-70">
+                      Correo Electrónico
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="pablofgarciaf@gmail.com"
+                      value={forgotEmail}
+                      onChange={(e) => setForgotEmail(e.target.value)}
+                      className={`w-full px-3.5 py-2.5 rounded-xl border text-sm outline-none ${
+                        darkMode ? 'bg-slate-950 border-slate-800 text-white' : 'bg-slate-50 border-slate-300'
+                      }`}
+                    />
                   </div>
-                  <div className="relative w-full sm:w-56">
-                    <Search className="w-3 h-3 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                    <input type="text" placeholder="Buscar marca o modelo..." value={catalogSearch} onChange={(e) => setCatalogSearch(e.target.value)} className={`w-full pl-8 pr-3 py-1.5 rounded-lg text-xs outline-none ${
-                      darkMode ? 'bg-slate-900 border border-slate-800 text-white placeholder-slate-500' : 'bg-white border border-slate-200 text-slate-900 placeholder-slate-400'
-                    } focus:border-blue-500`} />
-                  </div>
-                </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {vehicleCatalog
-                    .filter(v => 
-                      v.brand.toLowerCase().includes(catalogSearch.toLowerCase()) ||
-                      v.model.toLowerCase().includes(catalogSearch.toLowerCase())
-                    )
-                    .map((item) => (
-                      <div key={item.id} className={`p-4 rounded-xl flex flex-col justify-between ${cardClass}`}>
-                        <div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-[11px] font-semibold text-blue-500 uppercase">{item.brand} • {item.year}</span>
-                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${darkMode ? 'bg-slate-800 text-slate-400' : 'bg-slate-100 text-slate-500'}`}>{item.engine}</span>
-                          </div>
-                          <h3 className={`text-base font-bold mt-1 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{item.model}</h3>
-                          <div className={`mt-2.5 p-2.5 rounded-lg ${darkMode ? 'bg-slate-950 border border-slate-800' : 'bg-slate-50 border border-slate-200'}`}>
-                            <div className={`flex items-center justify-between text-xs font-semibold mb-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-                              <span>{item.recommendedBattery.model}</span>
-                              <span className="text-blue-500">${item.recommendedBattery.priceEcuador.toFixed(2)}</span>
-                            </div>
-                            <p className={`text-[10px] ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>
-                              BCI: {item.recommendedBattery.bciGroup} • {item.recommendedBattery.cca} CCA • {item.recommendedBattery.ah} Ah • {item.recommendedBattery.technology}
-                            </p>
-                          </div>
-                        </div>
-                        <div className={`mt-2.5 pt-2 border-t flex items-center justify-between text-[10px] ${darkMode ? 'border-slate-800 text-slate-500' : 'border-slate-200 text-slate-400'}`}>
-                          <span>Garantía: <strong>{item.recommendedBattery.warrantyMonths}m</strong></span>
-                          <span className="text-emerald-500 font-medium">Calibrado Ecuador</span>
-                        </div>
-                      </div>
-                    ))}
-                </div>
-              </div>
-            )}
+                  {forgotError && (
+                    <p className="text-xs text-red-400 font-medium text-center">{forgotError}</p>
+                  )}
 
-          </main>
-        </div>
-      )}
+                  <button
+                    type="submit"
+                    disabled={forgotLoading}
+                    className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold shadow-md active:scale-95 transition-all flex items-center justify-center gap-2"
+                  >
+                    {forgotLoading ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      'Enviar Enlace de Recuperación'
+                    )}
+                  </button>
+                </form>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
 
-    </div>
-  );
+  return <AdminShell />;
 }

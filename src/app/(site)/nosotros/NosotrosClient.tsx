@@ -110,58 +110,30 @@ export default function NosotrosClient() {
         </div>
       </section>
 
-      {/* Image + About Text */}
-      <section className={`py-20 sm:py-28 ${isDark ? 'bg-slate-900' : 'bg-gradient-to-b from-slate-50 to-white'}`}>
+      {/* About Text & Differentials */}
+      <section className={`py-16 sm:py-24 ${isDark ? 'bg-slate-900' : 'bg-slate-50'}`}>
         <div className="container-max">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="relative"
-            >
-              <div className="rounded-3xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800">
-                <img
-                  src="/quienes-somos-section-landing.webp"
-                  alt="Instalaciones de Corporación Maresa Ecuador"
-                  className="w-full h-[400px] sm:h-[480px] object-cover"
-                  loading="lazy"
-                />
-              </div>
-              <div className={`absolute -bottom-5 -right-5 rounded-2xl shadow-2xl p-5 hidden sm:flex items-center gap-3.5 border backdrop-blur-md ${
-                isDark ? 'bg-slate-950/95 border-slate-700' : 'bg-white border-slate-200'
-              }`}>
-                <div className="w-12 h-12 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/30">
-                  <Battery className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <div className={`text-2xl font-extrabold tracking-tight ${isDark ? 'text-white' : 'text-slate-950'}`}>{about.yearsBadge}</div>
-                  <p className={`text-xs font-semibold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{about.yearsSubtext}</p>
-                </div>
-              </div>
-            </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="max-w-4xl mx-auto text-center"
+          >
+            <p className={`text-lg sm:text-xl leading-relaxed mb-10 ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+              {about.paragraph2}
+            </p>
 
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              <p className={`text-base sm:text-lg leading-relaxed ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
-                {about.paragraph2}
-              </p>
-
-              <div className="mt-8 grid grid-cols-2 gap-3">
-                {differentials.map((d, i) => (
-                  <div key={i} className={`flex items-center gap-2.5 px-4 py-3 rounded-xl border ${
-                    isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
-                  }`}>
-                    <d.icon className={`w-4 h-4 shrink-0 ${isDark ? 'text-primary-400' : 'text-primary-600'}`} />
-                    <span className={`text-sm font-medium ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>{d.text}</span>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {differentials.map((d, i) => (
+                <div key={i} className={`flex flex-col items-center gap-3 p-6 rounded-2xl border ${
+                  isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200 shadow-sm'
+                }`}>
+                  <d.icon className={`w-8 h-8 ${isDark ? 'text-primary-400' : 'text-primary-600'}`} />
+                  <span className={`text-sm font-semibold text-center leading-tight ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>{d.text}</span>
+                </div>
+              ))}
+            </div>
+          </motion.div>
         </div>
       </section>
 

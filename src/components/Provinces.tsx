@@ -82,11 +82,10 @@ export default function Provinces() {
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => setActiveRegion('Todas')}
-              className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-                activeRegion === 'Todas'
+              className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeRegion === 'Todas'
                   ? 'bg-primary-600 text-white shadow-md'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
+                }`}
             >
               Todas ({provinces.length})
             </button>
@@ -94,11 +93,10 @@ export default function Provinces() {
               <button
                 key={r}
                 onClick={() => setActiveRegion(r)}
-                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-                  activeRegion === r
+                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeRegion === r
                     ? 'bg-primary-600 text-white shadow-md'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
+                  }`}
               >
                 {r} ({regionCounts[r]})
               </button>
