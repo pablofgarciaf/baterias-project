@@ -466,15 +466,7 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            <button
-              onClick={handlePasteExcel}
-              disabled={pasting}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm transition-colors cursor-pointer disabled:opacity-50"
-            >
-              {pasting && <Loader2 className="w-4 h-4 animate-spin" />}
-              {!pasting && <Clipboard className="w-4 h-4" />}
-              {pasting ? 'Pegando...' : 'Pegar desde Excel'}
-            </button>
+            
             <label className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-600 hover:bg-slate-500 text-white font-semibold text-sm cursor-pointer">
               <FileText className="w-4 h-4" />
               Cargar archivo
@@ -579,7 +571,7 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
             </h3>
             <p className="text-sm" style={{ color: styles.textSecondary }}>
               {catalog.length === 0
-                ? 'Usa "Pegar desde Excel", "Cargar archivo" o "Agregar Manual" para empezar.'
+                ? 'Presiona Ctrl + V en cualquier lugar para pegar registros desde Excel.'
                 : 'No coinciden con la búsqueda.'}
             </p>
           </div>

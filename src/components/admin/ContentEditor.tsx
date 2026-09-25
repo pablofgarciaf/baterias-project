@@ -192,10 +192,10 @@ export default function ContentEditor({ darkMode }: ContentEditorProps) {
   };
 
   /* ─── input class helpers ─── */
-  const inputCls = `w-full px-3.5 py-2.5 rounded-xl border text-sm outline-none transition-all ${
+  const inputCls = `w-full px-4 py-3.5 rounded-[16px] border text-sm outline-none transition-all ${
     darkMode
-      ? 'bg-slate-900/60 border-slate-700/80 text-white placeholder-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20'
-      : 'bg-white border-slate-300 text-slate-900 placeholder-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15'
+      ? 'bg-[#151E32]/50 border-white/5 text-white placeholder-slate-500 focus:border-blue-500 focus:bg-[#151E32] focus:ring-4 focus:ring-blue-500/10 hover:border-white/10'
+      : 'bg-slate-50/50 border-slate-200 text-slate-900 placeholder-slate-400 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-600/10 hover:border-slate-300'
   }`;
 
   const textareaCls = `${inputCls} resize-y min-h-[80px]`;

@@ -131,14 +131,14 @@ export default function AdminShell() {
       case 'catalog':
         return <CatalogManager darkMode={darkMode} />;
       case 'users':
-        return <UsersManager darkMode={darkMode} />;
+        return <UsersManager />;
     }
   };
 
   return (
     <div
       className={`h-screen flex flex-col font-sans transition-colors overflow-hidden ${
-        darkMode ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'
+        darkMode ? 'bg-[#060B14] text-slate-100' : 'bg-[#F8FAFC] text-slate-900'
       }`}
     >
       {/* ─────────────────────────────────────────────────────────────
@@ -147,7 +147,7 @@ export default function AdminShell() {
       <header
         className={`h-14 border-b flex items-center justify-between px-4 sm:px-6 z-30 transition-all ${
           isSidebarOpen ? 'md:ml-56 lg:ml-60' : 'md:ml-16 lg:ml-20'
-        } ${darkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-white/90 border-slate-200'} backdrop-blur-xl`}
+        } ${darkMode ? 'bg-[#0A0F1C]/90 border-slate-800' : 'bg-white/90 border-slate-200'} backdrop-blur-xl`}
       >
         {/* Left: Mobile hamburger + Active module title */}
         <div className="flex items-center gap-3 min-w-0">
@@ -241,7 +241,7 @@ export default function AdminShell() {
           3. SIDEBAR (Fixed on desktop, Slide-over Drawer on mobile)
       ───────────────────────────────────────────────────────────── */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 flex flex-col transition-all duration-300 border-r border-blue-900/50 bg-slate-950 text-slate-100 ${
+        className={`fixed top-0 bottom-0 left-0 z-50 flex flex-col transition-all duration-300 border-r border-white/5 bg-[#060B14] text-slate-100 ${
           // Mobile state: off-canvas drawer
           isMobileDrawerOpen ? 'translate-x-0 w-64 shadow-2xl' : '-translate-x-full'
         } ${
@@ -304,8 +304,8 @@ export default function AdminShell() {
                 }}
                 className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
                   isActive
-                    ? 'bg-blue-600 text-white shadow-md shadow-blue-600/25'
-                    : 'text-slate-400 hover:bg-slate-800/60 hover:text-white'
+                    ? 'bg-blue-600/20 text-blue-400 shadow-[0_0_20px_rgba(37,99,235,0.2)] border border-blue-500/30'
+                    : 'text-slate-400 hover:bg-white/5 hover:border-white/10 border border-transparent hover:text-white'
                 }`}
                 title={!isSidebarOpen && !isMobileDrawerOpen ? item.label : undefined}
               >

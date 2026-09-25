@@ -1,135 +1,161 @@
-/**
- * ═══════════════════════════════════════════════════════════════
- * 📄 USERS MANAGER — Admin User Management & Side Creation Drawer
- * ═══════════════════════════════════════════════════════════════
- * 📁 Path: src/components/admin/UsersManager.tsx
- * 🏷️ Type: Client Component
- * 📦 Module: Admin
- * ─────────────────────────────────────────────────────────────
- * 👥 Google Apps / Vermilion style side drawer for user creation
- * 🔐 Default initial password is their cédula + forcePasswordChange
- * ─────────────────────────────────────────────────────────────
- */
-
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import {
-  Users,
-  UserPlus,
-  ShieldCheck,
-  Mail,
-  CreditCard,
-  CheckCircle2,
-  AlertCircle,
-  X,
-  Plus,
-  RefreshCw,
-  Lock,
-} from 'lucide-react';
-import { getAdminUsers, createAdminUser, AdminUser } from '@/lib/authService';
+import { useState, useEffect, useRef } from 'react';
+import { User, UserPlus, Shield, CheckCircle, Mail, Key, X, Edit, Trash2 } from 'lucide-react';
+import { useTheme } from '@/context/ThemeContext';
 
-interface UsersManagerProps {
-  darkMode: boolean;
+interface UserData {
+  id: string;
+  name: string;
+  email: string;
+  role: 'Admin' | 'Editor';
+  status: 'Activo' | 'Inactivo';
+  createdAt: string;
 }
 
-export default function UsersManager({ darkMode }: UsersManagerProps) {
-  const [users, setUsers] = useState<AdminUser[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+export default function UsersManager() {
+  const { theme } = useTheme();
+  const darkMode = theme === 'dark';
 
-  // New user form state
+  const [users, setUsers] = useState<UserData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Modal states
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<UserData | null>(null);
+
+  // Form states
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [cedula, setCedula] = useState('');
-  const [role, setRole] = useState<'admin' | 'operator'>('admin');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formSuccess, setFormSuccess] = useState('');
+  const [role, setRole] = useState<'Admin' | 'Editor'>('Admin');
+  const [password, setPassword] = useState('');
   const [formError, setFormError] = useState('');
+  const [formSuccess, setFormSuccess] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    loadUsers();
+    // Mock load
+    setTimeout(() => {
+      setUsers([
+        { id: '1', name: 'Pablo García', email: 'pablofgarciaf@gmail.com', role: 'Admin', status: 'Activo', createdAt: new Date().toISOString() }
+      ]);
+      setIsLoading(false);
+    }, 500);
   }, []);
 
-  const loadUsers = async () => {
-    setIsLoading(true);
-    const list = await getAdminUsers();
-    setUsers(list);
-    setIsLoading(false);
+  // Handle ESC key
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeModal();
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, []);
+
+  // Handle outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+        closeModal();
+      }
+    };
+    if (isModalOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isModalOpen]);
+
+  const openNewUserModal = () => {
+    setEditingUser(null);
+    setName('');
+    setEmail('');
+    setRole('Admin');
+    setPassword('');
+    setFormError('');
+    setFormSuccess('');
+    setIsModalOpen(true);
   };
 
-  const handleCreateUser = async (e: React.FormEvent) => {
+  const openEditModal = (u: UserData) => {
+    setEditingUser(u);
+    setName(u.name);
+    setEmail(u.email);
+    setRole(u.role);
+    setPassword(''); // leave blank if not changing
+    setFormError('');
+    setFormSuccess('');
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setTimeout(() => {
+      setFormError('');
+      setFormSuccess('');
+    }, 300);
+  };
+
+  const handleSaveUser = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError('');
     setFormSuccess('');
-
-    if (!email || !name || !cedula) {
-      setFormError('Todos los campos son obligatorios.');
-      return;
-    }
-
-    if (cedula.length < 6) {
-      setFormError('La cédula / contraseña inicial debe tener al menos 6 caracteres.');
+    
+    if (!name || !email || (!editingUser && !password)) {
+      setFormError('Por favor completa los campos obligatorios.');
       return;
     }
 
     setIsSubmitting(true);
-    try {
-      const res = await createAdminUser({
-        name,
-        email,
-        cedula,
-        role,
-      });
 
-      if (res.success) {
-        setFormSuccess('Usuario creado exitosamente con cambio de clave obligatorio.');
-        setName('');
-        setEmail('');
-        setCedula('');
-        await loadUsers();
-        setTimeout(() => {
-          setIsDrawerOpen(false);
-          setFormSuccess('');
-        }, 1800);
+    try {
+      // Simulate API call
+      await new Promise(r => setTimeout(r, 800));
+
+      if (editingUser) {
+        setUsers(users.map(u => u.id === editingUser.id ? { ...u, name, email, role } : u));
+        setFormSuccess('Usuario actualizado con éxito.');
       } else {
-        setFormError(res.error || 'Error al crear usuario.');
+        const newUser: UserData = {
+          id: Math.random().toString(),
+          name,
+          email,
+          role,
+          status: 'Activo',
+          createdAt: new Date().toISOString()
+        };
+        setUsers([...users, newUser]);
+        setFormSuccess('Usuario creado con éxito.');
       }
-    } catch {
-      setFormError('Ocurrió un error al guardar el usuario.');
-    } finally {
+
+      setTimeout(() => {
+        closeModal();
+        setIsSubmitting(false);
+      }, 1000);
+    } catch (err: any) {
+      setFormError(err.message || 'Error al guardar el usuario.');
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header bar */}
+    <div className="space-y-6 animate-in fade-in duration-500">
+      
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2
-            className={`text-xl sm:text-2xl font-bold tracking-tight ${
-              darkMode ? 'text-white' : 'text-slate-900'
-            }`}
-          >
+          <h2 className={`text-2xl font-extrabold tracking-tight ${darkMode ? 'text-white' : 'text-slate-900'}`}>
             Usuarios y Accesos
           </h2>
-          <p
-            className={`text-xs sm:text-sm mt-1 ${
-              darkMode ? 'text-slate-400' : 'text-slate-500'
-            }`}
-          >
+          <p className={`text-sm mt-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
             Gestiona los administradores y operadores autorizados de Corporación Maresa.
           </p>
         </div>
 
         <button
-          onClick={() => {
-            setFormError('');
-            setFormSuccess('');
-            setIsDrawerOpen(true);
-          }}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs sm:text-sm font-semibold shadow-md active:scale-95 transition-all cursor-pointer"
+          onClick={openNewUserModal}
+          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold shadow-[0_0_20px_rgba(37,99,235,0.3)] active:scale-95 transition-all cursor-pointer"
         >
           <UserPlus className="w-4 h-4" />
           <span>Nuevo Usuario</span>
@@ -138,80 +164,78 @@ export default function UsersManager({ darkMode }: UsersManagerProps) {
 
       {/* Users List Card */}
       <div
-        className={`rounded-2xl border overflow-hidden shadow-lg transition-colors ${
-          darkMode ? 'bg-slate-900/70 border-slate-800' : 'bg-white border-slate-200 shadow-slate-900/5'
+        className={`rounded-[24px] border overflow-hidden shadow-2xl transition-colors ${
+          darkMode ? 'bg-slate-900/40 border-white/5 backdrop-blur-xl' : 'bg-white/80 border-slate-200 shadow-[0_20px_40px_rgba(0,0,0,0.04)] backdrop-blur-xl'
         }`}
       >
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs sm:text-sm">
+          <table className="w-full text-left text-sm">
             <thead
               className={`border-b text-[11px] font-bold uppercase tracking-wider ${
-                darkMode ? 'bg-slate-950/50 border-slate-800 text-slate-400' : 'bg-slate-50 border-slate-200 text-slate-500'
+                darkMode ? 'bg-slate-950/50 border-white/5 text-slate-400' : 'bg-slate-50/50 border-slate-200 text-slate-500'
               }`}
             >
               <tr>
-                <th className="py-3.5 px-4 sm:px-6">Usuario</th>
-                <th className="py-3.5 px-4">Correo</th>
-                <th className="py-3.5 px-4">Rol</th>
-                <th className="py-3.5 px-4">Clave Inicial</th>
-                <th className="py-3.5 px-4 sm:px-6">Estado</th>
+                <th className="py-4 px-6">Usuario</th>
+                <th className="py-4 px-6">Correo</th>
+                <th className="py-4 px-6">Rol</th>
+                <th className="py-4 px-6">Estado</th>
+                <th className="py-4 px-6 text-right">Acciones</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-200 dark:divide-slate-800/60">
+            <tbody className={`divide-y ${darkMode ? 'divide-white/5' : 'divide-slate-200'}`}>
               {isLoading ? (
                 <tr>
-                  <td colSpan={5} className="py-8 text-center text-slate-500">
+                  <td colSpan={5} className="py-12 text-center text-slate-500">
                     Cargando usuarios...
                   </td>
                 </tr>
               ) : users.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="py-8 text-center text-slate-500">
+                  <td colSpan={5} className="py-12 text-center text-slate-500">
                     No hay usuarios registrados.
                   </td>
                 </tr>
               ) : (
-                users.map((u, i) => (
-                  <tr
-                    key={u.email || i}
-                    className={`transition-colors ${
-                      darkMode ? 'hover:bg-slate-800/40' : 'hover:bg-slate-50'
-                    }`}
-                  >
-                    <td className="py-4 px-4 sm:px-6 font-semibold">
+                users.map((u) => (
+                  <tr key={u.id} className={`transition-colors hover:bg-black/5 dark:hover:bg-white/5`}>
+                    <td className="py-4 px-6">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-blue-600/10 text-blue-500 flex items-center justify-center font-bold text-xs shrink-0">
-                          {u.name?.charAt(0) || 'U'}
+                        <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-md">
+                          {u.name.charAt(0).toUpperCase()}
                         </div>
-                        <span className={darkMode ? 'text-white' : 'text-slate-900'}>
+                        <span className={`font-semibold ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                           {u.name}
                         </span>
                       </div>
                     </td>
-                    <td className={`py-4 px-4 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
+                    <td className={`py-4 px-6 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
                       {u.email}
                     </td>
-                    <td className="py-4 px-4">
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-blue-500/15 text-blue-400 border border-blue-500/30">
-                        <ShieldCheck className="w-3 h-3" />
-                        {u.role === 'admin' ? 'Administrador' : 'Operador'}
+                    <td className="py-4 px-6">
+                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold border ${
+                        darkMode ? 'bg-blue-900/20 border-blue-500/30 text-blue-400' : 'bg-blue-50 border-blue-200 text-blue-700'
+                      }`}>
+                        <Shield className="w-3.5 h-3.5" />
+                        {u.role}
                       </span>
                     </td>
-                    <td className={`py-4 px-4 font-mono text-xs ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                      {u.cedula ? `C.I. ${u.cedula}` : 'Personalizada'}
+                    <td className="py-4 px-6">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                        <CheckCircle className="w-3.5 h-3.5" />
+                        {u.status}
+                      </span>
                     </td>
-                    <td className="py-4 px-4 sm:px-6">
-                      {u.forcePasswordChange ? (
-                        <span className="inline-flex items-center gap-1 text-[11px] font-medium text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
-                          <Lock className="w-3 h-3" />
-                          Debe cambiar clave
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-                          <CheckCircle2 className="w-3 h-3" />
-                          Activo
-                        </span>
-                      )}
+                    <td className="py-4 px-6 text-right">
+                      <button
+                        onClick={() => openEditModal(u)}
+                        className={`p-2 rounded-xl border transition-all ${
+                          darkMode ? 'bg-slate-800 border-slate-700 text-slate-300 hover:text-white hover:border-blue-500' : 'bg-white border-slate-200 text-slate-600 hover:text-blue-600 hover:border-blue-500'
+                        }`}
+                        title="Editar usuario"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
                     </td>
                   </tr>
                 ))
@@ -221,134 +245,148 @@ export default function UsersManager({ darkMode }: UsersManagerProps) {
         </div>
       </div>
 
-      {/* SIDE DRAWER: Crear Nuevo Usuario (Google / Vermilion Style) */}
-      {isDrawerOpen && (
-        <div className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+      {/* POPUP MODAL: Crear/Editar Usuario */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200">
           <div
-            className={`w-full max-w-md h-full flex flex-col shadow-2xl border-l animate-in slide-in-from-right duration-300 ${
-              darkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'
+            ref={modalRef}
+            className={`w-full max-w-lg rounded-[32px] border shadow-[0_0_60px_rgba(0,0,0,0.5)] overflow-hidden animate-in zoom-in-95 duration-200 ${
+              darkMode ? 'bg-[#0f172a] border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'
             }`}
           >
-            {/* Drawer Top */}
-            <div className={`p-5 sm:p-6 border-b flex items-center justify-between ${
-              darkMode ? 'border-slate-800' : 'border-slate-200'
+            {/* Modal Header */}
+            <div className={`px-6 py-5 border-b flex items-center justify-between ${
+              darkMode ? 'border-slate-800 bg-slate-900/50' : 'border-slate-200 bg-slate-50'
             }`}>
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-blue-600/15 text-blue-500 flex items-center justify-center">
-                  <UserPlus className="w-5 h-5" />
+                <div className="w-10 h-10 rounded-xl bg-blue-600/15 text-blue-500 flex items-center justify-center">
+                  {editingUser ? <Edit className="w-5 h-5" /> : <UserPlus className="w-5 h-5" />}
                 </div>
                 <div>
-                  <h3 className="font-bold text-base tracking-tight">Crear Nuevo Usuario</h3>
-                  <p className="text-[11px] text-slate-400">Acceso administrativo Corporación Maresa</p>
+                  <h3 className="font-extrabold text-lg tracking-tight">
+                    {editingUser ? 'Editar Usuario' : 'Crear Nuevo Usuario'}
+                  </h3>
+                  <p className="text-xs opacity-60">Acceso administrativo</p>
                 </div>
               </div>
-
               <button
-                onClick={() => setIsDrawerOpen(false)}
-                className="p-1.5 rounded-lg opacity-60 hover:opacity-100 hover:bg-slate-800/40 transition-all"
+                onClick={closeModal}
+                className="p-2 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            {/* Drawer Body Form */}
-            <form onSubmit={handleCreateUser} className="flex-1 p-5 sm:p-6 space-y-4 overflow-y-auto">
-              <div>
-                <label className="block text-[11px] font-bold uppercase tracking-wider mb-1 opacity-70">
-                  Nombre Completo *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Ej: Ing. Juan Pérez"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className={`w-full px-3.5 py-2.5 rounded-xl border text-sm outline-none ${
-                    darkMode ? 'bg-slate-950 border-slate-800 text-white' : 'bg-slate-50 border-slate-300'
-                  }`}
-                />
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-bold uppercase tracking-wider mb-1 opacity-70">
-                  Correo Electrónico *
-                </label>
-                <input
-                  type="email"
-                  required
-                  placeholder="juan.perez@maresa.ec"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className={`w-full px-3.5 py-2.5 rounded-xl border text-sm outline-none ${
-                    darkMode ? 'bg-slate-950 border-slate-800 text-white' : 'bg-slate-50 border-slate-300'
-                  }`}
-                />
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-bold uppercase tracking-wider mb-1 opacity-70">
-                  Cédula (Contraseña Inicial) *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Ej: 1721790721"
-                  value={cedula}
-                  onChange={(e) => setCedula(e.target.value)}
-                  className={`w-full px-3.5 py-2.5 rounded-xl border text-sm outline-none ${
-                    darkMode ? 'bg-slate-950 border-slate-800 text-white' : 'bg-slate-50 border-slate-300'
-                  }`}
-                />
-                <p className="text-[11px] text-slate-500 mt-1">
-                  El usuario usará su cédula para ingresar por primera vez y el sistema le pedirá cambiarla obligatoriamente.
-                </p>
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-bold uppercase tracking-wider mb-1 opacity-70">
-                  Rol Asignado
-                </label>
-                <select
-                  value={role}
-                  onChange={(e) => setRole(e.target.value as any)}
-                  className={`w-full px-3.5 py-2.5 rounded-xl border text-sm outline-none ${
-                    darkMode ? 'bg-slate-950 border-slate-800 text-white' : 'bg-slate-50 border-slate-300'
-                  }`}
-                >
-                  <option value="admin">Administrador (Total)</option>
-                  <option value="operator">Operador (CRM y Puntos de Venta)</option>
-                </select>
-              </div>
-
-              {formSuccess && (
-                <div className="flex items-center gap-2 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs">
-                  <CheckCircle2 className="w-4 h-4 shrink-0" />
-                  <span>{formSuccess}</span>
-                </div>
-              )}
-
+            {/* Modal Body Form */}
+            <form onSubmit={handleSaveUser} className="p-6 space-y-5">
+              
               {formError && (
-                <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  <span>{formError}</span>
+                <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500 text-sm font-semibold flex items-center gap-2">
+                  <Shield className="w-4 h-4 shrink-0" />
+                  {formError}
+                </div>
+              )}
+              {formSuccess && (
+                <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-sm font-semibold flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 shrink-0" />
+                  {formSuccess}
                 </div>
               )}
 
-              {/* Drawer Bottom Actions */}
-              <div className="pt-6 border-t border-slate-800/60 flex items-center justify-end gap-3">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-[11px] font-bold uppercase tracking-widest mb-1.5 opacity-60">
+                    Nombre Completo *
+                  </label>
+                  <div className="relative">
+                    <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 opacity-40" />
+                    <input
+                      type="text"
+                      required
+                      placeholder="Ej: Ing. Juan PAcrez"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className={`w-full pl-10 pr-4 py-3 rounded-2xl border text-sm outline-none transition-all focus:ring-2 focus:ring-blue-500/20 ${
+                        darkMode ? 'bg-slate-900 border-slate-800 focus:border-blue-500' : 'bg-slate-50 border-slate-200 focus:border-blue-500'
+                      }`}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold uppercase tracking-widest mb-1.5 opacity-60">
+                    Correo ElectrA3nico *
+                  </label>
+                  <div className="relative">
+                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 opacity-40" />
+                    <input
+                      type="email"
+                      required
+                      placeholder="usuario@dominio.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className={`w-full pl-10 pr-4 py-3 rounded-2xl border text-sm outline-none transition-all focus:ring-2 focus:ring-blue-500/20 ${
+                        darkMode ? 'bg-slate-900 border-slate-800 focus:border-blue-500' : 'bg-slate-50 border-slate-200 focus:border-blue-500'
+                      }`}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[11px] font-bold uppercase tracking-widest mb-1.5 opacity-60">
+                      Rol del Sistema *
+                    </label>
+                    <select
+                      value={role}
+                      onChange={(e) => setRole(e.target.value as 'Admin' | 'Editor')}
+                      className={`w-full px-4 py-3 rounded-2xl border text-sm outline-none transition-all cursor-pointer focus:ring-2 focus:ring-blue-500/20 ${
+                        darkMode ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-slate-200'
+                      }`}
+                    >
+                      <option value="Admin">Administrador (Total)</option>
+                      <option value="Editor">Editor (Contenidos)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold uppercase tracking-widest mb-1.5 opacity-60">
+                      {editingUser ? 'Nueva Clave (Opcional)' : 'Clave Inicial *'}
+                    </label>
+                    <div className="relative">
+                      <Key className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 opacity-40" />
+                      <input
+                        type="password"
+                        required={!editingUser}
+                        placeholder="********"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className={`w-full pl-10 pr-4 py-3 rounded-2xl border text-sm outline-none transition-all focus:ring-2 focus:ring-blue-500/20 ${
+                          darkMode ? 'bg-slate-900 border-slate-800 focus:border-blue-500' : 'bg-slate-50 border-slate-200 focus:border-blue-500'
+                        }`}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-slate-800 flex justify-end gap-3 mt-6">
                 <button
                   type="button"
-                  onClick={() => setIsDrawerOpen(false)}
-                  className="px-4 py-2.5 rounded-xl text-xs font-semibold hover:bg-slate-800/40 transition-colors"
+                  onClick={closeModal}
+                  className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                    darkMode ? 'bg-slate-800 hover:bg-slate-700 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-800'
+                  }`}
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-md active:scale-95 transition-all"
+                  className={`px-6 py-2.5 rounded-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-500 shadow-[0_0_15px_rgba(37,99,235,0.3)] transition-all flex items-center gap-2 ${
+                    isSubmitting ? 'opacity-70 cursor-wait' : ''
+                  }`}
                 >
-                  {isSubmitting ? 'Guardando...' : 'Crear Usuario'}
+                  {isSubmitting ? 'Guardando...' : editingUser ? 'Actualizar Usuario' : 'Crear Usuario'}
                 </button>
               </div>
             </form>
