@@ -112,35 +112,32 @@ export default function HeroReciclaje() {
           >
             <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
               {/* Row 1: 2 buttons */}
-              <div className="flex flex-col sm:flex-row gap-3 w-full">
-                <Link
-                  href="#puntos-de-venta"
-                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-200 active:scale-[0.97] hover:-translate-y-px flex-1 sm:flex-none"
-                >
-                  <Leaf className="w-4 h-4" />
-                  {rec.ctaButtonText}
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
+              <div className="flex flex-wrap items-center gap-3 w-full mt-4">
+              <Link
+                href="#puntos-de-venta"
+                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-200 active:scale-[0.97] hover:-translate-y-px"
+              >
+                <Leaf className="w-4 h-4" />
+                {rec.ctaButtonText}
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
 
-                <Link
-                  href="/contacto-b2b"
-                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-white/10 backdrop-blur-md text-white text-sm font-semibold border border-white/20 hover:bg-white/20 transition-all duration-200 active:scale-[0.97] flex-1 sm:flex-none"
-                >
-                  <MapPin className="w-4 h-4" />
-                  {rec.secondaryButtonText || 'Puntos de Venta'}
-                </Link>
-              </div>
+              <Link
+                href="/contacto-b2b"
+                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-white/10 backdrop-blur-md text-white text-sm font-semibold border border-white/20 hover:bg-white/20 transition-all duration-200 active:scale-[0.97]"
+              >
+                <MapPin className="w-4 h-4" />
+                {rec.secondaryButtonText || 'Puntos de Venta'}
+              </Link>
 
-              {/* Row 2: 1 button full width on mobile only */}
-              <div className="w-full sm:hidden">
-                <Link
-                  href="tel:1800228374"
-                  className="inline-flex items-center justify-center gap-2 w-full px-5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-200 active:scale-[0.97]"
-                >
-                  <PhoneCall className="w-4 h-4" />
-                  Llamar 1-800-BATERIA
-                </Link>
-              </div>
+              <Link
+                href="tel:1800228374"
+                className="inline-flex sm:hidden items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-200 active:scale-[0.97]"
+              >
+                <PhoneCall className="w-4 h-4" />
+                1-800-BATERIA
+              </Link>
+            </div>
             </div>
           </motion.div>
         </div>

@@ -141,8 +141,8 @@ export const defaultSiteContent: SiteContent = {
     stat1Label: 'Años de experiencia',
     stat2Value: '150+',
     stat2Label: 'Distribuidores en Ecuador',
-    stat3Value: '24/24',
-    stat3Label: 'Provincias cubiertas'
+    stat3Value: 'Nacional',
+    stat3Label: 'Cobertura'
   },
   about: {
     badge: 'Sobre Nosotros',

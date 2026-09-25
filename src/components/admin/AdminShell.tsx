@@ -138,7 +138,7 @@ export default function AdminShell() {
   return (
     <div
       className={`h-screen flex flex-col font-sans transition-colors overflow-hidden ${
-        darkMode ? 'bg-[#060B14] text-slate-100' : 'bg-[#F8FAFC] text-slate-900'
+        darkMode ? 'bg-[#0B121A] text-slate-100' : 'bg-[#F8FAFC] text-slate-900'
       }`}
     >
       {/* ─────────────────────────────────────────────────────────────
@@ -147,7 +147,7 @@ export default function AdminShell() {
       <header
         className={`h-14 border-b flex items-center justify-between px-4 sm:px-6 z-30 transition-all ${
           isSidebarOpen ? 'md:ml-56 lg:ml-60' : 'md:ml-16 lg:ml-20'
-        } ${darkMode ? 'bg-[#0A0F1C]/90 border-slate-800' : 'bg-white/90 border-slate-200'} backdrop-blur-xl`}
+        } ${darkMode ? 'bg-[#080D14]/90 border-slate-800' : 'bg-white/90 border-slate-200'} backdrop-blur-xl`}
       >
         {/* Left: Mobile hamburger + Active module title */}
         <div className="flex items-center gap-3 min-w-0">
@@ -241,7 +241,7 @@ export default function AdminShell() {
           3. SIDEBAR (Fixed on desktop, Slide-over Drawer on mobile)
       ───────────────────────────────────────────────────────────── */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 flex flex-col transition-all duration-300 border-r border-white/5 bg-[#060B14] text-slate-100 ${
+        className={`fixed top-0 bottom-0 left-0 z-50 flex flex-col transition-all duration-300 border-r border-white/5 bg-[#0B121A] text-slate-100 ${
           // Mobile state: off-canvas drawer
           isMobileDrawerOpen ? 'translate-x-0 w-64 shadow-2xl' : '-translate-x-full'
         } ${

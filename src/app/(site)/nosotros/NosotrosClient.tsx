@@ -161,67 +161,38 @@ export default function NosotrosClient() {
         </div>
       </section>
 
-      {/* Values Grid */}
-      <section
-        className={`py-20 sm:py-28 ${isDark ? "bg-slate-900" : "bg-slate-50"}`}
-      >
+      {/* Values Grid - Clean Flat Design */}
+      <section className="py-20 sm:py-28 bg-slate-50 dark:bg-slate-900/50">
         <div className="container-max">
-          <div className="mb-12 text-center">
-            <span
-              className={`inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] mb-4 ${isDark ? "text-primary-400" : "text-primary-600"}`}
-            >
-              <span className="w-6 h-px bg-current" />
-              Nuestros Pilares
-              <span className="w-6 h-px bg-current" />
+          <div className="mb-16 text-center">
+            <span className="inline-flex items-center justify-center px-3 py-1 mb-4 text-xs font-bold uppercase tracking-widest text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 rounded-full">
+              Nuestro Propósito
             </span>
-            <h2
-              className={`text-3xl sm:text-4xl font-extrabold tracking-tight ${isDark ? "text-white" : "text-slate-950"}`}
-            >
+            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
               Lo que nos impulsa
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 relative z-10">
-              {/* Background ambient glow behind the grid */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg h-[400px] bg-primary-500/10 rounded-full blur-[100px] pointer-events-none -z-10" />
-              
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 max-w-4xl mx-auto">
               {values.map((item, i) => (
-                <motion.div
+                <div
                   key={i}
-                  initial={{ opacity: 0, y: 24, scale: 0.98 }}
-                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                  viewport={{ once: true, margin: "-50px" }}
-                  transition={{ delay: i * 0.1, duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-                  className={`group relative p-8 sm:p-10 rounded-[32px] border backdrop-blur-2xl overflow-hidden transition-all duration-500 hover:-translate-y-1.5 ${
-                    isDark
-                      ? "bg-slate-900/40 border-white/10 hover:bg-slate-800/60 hover:shadow-[0_0_40px_rgba(37,99,235,0.15)] hover:border-white/20"
-                      : "bg-white/60 border-white/80 hover:bg-white/90 hover:shadow-[0_20px_40px_rgb(0,0,0,0.06)] hover:border-white"
-                  }`}
+                  className="relative bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col transition-shadow hover:shadow-md"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-transparent to-primary-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  
-                  <div className="relative z-10">
-                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-inner ${
-                      isDark 
-                        ? "bg-slate-800/80 border border-white/10 text-primary-400 shadow-black/50" 
-                        : "bg-gradient-to-br from-white to-primary-50 border border-primary-100 text-primary-600 shadow-primary-500/10"
-                    }`}>
-                      <item.icon className="w-6 h-6 drop-shadow-sm" />
+                  <div className="p-10 flex-1 flex flex-col items-center text-center">
+                    <div className="w-16 h-16 rounded-full bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex items-center justify-center mb-6">
+                      <item.icon className="w-8 h-8 text-primary-600 dark:text-primary-400" strokeWidth={1.5} />
                     </div>
-                    
-                    <h3 className={`text-xl font-extrabold mb-3 tracking-tight transition-colors duration-300 ${
-                      isDark ? "text-white group-hover:text-primary-300" : "text-slate-950 group-hover:text-primary-700"
-                    }`}>
+                    <h3 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white mb-4 uppercase">
                       {item.title}
                     </h3>
-                    
-                    <p className={`text-[15px] leading-relaxed transition-colors duration-300 ${
-                      isDark ? "text-slate-400 group-hover:text-slate-300" : "text-slate-600 group-hover:text-slate-700"
-                    }`}>
+                    <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-sm sm:text-base">
                       {item.text}
                     </p>
                   </div>
-                </motion.div>
+                  {/* Bottom Ribbon */}
+                  <div className={`h-3 w-full ${i % 2 === 0 ? 'bg-amber-500' : 'bg-primary-600'}`} />
+                </div>
               ))}
             </div>
         </div>

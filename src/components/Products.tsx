@@ -354,24 +354,15 @@ export default function Products() {
           </button>
 
           <div 
-            className="relative overflow-hidden cursor-grab active:cursor-grabbing select-none -mx-4 px-4 sm:mx-0 sm:px-0"
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-          >
-          <div 
-            className="flex transition-transform duration-500 ease-out"
-            style={{
-              transform: `translateX(-${currentIndex * (100 / itemsPerView)}%)`,
-            }}
+            id="products-carousel-track"
+            className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-8 pt-4 -mx-4 px-4 sm:mx-0 sm:px-2 no-scrollbar scroll-smooth"
           >
             {filteredItems.map((item) => {
               const IconComp = item.icon;
               return (
                 <div
                   key={item.id}
-                  className="px-3 shrink-0"
-                  style={{ width: `${100 / itemsPerView}%` }}
+                  className="shrink-0 snap-center w-[300px] sm:w-[340px] md:w-[360px]"
                 >
                   <div 
                     className={`h-full flex flex-col rounded-3xl overflow-hidden border transition-all duration-300 hover:-translate-y-1.5 ${
@@ -522,23 +513,6 @@ export default function Products() {
         </div>
       </div>
 
-      {/* Carousel Indicators / Dots */}
-        <div className="flex items-center justify-center gap-2 mt-8">
-          {Array.from({ length: maxIndex + 1 }).map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => setCurrentIndex(idx)}
-              aria-label={`Ir al slide ${idx + 1}`}
-              className={`h-2 rounded-full transition-all cursor-pointer ${
-                currentIndex === idx
-                  ? 'w-7 bg-blue-600'
-                  : isDark ? 'w-2 bg-slate-800 hover:bg-slate-700' : 'w-2 bg-slate-300 hover:bg-slate-400'
-              }`}
-            />
-          ))}
-        </div>
-
-      </div>
 
       {/* Technical Specs Modal Dialog */}
       <AnimatePresence>
