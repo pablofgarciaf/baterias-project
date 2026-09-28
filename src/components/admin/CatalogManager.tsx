@@ -20,6 +20,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, FormEvent } from 'react';
+import { motion } from 'motion/react';
 import {
   Plus,
   Save,
@@ -577,9 +578,13 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-            {filteredCatalog.map((item) => (
-              <div
+            {filteredCatalog.map((item, idx) => (
+              <motion.div
                 key={item.id}
+                initial={{ opacity: 0, y: 12, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.3, delay: idx * 0.04, ease: [0.25, 0.1, 0.25, 1] }}
+                whileHover={{ y: -3, boxShadow: '0 12px 40px rgba(0,0,0,0.2)' }}
                 className="relative"
                 style={{ background: styles.hoverBg, borderRadius: '0.75rem', border: `1px solid ${border}` }}
               >
@@ -659,7 +664,7 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
                     </div>
                   </>
                 )}
-              </div>
+              </motion.div>
             ))}
           </div>
         )}

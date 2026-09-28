@@ -141,7 +141,7 @@ export const defaultSiteContent: SiteContent = {
     stat1Label: 'Años de experiencia',
     stat2Value: '150+',
     stat2Label: 'Distribuidores en Ecuador',
-    stat3Value: 'Nacional',
+    stat3Value: 'Na cional',
     stat3Label: 'Cobertura'
   },
   about: {
@@ -151,7 +151,7 @@ export const defaultSiteContent: SiteContent = {
     paragraph2: 'Trabajamos con tecnología comprobada y procesos certificados para entregar productos que aguantan la altitud de los Andes, el calor de la Costa, la humedad de la Amazonía y la salinidad de Galápagos.',
     yearsBadge: 'Desde 1985',
     yearsSubtext: 'Energizando el Ecuador',
-    aboutImage: 'https://images.pexels.com/photos/18589218/pexels-photo-18589218.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    aboutImage: '/hero-reciclaje.webp',
     missionTitle: 'Misión',
     missionText: 'Proveer energía confiable a cada ecuatoriano, sin importar dónde esté.',
     visionTitle: 'Visión',

@@ -40,7 +40,7 @@ export default function HeroReciclaje() {
   const stats = [
     { icon: ShieldCheck, value: '99%', label: 'Componentes reciclados' },
     { icon: RefreshCw, value: '50+ Ton', label: 'Plomo/plástico al mes' },
-    { icon: MapPin, value: 'Nacional / Cobertura', label: '' },
+    { icon: MapPin, value: 'Nacional', label: 'Cobertura' },
   ];
 
   return (

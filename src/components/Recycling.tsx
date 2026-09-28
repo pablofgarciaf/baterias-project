@@ -65,7 +65,7 @@ export default function Recycling() {
       </div>
 
       <div className="container-max relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
           
           {/* Left Editorial */}
           <motion.div

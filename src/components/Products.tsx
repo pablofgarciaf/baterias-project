@@ -32,7 +32,6 @@ import {
   CheckCircle2, 
   Car, 
   Truck, 
-  Sailboat, 
   Search,
   MessageCircle,
   FileText,
@@ -130,50 +129,6 @@ const batteryCatalogItems: BatteryShowcaseItem[] = [
     image: 'https://images.pexels.com/photos/37177070/pexels-photo-37177070.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
     icon: Car
   },
-  {
-    id: 'andina-truck-4d',
-    name: 'Andina Titan 4D-1000 Interprovincial',
-    category: 'Transporte Pesado & Cabezales',
-    bciGroup: '4D / 8D',
-    cca: 1050,
-    ah: 150,
-    voltage: 12,
-    warrantyMonths: 18,
-    priceEcuador: 235.00,
-    technology: 'Heavy Duty',
-    bestFor: 'Buses interprovinciales, camiones Hino, Isuzu, Freightliner, Kenworth',
-    features: [
-      'Placas gruesas ancladas con resina epóxica anti-vibración extrema',
-      'Máxima capacidad de reserva para viajes nocturnos de largo recorrido',
-      'Separadores de polietileno microporoso de baja resistencia interna'
-    ],
-    dimensions: '508 x 216 x 241 mm',
-    polarity: 'Bornes Industriales Roscados',
-    image: 'https://images.pexels.com/photos/280014/pexels-photo-280014.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
-    icon: Truck
-  },
-  {
-    id: 'andina-marine-27m',
-    name: 'Andina Marine & Deep Cycle 27M',
-    category: 'Naútica & Ciclo Profundo',
-    bciGroup: 'Grupo 27M',
-    cca: 650,
-    ah: 90,
-    voltage: 12,
-    warrantyMonths: 24,
-    priceEcuador: 155.00,
-    technology: 'Heavy Duty',
-    bestFor: 'Lanchas rápidas, barcos pesqueros en Manta/Esmeraldas, sistemas solares',
-    features: [
-      'Bornes dobles roscados con aleación marina anticorrosiva',
-      'Soporta descargas repetidas de hasta el 80% sin daño',
-      'Carcasa sellada resistente al salitre y oleaje fuerte'
-    ],
-    dimensions: '320 x 175 x 235 mm',
-    polarity: 'Bornes Duales Marinos',
-    image: 'https://images.pexels.com/photos/7966664/pexels-photo-7966664.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
-    icon: Sailboat
-  }
 ];
 
 export default function Products() {
@@ -188,7 +143,7 @@ export default function Products() {
   const touchStartX = useRef<number | null>(null);
   const touchEndX = useRef<number | null>(null);
 
-  const filters = ['Todas', 'AGM', 'EFB', 'Calcio-Plata', 'Heavy Duty'];
+  const filters = ['Todas', 'AGM', 'EFB', 'Calcio-Plata'];
 
   const filteredItems = batteryCatalogItems.filter(item => 
     activeFilter === 'Todas' ? true : item.technology === activeFilter
@@ -299,33 +254,49 @@ export default function Products() {
 
         </div>
 
-        {/* Technology Filter Tabs with animated pill */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-8 no-scrollbar">
-          {filters.map((filter) => {
-            const isActive = activeFilter === filter;
-            return (
-              <button
-                key={filter}
-                onClick={() => setActiveFilter(filter)}
-                className={`relative px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap cursor-pointer ${
-                  isActive
-                    ? 'text-white'
-                    : isDark 
-                      ? 'text-slate-400 hover:text-white bg-slate-900/60 border border-slate-800' 
-                      : 'text-slate-600 hover:text-slate-900 bg-white border border-slate-200 shadow-sm'
-                }`}
-              >
-                {isActive && (
-                  <motion.div
-                    layoutId="active-product-filter"
-                    className="absolute inset-0 bg-blue-600 rounded-xl shadow-md shadow-blue-600/25"
-                    transition={{ type: 'spring', stiffness: 500, damping: 35 }}
-                  />
-                )}
-                <span className="relative z-10">{filter}</span>
-              </button>
-            );
-          })}
+        {/* Technology Filter — Dropdown on mobile, pills on desktop */}
+        <div className="mb-8">
+          <select
+            value={activeFilter}
+            onChange={(e) => setActiveFilter(e.target.value)}
+            className={`sm:hidden w-full py-3 px-4 rounded-xl border text-sm font-bold outline-none transition-all cursor-pointer ${
+              isDark
+                ? 'bg-slate-900 border-slate-800 text-white focus:border-blue-500'
+                : 'bg-white border-slate-200 text-slate-900 focus:border-blue-500 shadow-sm'
+            }`}
+          >
+            {filters.map((filter) => (
+              <option key={filter} value={filter}>{filter}</option>
+            ))}
+          </select>
+
+          <div className="hidden sm:flex items-center gap-2 overflow-x-auto pb-4 no-scrollbar">
+            {filters.map((filter) => {
+              const isActive = activeFilter === filter;
+              return (
+                <button
+                  key={filter}
+                  onClick={() => setActiveFilter(filter)}
+                  className={`relative px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap cursor-pointer ${
+                    isActive
+                      ? 'text-white'
+                      : isDark
+                        ? 'text-slate-400 hover:text-white bg-slate-900/60 border border-slate-800'
+                        : 'text-slate-600 hover:text-slate-900 bg-white border border-slate-200 shadow-sm'
+                  }`}
+                >
+                  {isActive && (
+                    <motion.div
+                      layoutId="active-product-filter"
+                      className="absolute inset-0 bg-blue-600 rounded-xl shadow-md shadow-blue-600/25"
+                      transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                    />
+                  )}
+                  <span className="relative z-10">{filter}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Mobile Controls (below tabs, aligned right) */}
@@ -346,10 +317,10 @@ export default function Products() {
         {/* Fluid Responsive Carousel Track with Touch Swipe */}
         <div className="relative group">
           {/* Desktop Controls (flanking) */}
-          <button onClick={handlePrev} className={`hidden md:flex absolute -left-5 lg:-left-12 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full items-center justify-center transition-all active:scale-95 cursor-pointer border shadow-lg ${isDark ? 'bg-slate-900 hover:bg-slate-800 text-white border-slate-800' : 'bg-white hover:bg-slate-50 text-slate-800 border-slate-200'}`}>
+          <button onClick={handlePrev} className={`hidden md:flex absolute left-3 lg:left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full items-center justify-center transition-all active:scale-95 cursor-pointer border shadow-lg backdrop-blur-md ${isDark ? 'bg-slate-900/90 hover:bg-slate-800 text-white border-slate-800' : 'bg-white/90 hover:bg-white text-slate-800 border-slate-200'}`}>
             <ChevronLeft className="w-6 h-6" />
           </button>
-          <button onClick={handleNext} className="hidden md:flex absolute -right-5 lg:-right-12 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-blue-600 hover:bg-blue-700 text-white items-center justify-center transition-all active:scale-95 cursor-pointer shadow-xl shadow-blue-600/30">
+          <button onClick={handleNext} className="hidden md:flex absolute right-3 lg:right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-blue-600 hover:bg-blue-700 text-white items-center justify-center transition-all active:scale-95 cursor-pointer shadow-xl shadow-blue-600/30 backdrop-blur-md">
             <ChevronRight className="w-6 h-6" />
           </button>
 

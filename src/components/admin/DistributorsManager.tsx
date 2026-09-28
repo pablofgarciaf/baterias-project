@@ -18,6 +18,7 @@
 'use client';
 
 import React, { useState, useEffect, FormEvent } from 'react';
+import { motion } from 'motion/react';
 import {
   Plus,
   Save,
@@ -30,7 +31,10 @@ import {
   Edit3,
   Check,
   Loader2,
+  Download,
+  Upload,
 } from 'lucide-react';
+import * as XLSX from 'xlsx';
 import { GlassCard } from './ui/GlassCard';
 import { GLASS_TOKENS } from '@/types/admin';
 import { DistributorLocation } from '@/types/sinergia';
@@ -157,6 +161,63 @@ export default function DistributorsManager({ darkMode }: { darkMode: boolean })
       console.error('Error deleting distributor:', err);
       alert('Error al eliminar');
     }
+  };
+
+  const exportToExcel = () => {
+    if (distributors.length === 0) return;
+    const ws = XLSX.utils.json_to_sheet(distributors.map(d => ({
+      'Nombre': d.name,
+      'Provincia': d.province,
+      'Ciudad': d.city,
+      'Dirección': d.address,
+      'Teléfono': d.phone,
+      'WhatsApp': d.whatsapp,
+      'Horario': d.schedule,
+      'Latitud': d.latitude,
+      'Longitud': d.longitude,
+      'Servicios': d.services?.join(', ') || '',
+      'Rating': d.rating,
+    })));
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Puntos de Venta');
+    XLSX.writeFile(wb, `Puntos_Venta_Maresa_${new Date().toISOString().split('T')[0]}.xlsx`);
+  };
+
+  const importFromExcel = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (evt) => {
+      const data = new Uint8Array(evt.target?.result as ArrayBuffer);
+      const wb = XLSX.read(data, { type: 'array' });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json<Record<string, string>>(ws);
+      for (const row of rows) {
+        const dist: DistributorLocation = {
+          id: `dist-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+          name: row['Nombre'] || '',
+          province: row['Provincia'] || 'Pichincha',
+          city: row['Ciudad'] || '',
+          address: row['Dirección'] || row['Direccion'] || '',
+          phone: row['Teléfono'] || row['Telefono'] || '',
+          whatsapp: row['WhatsApp'] || row['Whatsapp'] || '',
+          schedule: row['Horario'] || 'Lunes a Sábado 08:00 - 18:00',
+          latitude: Number(row['Latitud']) || -0.1807,
+          longitude: Number(row['Longitud']) || -78.4678,
+          services: (row['Servicios'] || 'Diagnóstico gratis, Instalación express').split(',').map(s => s.trim()),
+          isAuthorized: true,
+          rating: Number(row['Rating']) || 4.9,
+          mapsIframe: '',
+        };
+        if (dist.name) {
+          await saveDistributor(dist);
+          setDistributors(prev => [dist, ...prev]);
+        }
+      }
+      alert(`Se importaron ${rows.length} puntos de venta.`);
+    };
+    reader.readAsArrayBuffer(file);
+    e.target.value = '';
   };
 
   const getThemeStyles = () => {
@@ -325,13 +386,28 @@ export default function DistributorsManager({ darkMode }: { darkMode: boolean })
               Agencias Maresa en las 24 provincias del Ecuador.
             </p>
           </div>
-          <button
-            onClick={() => setIsAdding(!isAdding)}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm transition-colors cursor-pointer"
-          >
-            <Plus className="w-4 h-4" />
-            Nueva Ubicación
-          </button>
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              onClick={exportToExcel}
+              disabled={distributors.length === 0}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Download className="w-3.5 h-3.5" />
+              Exportar Excel
+            </button>
+            <label className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-semibold text-xs transition-colors cursor-pointer">
+              <Upload className="w-3.5 h-3.5" />
+              Cargar Excel
+              <input type="file" accept=".xlsx,.xls,.csv" onChange={importFromExcel} className="hidden" />
+            </label>
+            <button
+              onClick={() => setIsAdding(!isAdding)}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs transition-colors cursor-pointer"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              Nueva Ubicación
+            </button>
+          </div>
         </div>
       </div>
 
@@ -417,9 +493,12 @@ export default function DistributorsManager({ darkMode }: { darkMode: boolean })
                   </td>
                 </tr>
               ) : (
-                distributors.map((d) => (
-                  <tr
+                distributors.map((d, idx) => (
+                  <motion.tr
                     key={d.id}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.25, delay: idx * 0.03 }}
                     className={`transition-colors ${editingId === d.id ? '' : darkMode ? 'hover:bg-white/[0.02]' : 'hover:bg-slate-50'}`}
                     style={{ background: editingId === d.id ? styles.accentBlue : undefined }}
                   >
@@ -560,7 +639,7 @@ export default function DistributorsManager({ darkMode }: { darkMode: boolean })
                         </td>
                       </>
                     )}
-                  </tr>
+                  </motion.tr>
                 ))
               )}
             </tbody>

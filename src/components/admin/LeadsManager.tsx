@@ -18,8 +18,10 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
+import { motion } from 'motion/react';
 import {
   Download,
+  Upload,
   Users,
   Check,
   X,
@@ -74,6 +76,36 @@ export default function LeadsManager({ darkMode }: { darkMode: boolean }) {
     } finally {
       setUpdatingId(null);
     }
+  };
+
+  const importFromExcel = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const data = new Uint8Array(evt.target?.result as ArrayBuffer);
+      const wb = XLSX.read(data, { type: 'array' });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json<Record<string, string>>(ws);
+      const imported = rows.map(row => ({
+        id: `lead-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        companyName: row['Empresa'] || '',
+        contactName: row['Contacto'] || '',
+        email: row['Email'] || '',
+        phone: row['Teléfono'] || row['Telefono'] || '',
+        province: row['Provincia'] || '',
+        city: row['Ciudad'] || '',
+        businessType: (row['Tipo Negocio'] || 'Otro') as B2BLead['businessType'],
+        estimatedVolume: row['Volumen Estimado'] || '',
+        status: 'Pendiente' as B2BLead['status'],
+        createdAt: new Date().toISOString(),
+        notes: row['Notas'] || '',
+      })) satisfies B2BLead[];
+      setLeads(prev => [...imported, ...prev]);
+      alert(`Se importaron ${imported.length} prospectos.`);
+    };
+    reader.readAsArrayBuffer(file);
+    e.target.value = '';
   };
 
   const exportToExcel = () => {
@@ -195,14 +227,21 @@ export default function LeadsManager({ darkMode }: { darkMode: boolean }) {
               Califica y contacta distribuidores que quieren unirse a Maresa.
             </p>
           </div>
-          <button
-            onClick={exportToExcel}
-            disabled={leads.length === 0}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Download className="w-4 h-4" />
-            Exportar Excel
-          </button>
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              onClick={exportToExcel}
+              disabled={leads.length === 0}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Download className="w-3.5 h-3.5" />
+              Exportar Excel
+            </button>
+            <label className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-semibold text-xs transition-colors cursor-pointer">
+              <Upload className="w-3.5 h-3.5" />
+              Cargar Excel
+              <input type="file" accept=".xlsx,.xls,.csv" onChange={importFromExcel} className="hidden" />
+            </label>
+          </div>
         </div>
       </div>
 
@@ -268,8 +307,14 @@ export default function LeadsManager({ darkMode }: { darkMode: boolean }) {
                 </tr>
               </thead>
               <tbody className="divide-y" style={{ borderColor: styles.border }}>
-                {filteredLeads.map((lead) => (
-                  <tr key={lead.id} className={`transition-colors ${darkMode ? 'hover:bg-white/[0.02]' : 'hover:bg-slate-50'}`}>
+                {filteredLeads.map((lead, idx) => (
+                  <motion.tr
+                    key={lead.id}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.25, delay: idx * 0.03 }}
+                    className={`transition-colors ${darkMode ? 'hover:bg-white/[0.02]' : 'hover:bg-slate-50'}`}
+                  >
                     <td className="p-3">
                       <span className="font-semibold block" style={{ color: styles.textPrimary }}>{lead.companyName}</span>
                       <span className="text-xs" style={{ color: styles.textSecondary }}>{lead.contactName}</span>
@@ -328,7 +373,7 @@ export default function LeadsManager({ darkMode }: { darkMode: boolean }) {
                         </button>
                       </div>
                     </td>
-                  </tr>
+                  </motion.tr>
                 ))}
               </tbody>
             </table>

@@ -24,6 +24,7 @@ import About from '@/components/About';
 import Features from '@/components/Features';
 import { useTheme } from '@/context/ThemeContext';
 import { motion } from 'motion/react';
+import { useEffect, useRef } from 'react';
 import {
   Search,
   Car,
@@ -107,6 +108,95 @@ const teaserSections = [
   },
 ];
 
+function InfiniteCarousel({ items, isDark }: { items: typeof teaserSections; isDark: boolean }) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval>>(undefined);
+  const idxRef = useRef(0);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const cards = el.querySelectorAll<HTMLElement>('[data-card]');
+    if (!cards.length) return;
+
+    const scrollToIdx = (i: number) => {
+      const card = cards[i % cards.length];
+      if (!card) return;
+      el.scrollTo({ left: card.offsetLeft - 16, behavior: 'smooth' });
+    };
+
+    timerRef.current = setInterval(() => {
+      idxRef.current++;
+      if (idxRef.current >= cards.length) idxRef.current = 0;
+      scrollToIdx(idxRef.current);
+    }, 3000);
+
+    const pause = () => clearInterval(timerRef.current);
+    const resume = () => {
+      pause();
+      timerRef.current = setInterval(() => {
+        idxRef.current++;
+        if (idxRef.current >= cards.length) idxRef.current = 0;
+        scrollToIdx(idxRef.current);
+      }, 3000);
+    };
+
+    el.addEventListener('mouseenter', pause);
+    el.addEventListener('mouseleave', resume);
+    el.addEventListener('touchstart', pause, { passive: true });
+    el.addEventListener('touchend', () => setTimeout(resume, 2000), { passive: true });
+
+    return () => {
+      clearInterval(timerRef.current);
+      el.removeEventListener('mouseenter', pause);
+      el.removeEventListener('mouseleave', resume);
+    };
+  }, []);
+
+  return (
+    <div
+      ref={scrollRef}
+      className="flex gap-5 sm:gap-6 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-2"
+    >
+      {items.map((section) => (
+        <Link
+          key={section.id}
+          href={section.href}
+          data-card
+          className={`group shrink-0 w-[82%] sm:w-[48%] lg:w-[30%] snap-start block rounded-2xl border overflow-hidden transition-all duration-300 hover:shadow-xl ${
+            isDark
+              ? 'bg-slate-900/80 border-slate-800 hover:border-slate-600 hover:shadow-slate-900/50'
+              : 'bg-white border-gray-100 hover:border-primary-200 hover:shadow-primary-100/40'
+          }`}
+        >
+          <div className={`h-1.5 w-full bg-gradient-to-r ${section.gradient} opacity-80 group-hover:opacity-100 transition-opacity`} />
+          <div className="p-6 sm:p-7">
+            <div className="flex items-center gap-3 mb-4">
+              <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${section.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                <section.icon className="w-6 h-6 text-white" />
+              </div>
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isDark ? 'bg-slate-800' : 'bg-gray-100'}`}>
+                <section.accentIcon className={`w-4 h-4 ${isDark ? 'text-slate-400' : 'text-gray-400'}`} />
+              </div>
+            </div>
+            <h3 className={`text-lg font-bold mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>{section.title}</h3>
+            <p className={`text-sm font-medium mb-3 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>{section.subtitle}</p>
+            <div className="flex flex-wrap gap-1.5 mb-5">
+              {section.highlights.map((h) => (
+                <span key={h} className={`inline-block px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${isDark ? 'bg-slate-800 text-slate-300 border border-slate-700' : 'bg-gray-50 text-gray-600 border border-gray-200'}`}>{h}</span>
+              ))}
+            </div>
+            <div className={`flex items-center gap-2 text-sm font-bold transition-colors ${isDark ? 'text-primary-400 group-hover:text-primary-300' : 'text-primary-600 group-hover:text-primary-700'}`}>
+              <span>{section.cta}</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </div>
+        </Link>
+      ))}
+    </div>
+  );
+}
+
 export default function HomePage() {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
@@ -156,100 +246,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="flex md:grid md:grid-cols-2 gap-5 sm:gap-6 overflow-x-auto md:overflow-visible snap-x snap-mandatory scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0 pb-2">
-            {teaserSections.map((section, idx) => (
-              <motion.div
-                key={section.id}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-40px' }}
-                transition={{ duration: 0.4, delay: idx * 0.08 }}
-                className="shrink-0 w-[82%] sm:w-[60%] md:w-auto snap-start"
-              >
-                <Link
-                  href={section.href}
-                  id={section.id}
-                  className={`group block h-full rounded-2xl border overflow-hidden transition-all duration-300 hover:shadow-xl ${
-                    isDark
-                      ? 'bg-slate-900/80 border-slate-800 hover:border-slate-600 hover:shadow-slate-900/50'
-                      : 'bg-white border-gray-100 hover:border-primary-200 hover:shadow-primary-100/40'
-                  }`}
-                >
-                  {/* Top gradient accent bar */}
-                  <div
-                    className={`h-1.5 w-full bg-gradient-to-r ${section.gradient} opacity-80 group-hover:opacity-100 transition-opacity`}
-                  />
-
-                  <div className="p-6 sm:p-7">
-                    {/* Icon pair */}
-                    <div className="flex items-center gap-3 mb-4">
-                      <div
-                        className={`w-12 h-12 rounded-xl bg-gradient-to-br ${section.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}
-                      >
-                        <section.icon className="w-6 h-6 text-white" />
-                      </div>
-                      <div
-                        className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                          isDark ? 'bg-slate-800' : 'bg-gray-100'
-                        }`}
-                      >
-                        <section.accentIcon
-                          className={`w-4 h-4 ${isDark ? 'text-slate-400' : 'text-gray-400'}`}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Copy */}
-                    <h3
-                      className={`text-lg font-bold mb-1 ${
-                        isDark ? 'text-white' : 'text-gray-900'
-                      }`}
-                    >
-                      {section.title}
-                    </h3>
-                    <p
-                      className={`text-sm font-medium mb-3 ${
-                        isDark ? 'text-slate-400' : 'text-gray-500'
-                      }`}
-                    >
-                      {section.subtitle}
-                    </p>
-
-                    {/* Highlight pills */}
-                    <div className="flex flex-wrap gap-1.5 mb-5">
-                      {section.highlights.map((h) => (
-                        <span
-                          key={h}
-                          className={`inline-block px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${
-                            isDark
-                              ? 'bg-slate-800 text-slate-300 border border-slate-700'
-                              : 'bg-gray-50 text-gray-600 border border-gray-200'
-                          }`}
-                        >
-                          {h}
-                        </span>
-                      ))}
-                    </div>
-
-                    {/* CTA */}
-                    <div
-                      className={`flex items-center gap-2 text-sm font-bold transition-colors ${
-                        isDark
-                          ? 'text-primary-400 group-hover:text-primary-300'
-                          : 'text-primary-600 group-hover:text-primary-700'
-                      }`}
-                    >
-                      <span>{section.cta}</span>
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-          <p className={`md:hidden mt-4 text-center text-xs font-medium ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
-            Desliza para ver más →
-          </p>
+          <InfiniteCarousel items={teaserSections} isDark={isDark} />
         </div>
       </section>
 
@@ -262,7 +259,7 @@ export default function HomePage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: false, amount: 0.2 }}
             transition={{ duration: 0.5 }}
             className={`relative overflow-hidden rounded-3xl p-8 sm:p-12 border ${
               isDark

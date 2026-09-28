@@ -319,33 +319,49 @@ export default function Blog() {
 
         </div>
 
-        {/* Category Filter Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-8 no-scrollbar">
-          {categories.map((cat) => {
-            const isActive = activeCategory === cat;
-            return (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`relative px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap cursor-pointer ${
-                  isActive
-                    ? 'text-white'
-                    : isDark 
-                      ? 'text-slate-400 hover:text-white bg-slate-800/60 border border-slate-700' 
-                      : 'text-slate-600 hover:text-slate-900 bg-slate-100 border border-slate-200 shadow-sm'
-                }`}
-              >
-                {isActive && (
-                  <motion.div
-                    layoutId="active-blog-cat"
-                    className="absolute inset-0 bg-blue-600 rounded-xl shadow-md shadow-blue-600/25"
-                    transition={{ type: 'spring', stiffness: 500, damping: 35 }}
-                  />
-                )}
-                <span className="relative z-10">{cat}</span>
-              </button>
-            );
-          })}
+        {/* Category Filter — Dropdown on mobile, pills on desktop */}
+        <div className="mb-8">
+          <select
+            value={activeCategory}
+            onChange={(e) => setActiveCategory(e.target.value)}
+            className={`sm:hidden w-full py-3 px-4 rounded-xl border text-sm font-bold outline-none transition-all cursor-pointer ${
+              isDark
+                ? 'bg-slate-800 border-slate-700 text-white focus:border-blue-500'
+                : 'bg-white border-slate-200 text-slate-900 focus:border-blue-500 shadow-sm'
+            }`}
+          >
+            {categories.map((cat) => (
+              <option key={cat} value={cat}>{cat}</option>
+            ))}
+          </select>
+
+          <div className="hidden sm:flex items-center gap-2 overflow-x-auto pb-4 no-scrollbar">
+            {categories.map((cat) => {
+              const isActive = activeCategory === cat;
+              return (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`relative px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap cursor-pointer ${
+                    isActive
+                      ? 'text-white'
+                      : isDark
+                        ? 'text-slate-400 hover:text-white bg-slate-800/60 border border-slate-700'
+                        : 'text-slate-600 hover:text-slate-900 bg-slate-100 border border-slate-200 shadow-sm'
+                  }`}
+                >
+                  {isActive && (
+                    <motion.div
+                      layoutId="active-blog-cat"
+                      className="absolute inset-0 bg-blue-600 rounded-xl shadow-md shadow-blue-600/25"
+                      transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                    />
+                  )}
+                  <span className="relative z-10">{cat}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Mobile Controls (below tabs, aligned right) */}
@@ -366,10 +382,10 @@ export default function Blog() {
         {/* Fluid Responsive Carousel Track with Touch Swipe */}
         <div className="relative group">
           {/* Desktop Controls (flanking) */}
-          <button onClick={handlePrev} className={`hidden md:flex absolute -left-5 lg:-left-12 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full items-center justify-center transition-all active:scale-95 cursor-pointer border shadow-lg ${isDark ? 'bg-slate-800 hover:bg-slate-700 text-white border-slate-700' : 'bg-white hover:bg-slate-50 text-slate-800 border-slate-200'}`}>
+          <button onClick={handlePrev} className={`hidden md:flex absolute left-3 lg:left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full items-center justify-center transition-all active:scale-95 cursor-pointer border shadow-lg backdrop-blur-md ${isDark ? 'bg-slate-800/90 hover:bg-slate-700 text-white border-slate-700' : 'bg-white/90 hover:bg-white text-slate-800 border-slate-200'}`}>
             <ChevronLeft className="w-6 h-6" />
           </button>
-          <button onClick={handleNext} className="hidden md:flex absolute -right-5 lg:-right-12 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-blue-600 hover:bg-blue-700 text-white items-center justify-center transition-all active:scale-95 cursor-pointer shadow-xl shadow-blue-600/30">
+          <button onClick={handleNext} className="hidden md:flex absolute right-3 lg:right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-blue-600 hover:bg-blue-700 text-white items-center justify-center transition-all active:scale-95 cursor-pointer shadow-xl shadow-blue-600/30 backdrop-blur-md">
             <ChevronRight className="w-6 h-6" />
           </button>
 

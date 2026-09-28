@@ -51,63 +51,10 @@ export default function About() {
 
       <div className="container-max">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          
-          {/* Left Column: Visual Asset & Floating 45 Years Badge */}
-          <motion.div 
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="relative"
-          >
-            <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800">
-              <img suppressHydrationWarning
-                src={about.aboutImage || '/quienes-somos-section-landing.webp'}
-                alt="Instalaciones de Corporación Maresa Ecuador"
-                className="w-full h-[420px] sm:h-[500px] object-cover hover:scale-105 transition-transform duration-700 ease-out"
-                loading="lazy"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none" />
-              
-              <div className="absolute bottom-6 left-6 right-6 text-white sm:hidden">
-                <span className="text-xs font-bold uppercase tracking-wider text-amber-400">
-                  {about.yearsBadge}
-                </span>
-                <p className="text-sm font-semibold">{about.yearsSubtext}</p>
-              </div>
-            </div>
 
-            {/* Floating Desktop Badge with shadow */}
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.85 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className={`absolute -bottom-6 -right-6 rounded-2xl shadow-2xl p-5 sm:p-6 max-w-xs hidden sm:block border ${
-                isDark 
-                  ? 'bg-slate-950/95 border-slate-700 text-white shadow-blue-900/20' 
-                  : 'bg-white border-slate-200 text-slate-900 shadow-slate-900/15'
-              } backdrop-blur-md`}
-            >
-              <div className="flex items-center gap-3.5">
-                <div className="w-13 h-13 rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-600/30 shrink-0">
-                  <Battery className="w-7 h-7 text-white" />
-                </div>
-                <div>
-                  <div className={`text-2xl font-extrabold tracking-tight ${isDark ? 'text-white' : 'text-slate-950'}`}>
-                    {about.yearsBadge}
-                  </div>
-                  <p className={`text-xs font-semibold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                    {about.yearsSubtext}
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-
-          {/* Right Column: Editorial & Pillars */}
+          {/* Column 1: Editorial & Pillars (always first) */}
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
+            initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
@@ -123,6 +70,16 @@ export default function About() {
               {about.title}
             </h2>
 
+            {/* Mobile-only image — between title and paragraph */}
+            <div className="mt-5 lg:hidden rounded-2xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-800">
+              <img suppressHydrationWarning
+                src={about.aboutImage || '/quienes-somos-section-landing.webp'}
+                alt="Instalaciones de Corporación Maresa Ecuador"
+                className="w-full h-[220px] sm:h-[280px] object-cover"
+                loading="lazy"
+              />
+            </div>
+
             <p className={`mt-5 text-lg sm:text-xl leading-relaxed tracking-tight ${
               isDark ? 'text-slate-300' : 'text-slate-600'
             }`}>
@@ -136,33 +93,77 @@ export default function About() {
             </p>
 
             {/* Strategic Pillars Bento Grid */}
-            <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="mt-6 sm:mt-8 grid grid-cols-2 gap-2.5 sm:gap-4">
               {pillars.map((item, index) => (
-                <motion.div 
+                <motion.div
                     initial={{opacity: 0, y: 15}}
                     whileInView={{opacity: 1, y: 0}}
                     viewport={{once: true}}
                     transition={{duration: 0.4, delay: index * 0.1}}
-                    key={index} 
-                    className={`group p-6 rounded-3xl border transition-all duration-300 hover:scale-[1.03] cursor-default ${
-                      isDark 
-                        ? 'bg-white/5 backdrop-blur-xl border-white/10 hover:border-white/20 hover:bg-white/10' 
+                    key={index}
+                    className={`group p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border transition-all duration-300 hover:scale-[1.03] cursor-default ${
+                      isDark
+                        ? 'bg-white/5 backdrop-blur-xl border-white/10 hover:border-white/20 hover:bg-white/10'
                         : 'bg-white border-slate-200 hover:border-blue-200 hover:shadow-xl hover:shadow-blue-900/5'
                     }`}
                   >
-                  <div className="w-10 h-10 rounded-xl bg-blue-600/15 border border-blue-500/20 flex items-center justify-center mb-3 text-blue-600 dark:text-blue-400">
-                    <item.icon className="w-5 h-5" />
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-blue-600/15 border border-blue-500/20 flex items-center justify-center mb-2 sm:mb-3 text-blue-600 dark:text-blue-400">
+                    <item.icon className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
-                  <h4 className={`font-bold text-sm sm:text-base ${isDark ? 'text-white' : 'text-slate-950'}`}>
+                  <h4 className={`font-bold text-xs sm:text-base leading-tight ${isDark ? 'text-white' : 'text-slate-950'}`}>
                     {item.title}
                   </h4>
-                  <p className={`text-xs mt-1 leading-relaxed ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                  <p className={`text-[11px] sm:text-xs mt-1 leading-snug sm:leading-relaxed line-clamp-3 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                     {item.text}
                   </p>
                 </motion.div>
               ))}
             </div>
 
+          </motion.div>
+
+          {/* Column 2: Visual Asset & Floating Badge (desktop only) */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="relative hidden lg:block"
+          >
+            <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800">
+              <img suppressHydrationWarning
+                src={about.aboutImage || '/quienes-somos-section-landing.webp'}
+                alt="Instalaciones de Corporación Maresa Ecuador"
+                className="w-full h-[420px] sm:h-[500px] object-cover hover:scale-105 transition-transform duration-700 ease-out"
+                loading="lazy"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none" />
+              <div className="absolute bottom-6 left-6 right-6 text-white sm:hidden">
+                <span className="text-xs font-bold uppercase tracking-wider text-amber-400">{about.yearsBadge}</span>
+                <p className="text-sm font-semibold">{about.yearsSubtext}</p>
+              </div>
+            </div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.85 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className={`absolute -bottom-6 -right-6 rounded-2xl shadow-2xl p-5 sm:p-6 max-w-xs hidden sm:block border ${
+                isDark
+                  ? 'bg-slate-950/95 border-slate-700 text-white shadow-blue-900/20'
+                  : 'bg-white border-slate-200 text-slate-900 shadow-slate-900/15'
+              } backdrop-blur-md`}
+            >
+              <div className="flex items-center gap-3.5">
+                <div className="w-13 h-13 rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-600/30 shrink-0">
+                  <Battery className="w-7 h-7 text-white" />
+                </div>
+                <div>
+                  <div className={`text-2xl font-extrabold tracking-tight ${isDark ? 'text-white' : 'text-slate-950'}`}>{about.yearsBadge}</div>
+                  <p className={`text-xs font-semibold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{about.yearsSubtext}</p>
+                </div>
+              </div>
+            </motion.div>
           </motion.div>
 
         </div>

@@ -15,6 +15,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import {
   FileText,
   MapPin,
@@ -296,12 +297,14 @@ export default function AdminShell() {
           {navItems.map((item) => {
             const isActive = activeNav === item.id;
             return (
-              <button
+              <motion.button
                 key={item.id}
                 onClick={() => {
                   setActiveNav(item.id);
-                  setIsMobileDrawerOpen(false); // Close drawer on mobile click
+                  setIsMobileDrawerOpen(false);
                 }}
+                whileHover={{ x: 2 }}
+                whileTap={{ scale: 0.97 }}
                 className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
                   isActive
                     ? 'bg-blue-600/20 text-blue-400 shadow-[0_0_20px_rgba(37,99,235,0.2)] border border-blue-500/30'
@@ -329,7 +332,7 @@ export default function AdminShell() {
                     {item.badge}
                   </span>
                 )}
-              </button>
+              </motion.button>
             );
           })}
         </nav>
@@ -355,7 +358,19 @@ export default function AdminShell() {
           isSidebarOpen ? 'md:ml-56 lg:ml-60' : 'md:ml-16 lg:ml-20'
         }`}
       >
-        <div className="max-w-6xl mx-auto">{renderWorkspace()}</div>
+        <div className="max-w-6xl mx-auto">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeNav}
+              initial={{ opacity: 0, y: 12, filter: 'blur(6px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              exit={{ opacity: 0, y: -8, filter: 'blur(4px)' }}
+              transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
+            >
+              {renderWorkspace()}
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </main>
     </div>
   );

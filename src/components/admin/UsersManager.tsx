@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { User, UserPlus, Shield, CheckCircle, Mail, Key, X, Edit, Trash2 } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 
@@ -198,7 +199,13 @@ export default function UsersManager() {
                 </tr>
               ) : (
                 users.map((u) => (
-                  <tr key={u.id} className={`transition-colors hover:bg-black/5 dark:hover:bg-white/5`}>
+                  <motion.tr
+                    key={u.id}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className={`transition-colors hover:bg-black/5 dark:hover:bg-white/5`}
+                  >
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-md">
@@ -237,7 +244,7 @@ export default function UsersManager() {
                         <Edit className="w-4 h-4" />
                       </button>
                     </td>
-                  </tr>
+                  </motion.tr>
                 ))
               )}
             </tbody>
@@ -246,11 +253,22 @@ export default function UsersManager() {
       </div>
 
       {/* POPUP MODAL: Crear/Editar Usuario */}
+      <AnimatePresence>
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200">
-          <div
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md"
+        >
+          <motion.div
             ref={modalRef}
-            className={`w-full max-w-lg rounded-[32px] border shadow-[0_0_60px_rgba(0,0,0,0.5)] overflow-hidden animate-in zoom-in-95 duration-200 ${
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
+            className={`w-full max-w-lg rounded-[32px] border shadow-[0_0_60px_rgba(0,0,0,0.5)] overflow-hidden ${
               darkMode ? 'bg-[#0f172a] border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'
             }`}
           >
@@ -303,7 +321,7 @@ export default function UsersManager() {
                     <input
                       type="text"
                       required
-                      placeholder="Ej: Ing. Juan PAcrez"
+                      placeholder="Ej: Ing. Juan Pérez"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       className={`w-full pl-10 pr-4 py-3 rounded-2xl border text-sm outline-none transition-all focus:ring-2 focus:ring-blue-500/20 ${
@@ -315,7 +333,7 @@ export default function UsersManager() {
 
                 <div>
                   <label className="block text-[11px] font-bold uppercase tracking-widest mb-1.5 opacity-60">
-                    Correo ElectrA3nico *
+                    Correo Electrónico *
                   </label>
                   <div className="relative">
                     <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 opacity-40" />
@@ -390,9 +408,10 @@ export default function UsersManager() {
                 </button>
               </div>
             </form>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
+      </AnimatePresence>
     </div>
   );
 }

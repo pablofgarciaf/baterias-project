@@ -43,11 +43,11 @@ export default function Hero() {
   const stats = [
     { icon: ShieldCheck, value: heroContent.stat1Value, label: heroContent.stat1Label },
     { icon: Truck, value: heroContent.stat2Value, label: heroContent.stat2Label },
-    { icon: MapPin, value: 'Nacional / Cobertura', label: '' },
+    { icon: MapPin, value: 'Nacional', label: 'Cobertura' },
   ];
 
   return (
-    <section className="relative h-screen min-h-[600px] flex items-center overflow-hidden -mt-14 lg:-mt-16">
+    <section className="relative h-screen min-h-[600px] flex items-end sm:items-center overflow-hidden -mt-14 lg:-mt-16">
 
       {/* Background Image */}
       <picture className="absolute inset-0 z-0" suppressHydrationWarning>
@@ -69,7 +69,7 @@ export default function Hero() {
       </div>
 
       {/* Content — vertically centered */}
-      <div className="container-max relative z-10 pt-14 lg:pt-16 pb-20 w-full">
+      <div className="container-max relative z-10 pt-14 lg:pt-16 pb-24 sm:pb-20 w-full">
         <div className="max-w-2xl">
 
           {/* Eyebrow */}
@@ -112,7 +112,7 @@ export default function Hero() {
           transition={{ duration: 0.5, delay: 0.22 }}
           className="mt-6 md:mt-8"
         >
-          <div className="flex flex-col sm:flex-row gap-3 sm:items-center w-full max-w-md sm:max-w-none">
+          <div className="flex flex-col sm:flex-row gap-3 sm:items-center w-full sm:max-w-none">
             <Link
               href="/buscador"
               className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full bg-white text-slate-950 text-sm font-bold shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:shadow-[0_0_60px_rgba(255,255,255,0.5)] transition-all duration-300 active:scale-[0.98] hover:bg-slate-50"
@@ -133,17 +133,18 @@ export default function Hero() {
         </motion.div>
         </div>
 
-        {/* Mobile Stats (Simple inline pills to save vertical space) */}
+        {/* Mobile Stats — full-width cards, value on top, label below */}
         <motion.div
           initial={{ opacity: 0, y: 16, filter: "blur(12px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="mt-6 flex flex-wrap gap-2 lg:hidden"
+          className="mt-8 grid grid-cols-3 gap-2 lg:hidden"
         >
           {stats.map((stat, i) => (
-            <div key={i} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/10 backdrop-blur-md rounded-full border border-white/10 text-white text-xs font-medium">
-              <stat.icon className="w-3.5 h-3.5 text-primary-300" />
-              <span>{stat.value}</span>
+            <div key={i} className="flex flex-col items-center justify-center py-4 px-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 text-center">
+              <stat.icon className="w-5 h-5 text-primary-300 mb-1.5" />
+              <span className="text-xl font-extrabold text-white tracking-tight leading-none">{stat.value}</span>
+              <span className="text-[10px] text-white/60 font-semibold uppercase tracking-wider mt-1">{stat.label}</span>
             </div>
           ))}
         </motion.div>

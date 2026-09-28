@@ -19,6 +19,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import {
   Home,
   Car,
@@ -78,7 +79,10 @@ function GlassSection({
   darkMode: boolean;
 }) {
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
       className={`rounded-2xl p-5 backdrop-blur-xl border transition-all duration-200 ${
         darkMode
           ? 'bg-white/[0.04] border-white/[0.08] hover:border-white/[0.14] shadow-lg shadow-black/20'
@@ -86,7 +90,7 @@ function GlassSection({
       } ${className}`}
     >
       {children}
-    </div>
+    </motion.div>
   );
 }
 
@@ -822,10 +826,12 @@ export default function ContentEditor({ darkMode }: ContentEditorProps) {
       {/* Tabs Navigation */}
       <div className="flex items-center gap-1 overflow-x-auto pb-2 scrollbar-none mb-6">
         {TABS.map((tab) => (
-          <button
+          <motion.button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`px-3.5 py-2 rounded-xl text-sm font-medium whitespace-nowrap flex items-center gap-1.5 transition-all cursor-pointer active:scale-95 ${
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.96 }}
+            className={`relative px-3.5 py-2 rounded-xl text-sm font-medium whitespace-nowrap flex items-center gap-1.5 transition-colors cursor-pointer ${
               activeTab === tab.id
                 ? 'bg-blue-600 text-white shadow-md shadow-blue-600/25'
                 : darkMode
@@ -835,7 +841,7 @@ export default function ContentEditor({ darkMode }: ContentEditorProps) {
           >
             <tab.icon className="w-4 h-4" />
             {tab.label}
-          </button>
+          </motion.button>
         ))}
 
         {/* Preview toggle */}
@@ -857,22 +863,34 @@ export default function ContentEditor({ darkMode }: ContentEditorProps) {
 
       {/* Content Area */}
       <div className="space-y-5">
-        {renderActiveTab()}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 10, filter: 'blur(4px)' }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+          >
+            {renderActiveTab()}
+          </motion.div>
+        </AnimatePresence>
 
         {/* Save Actions */}
         <div className={`pt-4 border-t flex items-center justify-between ${darkMode ? 'border-white/[0.06]' : 'border-slate-200'}`}>
           <p className={`text-xs ${darkMode ? 'text-slate-600' : 'text-slate-400'}`}>
             Los cambios se aplican en tiempo real al guardar.
           </p>
-          <button
+          <motion.button
             onClick={saveCurrentSection}
             disabled={saving}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm transition-all cursor-pointer active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-600/20"
+            whileHover={{ scale: 1.03, boxShadow: '0 0 30px rgba(37,99,235,0.35)' }}
+            whileTap={{ scale: 0.97 }}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-600/20"
           >
             <Loader2 className={`w-4 h-4 ${saving ? 'animate-spin' : 'hidden'}`} />
             <Save className={saving ? 'hidden' : 'w-4 h-4'} />
             {saving ? 'Guardando...' : 'Guardar Cambios'}
-          </button>
+          </motion.button>
         </div>
       </div>
     </div>
