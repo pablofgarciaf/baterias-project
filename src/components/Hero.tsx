@@ -47,7 +47,7 @@ export default function Hero() {
   ];
 
   return (
-    <section className="relative h-screen min-h-[600px] flex items-end sm:items-center overflow-hidden -mt-14 lg:-mt-16">
+    <section className="relative h-[100dvh] min-h-[500px] md:min-h-[600px] flex items-end sm:items-center overflow-hidden -mt-14 lg:-mt-16">
 
       {/* Background Image */}
       <picture className="absolute inset-0 z-0" suppressHydrationWarning>
@@ -69,7 +69,7 @@ export default function Hero() {
       </div>
 
       {/* Content — vertically centered */}
-      <div className="container-max relative z-10 pt-14 lg:pt-16 pb-24 sm:pb-20 w-full">
+      <div className="container-max relative z-10 pt-14 lg:pt-16 pb-32 sm:pb-20 w-full">
         <div className="max-w-2xl">
 
           {/* Eyebrow */}
