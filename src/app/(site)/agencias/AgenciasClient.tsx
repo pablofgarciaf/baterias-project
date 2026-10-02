@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect, useRef } from 'react';
+import dynamic from 'next/dynamic';
 import { useTheme } from '@/context/ThemeContext';
 import { useSiteContent } from '@/context/SiteContentContext';
 import {
@@ -12,6 +13,12 @@ import { defaultDistributors } from '@/data/sinergiaData';
 import { provinces } from '@/data/provinces';
 import { DistributorLocation } from '@/types/sinergia';
 import { getDistributors } from '@/lib/firebaseStore';
+
+// Import PremiumMap only on client side (no SSR)
+const PremiumMap = dynamic(() => import('@/components/PremiumMap'), {
+  ssr: false,
+  loading: () => <div className="w-full h-full flex items-center justify-center bg-slate-900">Cargando mapa...</div>,
+});
 
 export default function AgenciasClient() {
   const { theme } = useTheme();
@@ -419,51 +426,21 @@ export default function AgenciasClient() {
             </div>
           </div>
 
-          {/* MAP AREA — MAGNIFICENT DESIGN */}
+          {/* MAP AREA — PREMIUM LEAFLET MAP */}
           <div
             ref={mapRef}
-            className="flex-1 relative h-[300px] lg:h-full bg-gradient-to-br from-slate-200/80 via-slate-100/60 to-slate-200/80 dark:from-slate-800 dark:via-slate-900 dark:to-slate-800 overflow-hidden"
+            className="flex-1 relative h-[300px] lg:h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden"
             onClick={() => setIsMapInteractive(true)}
             onMouseLeave={() => setIsMapInteractive(false)}
           >
             {selectedDistributor ? (
               <>
-                {/* Overlay Hint */}
-                <AnimatePresence>
-                  {!isMapInteractive && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                      className="absolute inset-0 z-20 flex items-center justify-center bg-gradient-to-b from-black/20 to-transparent backdrop-blur-md pointer-events-none"
-                    >
-                      <motion.div
-                        animate={{ scale: [1, 1.05, 1] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                        className={`rounded-2xl px-6 py-4 flex items-center gap-3 font-bold text-sm shadow-2xl border ${
-                          isDark
-                            ? 'bg-slate-950/80 text-white border-white/20'
-                            : 'bg-white/80 text-slate-900 border-slate-200/40'
-                        }`}
-                      >
-                        <MousePointerClick className="w-4 h-4" />
-                        Toca para navegar el mapa
-                      </motion.div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                {/* iFrame Map */}
-                <iframe
-                  title={`Mapa de ${selectedDistributor.name}`}
-                  width="100%"
-                  height="100%"
-                  frameBorder="0"
-                  scrolling="no"
-                  marginHeight={0}
-                  marginWidth={0}
-                  src={`https://www.openstreetmap.org/export/embed.html?bbox=${selectedDistributor.longitude - 0.015}%2C${selectedDistributor.latitude - 0.01}%2C${selectedDistributor.longitude + 0.015}%2C${selectedDistributor.latitude + 0.01}&layer=mapnik&marker=${selectedDistributor.latitude}%2C${selectedDistributor.longitude}`}
-                  className={`w-full h-full transition-all ${!isMapInteractive ? 'pointer-events-none' : ''}`}
+                {/* Premium Leaflet Map Component */}
+                <PremiumMap
+                  latitude={selectedDistributor.latitude}
+                  longitude={selectedDistributor.longitude}
+                  agencyName={selectedDistributor.name}
+                  isDark={isDark}
                 />
 
                 {/* Google Maps CTA Button */}
@@ -474,9 +451,9 @@ export default function AgenciasClient() {
                   href={`https://www.google.com/maps/dir/?api=1&destination=${selectedDistributor.latitude},${selectedDistributor.longitude}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`absolute bottom-6 right-6 z-30 px-6 py-3.5 rounded-2xl font-bold text-sm flex items-center gap-2.5 transition-all active:scale-[0.97] border shadow-lg ${
+                  className={`absolute bottom-6 right-6 z-30 px-6 py-3.5 rounded-2xl font-bold text-sm flex items-center gap-2.5 transition-all active:scale-[0.97] border shadow-lg backdrop-blur-md ${
                     isDark
-                      ? 'bg-slate-900/80 text-white border-slate-700 hover:bg-slate-800/90 hover:shadow-[0_0_20px_rgba(255,255,255,0.1)]'
+                      ? 'bg-slate-900/80 text-white border-slate-700 hover:bg-slate-800/90 hover:shadow-[0_0_30px_rgba(37,99,235,0.4)]'
                       : 'bg-white text-slate-900 border-slate-200 hover:bg-slate-50 hover:shadow-[0_10px_30px_rgba(0,0,0,0.1)]'
                   }`}
                 >
