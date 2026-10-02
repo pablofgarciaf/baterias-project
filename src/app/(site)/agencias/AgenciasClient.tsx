@@ -105,10 +105,19 @@ export default function AgenciasClient() {
       (error) => {
         clearTimeout(timeoutId);
         setFindingNearest(false);
-        console.error('Geolocalización error:', error);
-        // Error silencioso — usuario puede buscar manualmente
+
+        const errorMessages: { [key: number]: string } = {
+          1: '🚫 Permiso DENEGADO. Por favor, permite acceso a ubicación en los settings del navegador.',
+          2: '📍 Ubicación NO DISPONIBLE. Intenta de nuevo.',
+          3: '⏱️ Timeout. Intenta de nuevo.'
+        };
+
+        const errorCode = (error as any)?.code || 0;
+        const errorMsg = errorMessages[errorCode] || `⚠️ Error desconocido: ${JSON.stringify(error)}`;
+
+        console.error(`Geolocalización Error (${errorCode}):`, errorMsg, error);
       },
-      { enableHighAccuracy: false, timeout: 8000, maximumAge: 0 }
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
     );
   };
 
