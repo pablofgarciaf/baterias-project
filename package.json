@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:https": "node dev-https.js",
+    "gen-certs": "mkdir -p .certificates && openssl req -x509 -newkey rsa:2048 -keyout .certificates/localhost-key.pem -out .certificates/localhost.pem -days 365 -nodes -subj '/CN=localhost'",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
