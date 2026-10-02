@@ -3,9 +3,9 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { useSiteContent } from '@/context/SiteContentContext';
-import { 
-  MapPin, Search, Navigation, Phone, 
-  MessageCircle, Crosshair, MousePointerClick
+import {
+  MapPin, Search, Navigation, Phone,
+  MessageCircle, Crosshair, MousePointerClick, ChevronRight
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { defaultDistributors } from '@/data/sinergiaData';
@@ -137,33 +137,62 @@ export default function AgenciasClient() {
       </div>
 
       <div className="container-max">
-        
-        {/* Header & Controls in one row for Desktop */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
+
+        {/* Header & Controls - Premium Design with Emil Skills */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+          className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-8"
+        >
           <div>
-            <div className="flex items-center gap-2 mb-2">
-              <MapPin className="w-4 h-4 text-primary-500" />
-              <span className={`text-xs font-bold uppercase tracking-widest ${isDark ? 'text-primary-400' : 'text-primary-600'}`}>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.1 }}
+              className="flex items-center gap-2 mb-3"
+            >
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isDark ? 'bg-primary-600/20' : 'bg-primary-100'}`}>
+                <MapPin className="w-4 h-4 text-primary-600" />
+              </div>
+              <span className={`text-xs font-bold uppercase tracking-[0.15em] ${isDark ? 'text-primary-400' : 'text-primary-600'}`}>
                 Puntos de Venta
               </span>
-            </div>
-            <h1 className={`text-4xl sm:text-5xl font-extrabold tracking-tight mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-              Agencias y Distribuidores
-            </h1>
-            <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-              Encuentra tu agencia más cercana en las 24 provincias.
-            </p>
+            </motion.div>
+
+            <motion.h1
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.15, duration: 0.5 }}
+              className={`text-5xl sm:text-6xl font-black tracking-tight mb-3 leading-[1.1] ${isDark ? 'text-white' : 'text-slate-950'}`}
+            >
+              Agencias y<br/><span className="text-primary-600">Distribuidores</span>
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className={`text-base ${isDark ? 'text-slate-400' : 'text-slate-600'}`}
+            >
+              24 provincias en Ecuador • Garantía oficial • Soporte técnico
+            </motion.p>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3">
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.25, duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+            className="flex flex-col sm:flex-row gap-3 self-start lg:self-auto"
+          >
             <button
               onClick={handleFindNearest}
               disabled={findingNearest}
-              className={`py-2.5 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all active:scale-95 ${
-                findingNearest ? 'opacity-70 cursor-wait' : ''
-              } ${isDark ? 'bg-primary-600 hover:bg-primary-500 text-white shadow-[0_0_15px_rgba(37,99,235,0.2)]' : 'bg-primary-600 hover:bg-primary-700 text-white shadow-md shadow-primary-600/20'}`}
+              className={`py-3.5 px-6 rounded-xl text-sm font-bold flex items-center justify-center gap-2.5 transition-[transform,box-shadow,background] duration-200 ease-out active:scale-[0.97] ${
+                findingNearest ? 'opacity-60 cursor-wait' : 'hover:shadow-[0_10px_30px_rgba(37,99,235,0.3)]'
+              } ${isDark ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-[0_4px_20px_rgba(37,99,235,0.25)]' : 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-[0_4px_15px_rgba(37,99,235,0.2)]'}`}
             >
-              <Crosshair className={`w-4 h-4 ${findingNearest ? 'animate-spin' : ''}`} />
+              <Crosshair className={`w-5 h-5 ${findingNearest ? 'animate-spin' : ''}`} />
               {findingNearest ? 'Buscando...' : 'Cercana (GPS)'}
             </button>
             
