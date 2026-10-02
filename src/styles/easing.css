@@ -1,0 +1,61 @@
+/* ═══════════════════════════════════════════════════════════════
+   🎨 EASING CURVES — Emil Kowalski Standards
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Strong ease-out for UI entry/exit (better than CSS ease-out) */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+
+  /* Strong ease-in-out for on-screen movement (natural acceleration) */
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+
+  /* iOS-like drawer curve (Ionic Framework) */
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+
+  /* Gentle ease for hover/color changes */
+  --ease-gentle: ease;
+
+  /* Linear for constant motion (marquee, progress) */
+  --ease-linear: linear;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Button Press Feedback — scale(0.97) on active
+   ═══════════════════════════════════════════════════════════════ */
+
+button,
+[role="button"],
+a[href] {
+  transition: transform 160ms var(--ease-out);
+}
+
+button:active,
+[role="button"]:active {
+  transform: scale(0.97);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Prevent animation on keyboard-triggered actions (A11y)
+   ═══════════════════════════════════════════════════════════════ */
+
+button:focus-visible:active {
+  transform: scale(0.97);
+  /* Keyboard users still get subtle feedback */
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Reduced Motion Support (Accessibility)
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  button,
+  [role="button"],
+  a[href] {
+    transition: none;
+  }
+
+  button:active,
+  [role="button"]:active {
+    transform: none;
+  }
+}

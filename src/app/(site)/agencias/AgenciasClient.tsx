@@ -58,24 +58,32 @@ export default function AgenciasClient() {
 
   const handleFindNearest = () => {
     if (!navigator.geolocation) {
-      alert('Tu navegador no soporta geolocalización.');
+      console.error('Geolocalización no soportada');
+      setFindingNearest(false);
       return;
     }
 
     setFindingNearest(true);
+
+    const timeoutId = setTimeout(() => {
+      setFindingNearest(false);
+      console.error('Geolocalización timeout');
+    }, 10000);
+
     navigator.geolocation.getCurrentPosition(
       (position) => {
+        clearTimeout(timeoutId);
         const { latitude, longitude } = position.coords;
         const R = 6371; // km
-        
+
         const updatedList = distributorsList.map(dist => {
           const dLat = (dist.latitude - latitude) * Math.PI / 180;
           const dLon = (dist.longitude - longitude) * Math.PI / 180;
           const lat1 = latitude * Math.PI / 180;
           const lat2 = dist.latitude * Math.PI / 180;
           const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                    Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
-          const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+                    Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2);
+          const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
           const d = R * c;
           return { ...dist, distance: d };
         });
@@ -95,9 +103,12 @@ export default function AgenciasClient() {
         }
       },
       (error) => {
+        clearTimeout(timeoutId);
         setFindingNearest(false);
-        alert('No pudimos obtener tu ubicación. Por favor permite el acceso en tu navegador.');
-      }
+        console.error('Geolocalización error:', error);
+        // Error silencioso — usuario puede buscar manualmente
+      },
+      { enableHighAccuracy: false, timeout: 8000, maximumAge: 0 }
     );
   };
 

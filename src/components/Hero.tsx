@@ -76,7 +76,7 @@ export default function Hero() {
           <motion.span
             initial={{ opacity: 0, y: 8, filter: "blur(8px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ duration: 0.4 }}
+            transition={{ duration: 0.35, ease: [0.23, 1, 0.32, 1] }}
             className="inline-block text-[11px] sm:text-xs font-semibold uppercase tracking-[0.2em] text-white/70 mb-3"
           >
             {heroContent.badgeText}
@@ -86,7 +86,7 @@ export default function Hero() {
           <motion.h1
             initial={{ opacity: 0, y: 16, filter: "blur(12px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ duration: 0.5, delay: 0.08 }}
+            transition={{ duration: 0.45, delay: 0.08, ease: [0.23, 1, 0.32, 1] }}
             className="text-4xl sm:text-5xl lg:text-6xl xl:text-[4rem] font-display font-extrabold tracking-tighter leading-[1.05] text-white drop-shadow-sm"
           >
             {heroContent.titleMain}{' '}
@@ -99,34 +99,36 @@ export default function Hero() {
           <motion.p
             initial={{ opacity: 0, y: 16, filter: "blur(12px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ duration: 0.5, delay: 0.15 }}
+            transition={{ duration: 0.45, delay: 0.15, ease: [0.23, 1, 0.32, 1] }}
             className="mt-3 text-sm sm:text-base text-white/70 max-w-lg leading-relaxed"
           >
             {heroContent.subtitle}
           </motion.p>
 
-        {/* CTAs */}
+        {/* CTAs — Primary & Secondary */}
         <motion.div
           initial={{ opacity: 0, y: 16, filter: "blur(12px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          transition={{ duration: 0.5, delay: 0.22 }}
+          transition={{ duration: 0.45, delay: 0.22, ease: [0.23, 1, 0.32, 1] }}
           className="mt-6 md:mt-8"
         >
-          <div className="flex flex-col sm:flex-row gap-3 sm:items-center w-full sm:max-w-none">
+          <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 sm:items-center w-full sm:max-w-none">
+            {/* Primary CTA — Stronger feedback */}
             <Link
               href="/buscador"
-              className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full bg-white text-slate-950 text-sm font-bold shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:shadow-[0_0_60px_rgba(255,255,255,0.5)] transition-all duration-300 active:scale-[0.98] hover:bg-slate-50"
+              className="inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-2.5 sm:py-3.5 rounded-full bg-white text-slate-950 text-xs sm:text-sm font-bold shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:shadow-[0_0_60px_rgba(255,255,255,0.5)] transition-all duration-300 active:scale-[0.97] hover:bg-slate-50"
             >
-              <Search className="w-4 h-4" />
+              <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               {heroContent.ctaButtonText}
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </Link>
 
+            {/* Secondary CTA — Glass morphism */}
             <Link
               href="/agencias"
-              className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full bg-white/10 backdrop-blur-xl text-white text-sm font-semibold border border-white/20 hover:bg-white/20 hover:border-white/40 transition-all duration-300 active:scale-[0.98]"
+              className="inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-2.5 sm:py-3.5 rounded-full bg-white/10 backdrop-blur-xl text-white text-xs sm:text-sm font-semibold border border-white/20 hover:bg-white/20 hover:border-white/40 transition-all duration-300 active:scale-[0.97]"
             >
-              <MapPin className="w-4 h-4" />
+              <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               {heroContent.secondaryButtonText}
             </Link>
           </div>
