@@ -43,11 +43,11 @@ export default function Hero() {
   const stats = [
     { icon: ShieldCheck, value: heroContent.stat1Value, label: heroContent.stat1Label },
     { icon: Truck, value: heroContent.stat2Value, label: heroContent.stat2Label },
-    { icon: MapPin, value: 'Nacional', label: 'Cobertura' },
+    { icon: MapPin, value: 'BCI', label: 'Medidas' },
   ];
 
   return (
-    <section className="relative h-[100dvh] min-h-[500px] md:min-h-[600px] flex items-end sm:items-center overflow-hidden -mt-14 lg:-mt-16">
+    <section className="relative h-[100dvh] min-h-[500px] md:min-h-[600px] flex items-end sm:items-center overflow-hidden">
 
       {/* Background Image */}
       <picture className="absolute inset-0 z-0" suppressHydrationWarning>
@@ -185,25 +185,25 @@ export default function Hero() {
           <div className="flex items-center gap-2 flex-wrap">
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-600/30 text-blue-300 font-semibold border border-blue-500/30 text-[11px] tracking-wide uppercase">
               <Zap className="w-3 h-3 text-amber-400" />
-              Corporación Maresa
+              Baterías Maresa
             </span>
             <span className="text-slate-300">
-              <strong>Baterías Andinas:</strong> Distribución oficial en 24 provincias. Desde $65 con garantía hasta 36 meses.
+              Compara las especificaciones antes de elegir una batería.
             </span>
           </div>
           <div className="flex items-center gap-4 text-slate-400 flex-wrap hidden md:flex">
             <span className="flex items-center gap-1 hover:text-white transition-colors">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              Garantía Oficial
+              Revisa el manual
             </span>
             <span className="flex items-center gap-1 hover:text-white transition-colors">
               <RefreshCw className="w-3.5 h-3.5 text-blue-400" />
-              Reciclaje -$10
+              Entrega responsable
             </span>
-            <a href="tel:1800228374" className="flex items-center gap-1 text-blue-400 hover:text-blue-300 font-medium transition-colors">
+            <span className="flex items-center gap-1 text-blue-400 font-medium">
               <PhoneCall className="w-3 h-3" />
-              1-800-BATERIA
-            </a>
+              Consulta condiciones
+            </span>
           </div>
         </div>
       </div>

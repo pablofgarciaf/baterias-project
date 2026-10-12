@@ -25,54 +25,18 @@ import {
   getDocs, 
   addDoc, 
   updateDoc, 
-  deleteDoc, 
-  doc, 
-  serverTimestamp 
+  deleteDoc,
+  doc,
+  setDoc,
+  serverTimestamp
 } from 'firebase/firestore';
 import { db, isFirebaseConfigured } from '@/lib/firebase';
 import { B2BLead, DistributorLocation } from '@/types/sinergia';
-import { initialB2BLeads, defaultDistributors } from '@/data/sinergiaData';
-
-const LOCAL_STORAGE_KEY_LEADS = 'maresa_b2b_leads';
-const LOCAL_STORAGE_KEY_DISTRIBUTORS = 'maresa_distributors';
-
-// Helper for local fallback
-const getLocalLeads = (): B2BLead[] => {
-  try {
-    const data = localStorage.getItem(LOCAL_STORAGE_KEY_LEADS);
-    return data ? JSON.parse(data) : [];
-  } catch {
-    return [];
-  }
-};
-
-const saveLocalLeads = (leads: B2BLead[]) => {
-  try {
-    localStorage.setItem(LOCAL_STORAGE_KEY_LEADS, JSON.stringify(leads));
-  } catch (err) {
-    console.error('Error saving local leads', err);
-  }
-};
-
-const getLocalDistributors = (): DistributorLocation[] => {
-  try {
-    const data = localStorage.getItem(LOCAL_STORAGE_KEY_DISTRIBUTORS);
-    return data ? JSON.parse(data) : [];
-  } catch {
-    return [];
-  }
-};
-
-const saveLocalDistributors = (distributors: DistributorLocation[]) => {
-  try {
-    localStorage.setItem(LOCAL_STORAGE_KEY_DISTRIBUTORS, JSON.stringify(distributors));
-  } catch (err) {
-    console.error('Error saving local distributors', err);
-  }
-};
+import { defaultDistributors } from '@/data/sinergiaData';
 
 // 1. Enviar Solicitud B2B (Quiero ser distribuidor)
 export async function submitB2BLead(leadData: Omit<B2BLead, 'id' | 'createdAt' | 'status'>): Promise<{ success: boolean; id: string }> {
+  if (!isFirebaseConfigured) throw new Error('El formulario todavía no está conectado al CRM.');
   const newLead: B2BLead = {
     ...leadData,
     id: 'lead-' + Date.now(),
@@ -87,16 +51,9 @@ export async function submitB2BLead(leadData: Omit<B2BLead, 'id' | 'createdAt' |
         firebaseTimestamp: serverTimestamp()
       });
       return { success: true, id: docRef.id };
-    } catch (err) {
-      console.warn('Firebase sync failed, storing locally:', err);
-    }
+    } catch (err) { throw err; }
   }
-
-  // Local fallback
-  const current = getLocalLeads();
-  const updated = [newLead, ...current];
-  saveLocalLeads(updated);
-  return { success: true, id: newLead.id! };
+  throw new Error('El formulario todavía no está conectado al CRM.');
 }
 
 // 2. Obtener Solicitudes B2B para el CRM Admin
@@ -110,11 +67,9 @@ export async function getB2BLeads(): Promise<B2BLead[]> {
           ...(d.data() as Omit<B2BLead, 'id'>)
         }));
       }
-    } catch (err) {
-      console.warn('Firestore getDocs fallback to local:', err);
-    }
+    } catch (err) { throw err; }
   }
-  return getLocalLeads();
+  return [];
 }
 
 // 3. Actualizar Estado de Solicitud (Aprobado, Contactado, etc.)
@@ -124,15 +79,9 @@ export async function updateLeadStatus(id: string, newStatus: B2BLead['status'])
       const leadRef = doc(db, 'b2b_leads', id);
       await updateDoc(leadRef, { status: newStatus });
       return true;
-    } catch (err) {
-      console.warn('Firestore updateDoc failed, fallback to local', err);
-    }
+    } catch (err) { throw err; }
   }
-
-  const current = getLocalLeads();
-  const updated = current.map(lead => lead.id === id ? { ...lead, status: newStatus } : lead);
-  saveLocalLeads(updated);
-  return true;
+  return false;
 }
 
 // 4. Obtener Red de Distribuidores
@@ -146,11 +95,22 @@ export async function getDistributors(): Promise<DistributorLocation[]> {
           ...(d.data() as Omit<DistributorLocation, 'id'>)
         }));
       }
-    } catch (err) {
-      console.warn('Firestore getDistributors fallback to local:', err);
-    }
+    } catch (err) { console.warn('No se pudieron cargar los puntos de venta:', err); }
   }
-  return getLocalDistributors();
+  return defaultDistributors;
+}
+
+export async function isDistributorsCollectionEmpty(): Promise<boolean> {
+  if (!isFirebaseConfigured || !db) return false;
+  const snapshot = await getDocs(collection(db, 'distributors'));
+  return snapshot.empty;
+}
+
+export async function seedDefaultDistributors(): Promise<void> {
+  if (!isFirebaseConfigured || !db) return;
+  await Promise.all(
+    defaultDistributors.map(d => setDoc(doc(db, 'distributors', d.id), { ...d }))
+  );
 }
 
 // 5. Agregar o Modificar Distribuidor
@@ -163,20 +123,9 @@ export async function saveDistributor(distributor: DistributorLocation): Promise
         await addDoc(collection(db, 'distributors'), { ...distributor, createdAt: serverTimestamp() });
       }
       return true;
-    } catch (err) {
-      console.warn('Firestore saveDistributor failed, saving locally:', err);
-    }
+    } catch (err) { throw err; }
   }
-
-  const current = getLocalDistributors();
-  const existingIndex = current.findIndex(d => d.id === distributor.id);
-  if (existingIndex >= 0) {
-    current[existingIndex] = distributor;
-  } else {
-    current.unshift(distributor);
-  }
-  saveLocalDistributors(current);
-  return true;
+  return false;
 }
 
 // 6. Eliminar Distribuidor
@@ -185,13 +134,7 @@ export async function removeDistributor(id: string): Promise<boolean> {
     try {
       await deleteDoc(doc(db, 'distributors', id));
       return true;
-    } catch (err) {
-      console.warn('Firestore removeDistributor failed:', err);
-    }
+    } catch (err) { throw err; }
   }
-
-  const current = getLocalDistributors();
-  const filtered = current.filter(d => d.id !== id);
-  saveLocalDistributors(filtered);
-  return true;
+  return false;
 }

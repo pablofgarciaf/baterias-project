@@ -34,4 +34,29 @@ graph TD
 ```
 
 ## Relación con otros módulos
-Ver también: [[01_Nosotros_Page]]
+Ver también: [[01_Nosotros_Page]] | [[03_Agencias]] | [[AUDITORIA_2026-10-11]]
+
+---
+
+## Buscador Vehicular y Selectores de Lujo (`VehicleFinder.tsx` / `LuxuryDropdown`)
+
+Diseñado bajo la directriz **Emil Kowalski Luxury UI** y **WCAG 2.2 AA**:
+
+### Características Técnicas
+- **Cero líneas nativas de OS:** Reemplazo de los tags `<select>` nativos por paneles flotantes con Glassmorphism y bordes sutiles adaptativos para modo claro/oscuro.
+- **Micro-interacciones táctiles:** Feedback táctil instantáneo mediante `active:scale-[0.98]` y easings cubic-bezier `[0.23, 1, 0.32, 1]` a 180ms.
+- **Navegación total por teclado:**
+  - `ArrowDown` / `ArrowUp`: Navega y resalta opciones cíclicamente.
+  - `Enter`: Selecciona la opción activa y repliega el menú.
+  - `Escape`: Cierra el menú flotante sin perder el foco.
+  - `scrollIntoView({ block: 'nearest' })`: Autoscroll accesible automático para mantener visible la opción enfocada.
+- **Filtro predictivo inteligente:** Activo en marcas y modelos; deshabilitado en años (`hasSearch={false}`) para ofrecer una lista limpia cronológica sin inputs rotos.
+- **Catálogo ecuatoriano integral:** Soporta marcas locales de alta rotación (Chevrolet, Toyota, Kia, Hyundai) y nuevas marcas líderes (BAIC, BYD, Changan, Chery, DFSK, Geely, Jetour, MG, Mitsubishi, etc.).
+
+```mermaid
+graph TD
+    Trigger[Botón Trigger Luxury] -->|ArrowDown / Click| Menu[Panel Flotante Glassmorphism]
+    Menu -->|Teclado ArrowUp / Down| Focus[Highlight Index + Auto-Scroll]
+    Focus -->|Enter| Select[onSelect + Cierre Suave]
+    Menu -->|Escape o Click Outside| Close[Cierre Seguro sin pérdida de estado]
+```

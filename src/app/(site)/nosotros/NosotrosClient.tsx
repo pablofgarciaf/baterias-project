@@ -24,9 +24,9 @@ import RadialOrbitalTimeline, { TimelineItem } from "@/components/ui/radial-orbi
 const timelineData: TimelineItem[] = [
   {
     id: 1,
-    title: "Misión",
-    date: "Propósito",
-    content: "Proveer soluciones energéticas confiables y accesibles para cada vehículo en Ecuador, con tecnología adaptada a la exigente geografía andina.",
+    title: "Compatibilidad",
+    date: "Primero",
+    content: "Comprueba año, versión, motor y la batería especificada en el manual del vehículo.",
     category: "Principal",
     icon: Target,
     relatedIds: [2],
@@ -35,9 +35,9 @@ const timelineData: TimelineItem[] = [
   },
   {
     id: 2,
-    title: "Visión",
-    date: "Futuro",
-    content: "Ser la marca de baterías más reconocida y confiable de Latinoamérica, liderando innovación en almacenamiento energético vehicular.",
+    title: "Tecnología",
+    date: "Después",
+    content: "Identifica si tu vehículo necesita AGM, EFB u otra tecnología antes de elegir una alternativa.",
     category: "Aspiración",
     icon: Eye,
     relatedIds: [1, 3, 4],
@@ -46,9 +46,9 @@ const timelineData: TimelineItem[] = [
   },
   {
     id: 3,
-    title: "Calidad",
-    date: "Estándar",
-    content: "Cada batería pasa por rigurosos controles en nuestro laboratorio ISO 9001, garantizando rendimiento desde el nivel del mar hasta los 4,500 msnm.",
+    title: "Medidas",
+    date: "Verifica",
+    content: "Contrasta capacidad, CCA, tamaño, bornes y polaridad con la referencia original.",
     category: "Pilar",
     icon: ShieldCheck,
     relatedIds: [1, 2],
@@ -57,9 +57,9 @@ const timelineData: TimelineItem[] = [
   },
   {
     id: 4,
-    title: "Sostenibilidad",
-    date: "Compromiso",
-    content: "Programa Canje Verde: reciclamos el 95% de componentes. Compromiso real con la economía circular y el medio ambiente ecuatoriano.",
+    title: "Compra informada",
+    date: "Por último",
+    content: "Pide precio, disponibilidad y condiciones de garantía del modelo exacto antes de comprar.",
     category: "Impacto",
     icon: Leaf,
     relatedIds: [2],
@@ -69,45 +69,45 @@ const timelineData: TimelineItem[] = [
 ];
 
 const stats = [
-  { value: "45+", label: "Años de experiencia", icon: Award },
-  { value: "24", label: "Provincias cubiertas", icon: MapPin },
-  { value: "150+", label: "Distribuidores activos", icon: Users },
-  { value: "500K+", label: "Baterías vendidas", icon: Battery },
+  { value: "AGM", label: "Tipo de batería", icon: Award },
+  { value: "EFB", label: "Tipo de batería", icon: MapPin },
+  { value: "CCA", label: "Arranque", icon: Users },
+  { value: "Ah", label: "Capacidad", icon: Battery },
 ];
 
 const timeline = [
   {
-    year: "1979",
-    title: "Fundación",
-    desc: "Nace Corporación Maresa como importadora y distribuidora automotriz en Ecuador.",
+    year: "Paso 1",
+    title: "Revisa el manual",
+    desc: "Encuentra la referencia de batería recomendada para el año y la versión de tu vehículo.",
   },
   {
-    year: "1995",
-    title: "Expansión Nacional",
-    desc: "Cobertura en las 24 provincias con red propia de distribución.",
+    year: "Paso 2",
+    title: "Identifica la tecnología",
+    desc: "Comprueba si el sistema eléctrico necesita AGM, EFB u otra opción específica.",
   },
   {
-    year: "2008",
-    title: "Laboratorio ISO 9001",
-    desc: "Inauguración del laboratorio de control de calidad certificado internacionalmente.",
+    year: "Paso 3",
+    title: "Compara los datos",
+    desc: "CCA, Ah, dimensiones y polaridad deben coincidir con los requisitos del vehículo.",
   },
   {
-    year: "2018",
-    title: "Tecnología AGM & EFB",
-    desc: "Incorporación de baterías de alta tecnología para vehículos Start-Stop.",
+    year: "Paso 4",
+    title: "Solicita condiciones",
+    desc: "Pide precio final, disponibilidad, instalación y garantía de la referencia exacta.",
   },
   {
-    year: "2024",
-    title: "Transformación Digital",
-    desc: "Plataforma digital con buscador inteligente y CRM cloud para distribuidores.",
+    year: "Paso 5",
+    title: "Entrega la usada",
+    desc: "Consulta una opción autorizada de recepción para la batería que reemplazas.",
   },
 ];
 
 const differentials = [
-  { icon: Factory, text: "Laboratorio propio ISO 9001" },
-  { icon: Globe, text: "Red en 24 provincias" },
-  { icon: Zap, text: "Tecnología Calcio, EFB y AGM" },
-  { icon: TrendingUp, text: "Garantía hasta 36 meses" },
+  { icon: Factory, text: "Comprueba la ficha técnica" },
+  { icon: Globe, text: "Consulta un punto de atención" },
+  { icon: Zap, text: "Distingue AGM, EFB y convencional" },
+  { icon: TrendingUp, text: "Pide condiciones antes de comprar" },
 ];
 
 export default function NosotrosClient() {
@@ -119,7 +119,7 @@ export default function NosotrosClient() {
   return (
     <>
       {/* Hero - Split on mobile, full on desktop */}
-      <section className="relative flex flex-col lg:h-screen lg:min-h-[600px] lg:flex-row lg:items-end overflow-hidden -mt-14 lg:-mt-16 bg-slate-950">
+      <section className="relative flex flex-col lg:h-screen lg:min-h-[600px] lg:flex-row lg:items-end overflow-hidden bg-slate-950">
         
         {/* Mobile Text (Top) */}
         <div className="lg:hidden container-max pt-32 pb-8 z-10 w-full relative">
@@ -149,7 +149,7 @@ export default function NosotrosClient() {
             <source media="(min-width: 768px)" srcSet="/quienes-somos-hero-desktop.webp" type="image/webp" />
             <img
               src="/quienes-somos-hero-desktop.webp"
-              alt="Corporación Maresa – Quiénes Somos"
+              alt="Presentación de Baterías Maresa"
               className="w-full h-full object-cover"
               loading="eager"
               fetchPriority="high"
@@ -228,12 +228,12 @@ export default function NosotrosClient() {
               className={`inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] mb-4 ${isDark ? "text-primary-400" : "text-primary-600"}`}
             >
               <span className="w-6 h-px bg-current" />
-              Nuestra Trayectoria
+              Nuestro proceso
             </span>
             <h2
               className={`text-3xl sm:text-4xl font-extrabold tracking-tight ${isDark ? "text-white" : "text-slate-950"}`}
             >
-              Hitos que nos definen
+              Compromisos antes del lanzamiento
             </h2>
           </div>
 

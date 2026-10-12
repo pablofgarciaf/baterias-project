@@ -203,7 +203,7 @@ export default function B2BLeadCapture() {
                       Formulario de Postulación de Distribuidor
                     </h3>
                     <p className={`text-xs mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                      Completa los datos de tu empresa para acceder al catálogo mayorista oficial de Corporación Maresa.
+                      Déjanos los datos de tu empresa para solicitar información cuando el canal comercial esté habilitado.
                     </p>
                   </div>
 

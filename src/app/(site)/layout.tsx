@@ -19,6 +19,7 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import WhatsAppFloatingButton from '@/components/WhatsAppFloatingButton';
+import AnalyticsConsent from '@/components/AnalyticsConsent';
 import { useTheme } from '@/context/ThemeContext';
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
@@ -27,14 +28,13 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <div
-      className={`min-h-screen font-sans antialiased selection:bg-blue-600 selection:text-white transition-colors duration-200 ${
-        isDark ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'
-      }`}
+      className={`min-h-screen font-sans antialiased selection:bg-blue-600 selection:text-white transition-colors duration-200 ${isDark ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'
+        }`}
     >
       {/* Sticky Header — shared across all public routes */}
       <Header />
 
-      <main id="main-content" className="pt-14 lg:pt-16">
+      <main id="main-content" className="pt-0">
         {children}
       </main>
 
@@ -43,6 +43,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
 
       {/* Floating WhatsApp & Direct Call Button */}
       <WhatsAppFloatingButton />
+      <AnalyticsConsent />
     </div>
   );
 }

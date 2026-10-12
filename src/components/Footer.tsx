@@ -47,38 +47,18 @@ export default function Footer({ onOpenAdmin }: FooterProps) {
               </div>
               <div>
                 <span className="font-display font-extrabold text-xl text-white block leading-none">
-                  Baterías Andinas
+                  Baterías Maresa
                 </span>
                 <span className="text-xs text-blue-400 font-bold uppercase tracking-wider block mt-0.5">
-                  Corporación Maresa Holding
+                  Nombre comercial provisional
                 </span>
               </div>
             </div>
             <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-              Distribución oficial de baterías automotrices en el Ecuador con respaldo y garantía nacional de Corporación Maresa (45+ años de trayectoria automotriz).
+              Guías para comparar tecnologías y preparar una compra informada. Confirma siempre las condiciones de cada producto.
             </p>
             
-            {/* Social channels */}
-            <div className="flex gap-2.5 mt-5">
-              {[
-                { icon: Linkedin, href: 'https://www.linkedin.com/company/corporacion-maresa', label: 'LinkedIn' },
-                { icon: Facebook, href: 'https://www.facebook.com/corporacionmaresa', label: 'Facebook' },
-                { icon: Instagram, href: 'https://www.instagram.com/corporacionmaresa', label: 'Instagram' },
-                { icon: Twitter, href: 'https://twitter.com/corpmaresa', label: 'Twitter / X' },
-                { icon: Youtube, href: 'https://www.youtube.com', label: 'YouTube' },
-              ].map((s, i) => (
-                <a
-                  key={i}
-                  href={s.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={s.label}
-                  className="w-8 h-8 rounded-lg bg-white/5 hover:bg-blue-600 hover:text-white flex items-center justify-center text-slate-400 transition-colors"
-                >
-                  <s.icon className="w-4 h-4" />
-                </a>
-              ))}
-            </div>
+            <p className="text-xs text-slate-500 mt-5">Información comercial sujeta a confirmación.</p>
           </div>
 
           {/* Col 2: Líneas de Baterías */}
@@ -88,15 +68,15 @@ export default function Footer({ onOpenAdmin }: FooterProps) {
             </h4>
             <ul className="space-y-2 text-xs sm:text-sm">
               {[
-                'Baterías Calcio-Plata (Libre Mantenimiento)',
-                'Baterías EFB (Start-Stop Urbano & Taxis)',
-                'Baterías AGM (Start-Stop Luxury & 4x4)',
-                'Baterías para Camiones y Carga Pesada',
-                'Baterías Marinas y Ciclo Profundo',
-                'Diagnóstico Computarizado Gratuito',
+                'Baterías convencionales',
+                'Tecnología EFB',
+                'Tecnología AGM',
+                'Cómo comparar CCA y Ah',
+                'Dimensiones y polaridad',
+                'Cuidados de la batería',
               ].map((p) => (
                 <li key={p}>
-                  <a href="#catalogo" className="hover:text-blue-400 transition-colors">
+                  <a href="/productos" className="hover:text-blue-400 transition-colors">
                     {p}
                   </a>
                 </li>
@@ -104,48 +84,19 @@ export default function Footer({ onOpenAdmin }: FooterProps) {
             </ul>
           </div>
 
-          {/* Col 3: Enlaces y Contacto con Ofuscación Anti-Scraping */}
+          {/* Col 3: Contacto */}
           <div>
             <h4 className="text-white font-bold mb-4 text-sm uppercase tracking-wider">
-              Atención & Urgencias
+              Atención y contacto
             </h4>
-            <div className="space-y-3 text-xs sm:text-sm">
-              <div className="flex items-center gap-2">
-                <PhoneCall className="w-4 h-4 text-emerald-400 shrink-0" />
-                <a href="tel:1800228374" className="hover:text-white font-bold transition-colors">
-                  1-800-BATERIA (228-3742)
-                </a>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Phone className="w-4 h-4 text-amber-400 shrink-0" />
-                <a href="tel:+593998123456" className="hover:text-white transition-colors">
-                  Emergencias Móviles: 099-812-3456
-                </a>
-              </div>
-
-              {/* Email obfuscated against scrapers */}
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-blue-400 shrink-0" />
-                <span className="text-slate-300">
-                  <span>contacto</span>
-                  <span className="text-blue-400 font-bold">&#64;</span>
-                  <span>bateriasandinas.ec</span>
-                </span>
-              </div>
-
-              <div className="flex items-start gap-2">
-                <MapPin className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
-                <span>Av. Amazonas N34-451 y Atahualpa, Quito - Ecuador</span>
-              </div>
-            </div>
+            <p className="text-xs sm:text-sm text-slate-400">Consulta los puntos de atención publicados y confirma sus datos antes de desplazarte.</p>
 
             <div className="mt-6 pt-4 border-t border-slate-900">
               <span className="text-[11px] font-bold text-slate-500 uppercase block mb-1">
                 Garantía y Chequeo
               </span>
               <p className="text-xs text-slate-400">
-                Revisión de alternador y sistema de carga sin costo en todos nuestros centros autorizados.
+                Solicita las condiciones de garantía de la referencia exacta antes de comprar.
               </p>
             </div>
           </div>
@@ -156,21 +107,9 @@ export default function Footer({ onOpenAdmin }: FooterProps) {
               Novedades Técnicas
             </h4>
             <p className="text-xs text-slate-400 mb-4 leading-relaxed">
-              Recibe guías técnicas de altitud andina y avisos de promociones oficiales.
+              Explora consejos para elegir, instalar y cuidar la batería de tu vehículo.
             </p>
-            <div className="flex gap-2">
-              <input
-                type="email"
-                placeholder="tu@correo.ec"
-                className="flex-1 px-3.5 py-2.5 rounded-xl bg-white/5 border border-slate-800 text-white text-xs placeholder-slate-500 focus:ring-2 focus:ring-blue-500 outline-none"
-              />
-              <button
-                aria-label="Suscribirse al boletín"
-                className="px-3.5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white transition-colors cursor-pointer"
-              >
-                <Send className="w-4 h-4" />
-              </button>
-            </div>
+            <a href="/blog" className="text-xs text-blue-400 hover:text-blue-300">Leer las guías técnicas</a>
 
             {/* Clear Admin Access Callout */}
             {onOpenAdmin && (
@@ -194,13 +133,13 @@ export default function Footer({ onOpenAdmin }: FooterProps) {
         {/* 24 Provincias Quick Links */}
         <div className="pt-8 border-t border-slate-900">
           <h4 className="text-slate-300 font-semibold mb-3 text-xs uppercase tracking-wider">
-            Red Oficial en las 24 Provincias de Ecuador
+            Consulta ubicaciones por provincia
           </h4>
           <div className="flex flex-wrap gap-1.5">
             {provinces.map((p) => (
               <a
                 key={p.id}
-                href="#puntos-de-venta"
+                href={`/agencias?provincia=${encodeURIComponent(p.name)}`}
                 className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-blue-600 hover:text-white text-[11px] text-slate-400 transition-colors"
               >
                 {p.name}
@@ -211,11 +150,9 @@ export default function Footer({ onOpenAdmin }: FooterProps) {
 
         {/* Bottom Legal & Acceso Administrativo */}
         <div className="mt-8 pt-8 border-t border-slate-900 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-500">
-          <p>&copy; 2026 Baterías Andinas · Una marca respaldada por Corporación Maresa. Todos los derechos reservados.</p>
+          <p>&copy; 2026 Baterías Maresa · Sitio de demostración.</p>
           <div className="flex gap-4 items-center flex-wrap">
-            <a href="#" className="hover:text-slate-300 transition-colors">Términos de uso</a>
-            <a href="#" className="hover:text-slate-300 transition-colors">Privacidad</a>
-            <a href="#" className="hover:text-slate-300 transition-colors">Cookies</a>
+            <a href="/privacidad" className="hover:text-slate-300 transition-colors">Privacidad</a>
             {onOpenAdmin && (
               <button
                 onClick={onOpenAdmin}

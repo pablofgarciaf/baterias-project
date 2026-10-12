@@ -4,6 +4,7 @@ package-lock.json
 
 # Next.js
 .next/
+.next-dev/
 out/
 
 # build
@@ -11,9 +12,8 @@ build/
 dist/
 coverage/
 
-# env files (never commit secrets)
+# local environment configuration (never commit secrets)
 .env*
-!.env.example
 
 # architecture map (local dev reference only)
 .architecture.md

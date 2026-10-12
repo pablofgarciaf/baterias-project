@@ -133,7 +133,7 @@ export default function RadialOrbitalTimeline({ timelineData }: { timelineData: 
           Lo que nos impulsa
         </h2>
         <p className="text-slate-700 dark:text-slate-400 text-sm leading-relaxed max-w-xl mx-auto">
-          Descubre los pilares que conforman la identidad y el futuro de Corporación Maresa. 
+          Conoce los pilares propuestos para este proyecto.
           Explora nuestra órbita de valores interactuando con cada nodo.
         </p>
       </div>
@@ -244,7 +244,7 @@ export default function RadialOrbitalTimeline({ timelineData }: { timelineData: 
             Lo que nos impulsa
           </h2>
           <p className="text-slate-700 dark:text-slate-400 text-sm sm:text-base leading-relaxed max-w-xl">
-            Descubre los pilares que conforman la identidad y el futuro de Corporación Maresa. 
+            Conoce los pilares propuestos para este proyecto.
             Explora nuestra órbita de valores interactuando con cada nodo.
           </p>
         </div>

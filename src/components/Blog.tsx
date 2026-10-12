@@ -40,6 +40,8 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { useSiteContent } from '@/context/SiteContentContext';
 import { useTheme } from '@/context/ThemeContext';
+import { blogPostsData } from '@/data/blogGuides';
+export { blogPostsData };
 
 export interface BlogPost {
   id: string;
@@ -52,140 +54,6 @@ export interface BlogPost {
   image: string;
   tags: string[];
 }
-
-export const blogPostsData: BlogPost[] = [
-  {
-    id: 'bateria-altitud-sierra-ecuador',
-    title: 'Cómo elegir la batería correcta para el frío y altitud de la Sierra ecuatoriana',
-    excerpt: 'La altitud de Quito (2.850 msnm), Cuenca y Riobamba reduce la densidad del aire y exige mayor amperaje de arranque en frío (CCA). Te explicamos qué buscar.',
-    category: 'Altitud & Clima',
-    date: '15 Sep 2026',
-    readTime: '4 min de lectura',
-    image: 'https://images.pexels.com/photos/3989166/pexels-photo-3989166.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
-    tags: ['Quito', 'Arranque en frío', 'CCA', 'Sierra'],
-    content: `
-En las ciudades andinas del Ecuador como Quito, Cuenca, Riobamba y Tulcán, las temperaturas nocturnas pueden descender a menos de 5°C. A esta temperatura, la reacción química dentro de la batería se ralentiza, disminuyendo su capacidad disponible hasta en un 30%, mientras que el aceite del motor se vuelve más denso y demanda un 40% más de energía para arrancar.
-
-### 1. El factor clave: CCA (Cold Cranking Amps)
-Al comprar una batería para la Sierra, no te fijes únicamente en los amperios-hora (Ah). El valor fundamental es el **CCA a -18°C**. En vehículos de motor 1.6L a 2.0L, recomendamos un mínimo de 550 a 650 CCA. En camionetas diésel (D-Max, Hilux), el estándar no debe ser menor a 750 u 850 CCA.
-
-### 2. Tecnología Calcio-Plata
-Las baterías con rejillas de aleación Calcio-Plata ofrecen una conductividad superior y eliminan prácticamente la evaporación de agua en climas andinos de presión atmosférica reducida.
-
-### 3. Recomendación de Taller Maresa
-Realiza una prueba de conductancia computarizada cada 6 meses en cualquiera de nuestros centros de servicio Maresa. Si la batería marca menos de 12.4V en reposo matutino, es momento de una recarga o reemplazo preventivo.
-    `
-  },
-  {
-    id: 'baterias-agm-efb-start-stop',
-    title: 'Baterías AGM vs EFB: ¿Cuál necesita tu vehículo con sistema Start-Stop?',
-    excerpt: 'Instalar una batería convencional en un auto con Start-Stop puede quemarla en menos de 6 meses. Descubre las diferencias tecnológicas y cuál te corresponde.',
-    category: 'Tecnología',
-    date: '10 Sep 2026',
-    readTime: '5 min de lectura',
-    image: 'https://images.pexels.com/photos/37177072/pexels-photo-37177072.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
-    tags: ['Start-Stop', 'AGM', 'EFB', 'Ahorro'],
-    content: `
-Los vehículos modernos equipados con sistemas automáticos de apagado y encendido de motor (Start-Stop) someten a la batería a cientos de ciclos de arranque diarios en el tráfico denso de Guayaquil o Quito.
-
-### ¿Qué es una batería EFB?
-EFB significa *Enhanced Flooded Battery* (Batería Inundada Mejorada). Incorpora una malla de fibra de poliéster sobre las placas de plomo positivas, lo que duplica la resistencia a ciclos profundos frente a una batería tradicional. Es ideal para autos medianos y pickups con Start-Stop básico.
-
-### ¿Qué es una batería AGM?
-AGM significa *Absorbent Glass Mat*. El electrolito no flota libremente; está 100% absorbido en esteras de microfibra de vidrio ultrafinas. Ofrece:
-- Resistencia a ciclos 3 a 4 veces mayor.
-- Aceptación de recarga ultra rápida proveniente del freno regenerativo.
-- Nula posibilidad de derrames, incluso si la carcasa se fractura.
-
-### Regla de Oro Maresa
-**Nunca degradar la tecnología:** Si tu auto vino de fábrica con batería AGM, solo debes reemplazarla por otra AGM. Si vino con EFB, puedes poner EFB o mejorar a AGM, pero nunca una batería de plomo tradicional.
-    `
-  },
-  {
-    id: 'mantenimiento-costa-guayaquil-salitre',
-    title: 'Protección contra calor extremo y salinidad en la Costa ecuatoriana',
-    excerpt: 'Las altas temperaturas de Guayaquil, Manta y Machala aceleran la corrosión interna. Sigue estos tres consejos para duplicar su vida útil.',
-    category: 'Mantenimiento',
-    date: '05 Sep 2026',
-    readTime: '3 min de lectura',
-    image: 'https://images.pexels.com/photos/5562431/pexels-photo-5562431.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
-    tags: ['Costa', 'Guayaquil', 'Salinidad', 'Calor'],
-    content: `
-Aunque comúnmente se cree que el frío daña las baterías, en realidad es el **calor extremo el que las destruye internamente**, y el frío simplemente revela el daño cuando el motor no puede arrancar.
-
-Bajo el capó de un vehículo en Guayaquil al mediodía, las temperaturas pueden superar fácilmente los 80°C. Esto acelera la oxidación de las rejillas positivas y descompone el electrolito.
-
-### Pasos de Mantenimiento Preventivo:
-1. **Limpieza de Bornes:** La salinidad costera genera sulfatación blanquecina o verdosa en los bornes. Límpialos con agua tibia con bicarbonato y aplica grasa dieléctrica o vaselina neutra.
-2. **Revisión del Protector Térmico:** Nunca deseches la funda o cubierta plástica térmica que rodea la batería en autos modernos; fue diseñada para aislar el calor del radiador.
-3. **Chequeo del Alternador:** En zonas calurosas, si el regulador de voltaje envía más de 14.5V, hervirá el electrolito rápidamente.
-    `
-  },
-  {
-    id: 'flotas-pesadas-camiones-hino-chevrolet',
-    title: 'Optimización energética para flotas de carga pesada e interprovinciales',
-    excerpt: 'El tiempo detenido por batería descargada cuesta cientos de dólares por día en transporte. Cómo gestionar bancos de 24V en camiones Hino y cabezales.',
-    category: 'Transporte Pesado',
-    date: '28 Ago 2026',
-    readTime: '6 min de lectura',
-    image: 'https://images.pexels.com/photos/6940962/pexels-photo-6940962.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
-    tags: ['Flotas', 'Hino', 'Camiones', '24V'],
-    content: `
-Para empresas de transporte interprovincial que cruzan rutas exigentes como Quito - Guayaquil (vía Alóag o Santo Domingo), el sistema de doble batería en serie de 24V requiere un balanceo riguroso.
-
-### Cuidado con el consumo parásito
-Muchos transportistas conectan accesorios de 12V (radios, GPS, puertos USB) a una sola de las dos baterías de 12V en lugar de usar un convertidor reductor 24V a 12V. Esto desbalancea el banco, sobrecargando una batería y subcargando la otra, arruinando ambas en pocos meses.
-
-### Programa Corporativo Maresa Flotas
-En Corporación Maresa ofrecemos atención directa a flotas con precios mayoristas, entregas programadas en patio y diagnóstico de alternador en ruta nacional.
-    `
-  },
-  {
-    id: 'reciclaje-ecologico-bono-descuento',
-    title: 'Economía circular: Cómo el bono de -$10 de Maresa protege el agua de Ecuador',
-    excerpt: 'El plomo y el ácido sulfúrico son altamente tóxicos si terminan en quebradas o botaderos. Descubre qué pasa cuando entregas tu batería vieja en un punto oficial.',
-    category: 'Sostenibilidad',
-    date: '20 Ago 2026',
-    readTime: '4 min de lectura',
-    image: 'https://images.pexels.com/photos/35520664/pexels-photo-35520664.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
-    tags: ['Reciclaje', 'Bono $10', 'Medio Ambiente'],
-    content: `
-En Ecuador se desechan anualmente más de 900.000 baterías automotrices. Cada batería contiene aproximadamente 10 kg de plomo y 3 litros de solución ácida.
-
-### El proceso de reciclaje en plantas certificadas:
-1. **Separación de polipropileno:** Las carcasas plásticas se trituran, lavan y funden para crear nuevas carcasas de baterías o piezas plásticas automotrices.
-2. **Neutralización del ácido:** El electrolito se neutraliza químicamente o se convierte en sulfato de sodio para la industria de detergentes.
-3. **Fundición y purificación del plomo:** El plomo se funde en hornos a 400°C y se refina hasta un 99.9% de pureza, reingresando a la cadena productiva.
-
-Al entregar tu batería en cualquier agencia Maresa autorizada, no solo recibes **$10 de descuento inmediato** en tu nueva batería, sino que recibes un comprobante de disposición ambientalmente responsable.
-    `
-  },
-  {
-    id: 'diagnostico-bateria-o-alternador',
-    title: '¿Se dañó la batería o es el alternador? Guía para diagnosticarlo tú mismo',
-    excerpt: 'Si tu auto no enciende, no cambies la batería a ciegas. Aprende los síntomas específicos para saber si el culpable es el sistema de carga.',
-    category: 'Mantenimiento',
-    date: '12 Ago 2026',
-    readTime: '3 min de lectura',
-    image: 'https://images.pexels.com/photos/3817825/pexels-photo-3817825.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
-    tags: ['Alternador', 'Diagnóstico', 'Voltímetro'],
-    content: `
-Uno de los errores más comunes y costosos es comprar una batería nueva cuando el problema real es un alternador averiado que dejó de cargar, o viceversa.
-
-### Síntomas de que el problema es la BATERÍA:
-- El motor de arranque gira lento y con dificultad por las mañanas (*"ñe-ñe-ñe"* perezoso).
-- Al pasar corriente con cables desde otro auto, el motor enciende inmediatamente y se mantiene encendido sin apagarse.
-- La batería tiene más de 2.5 a 3 años de uso continuo.
-
-### Síntomas de que el problema es el ALTERNADOR:
-- Se encendió el testigo rojo con forma de batería en el tablero mientras ibas conduciendo.
-- Las luces delanteras y el tablero parpadean o bajan de intensidad al acelerar.
-- El auto arrancó con cables, pero al desconectarlos se apaga en pocos segundos.
-
-Recuerda: en cualquier centro de servicio de Corporación Maresa te realizamos la prueba eléctrica con escáner de carga **totalmente gratis**.
-    `
-  }
-];
 
 export default function Blog() {
   const { content } = useSiteContent();
@@ -408,7 +276,7 @@ export default function Blog() {
                 style={{ width: `${100 / itemsPerView}%` }}
               >
                 <div 
-                  className={`h-full flex flex-col rounded-3xl overflow-hidden border transition-all duration-300 hover:-translate-y-1.5 ${
+                  className={`max-w-[360px] mx-auto h-full flex flex-col rounded-3xl overflow-hidden border transition-all duration-300 hover:-translate-y-1.5 ${
                     isDark 
                       ? 'bg-slate-950/70 border-slate-800 hover:border-slate-700 shadow-xl' 
                       : 'bg-white border-slate-200 hover:border-blue-300 shadow-sm hover:shadow-xl text-slate-900'
@@ -576,15 +444,15 @@ export default function Blog() {
                     ))}
                   </div>
 
-                  <a
-                    href={`https://wa.me/593998123456?text=Hola%20Maresa,%20le%C3%AD%20el%20art%C3%ADculo%20"${encodeURIComponent(selectedArticle.title)}"%20y%20deseo%20asesor%C3%ADa.`}
+                  {process.env.NEXT_PUBLIC_CONTACT_WHATSAPP && <a
+                    href={`https://wa.me/${process.env.NEXT_PUBLIC_CONTACT_WHATSAPP.replace(/\D/g, '')}?text=${encodeURIComponent(`Hola, leí el artículo "${selectedArticle.title}" y deseo asesoría.`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-blue-600/30"
                   >
                     <span>Consultar a un Experto</span>
                     <ArrowRight className="w-3.5 h-3.5" />
-                  </a>
+                  </a>}
                 </div>
               </div>
             </motion.div>

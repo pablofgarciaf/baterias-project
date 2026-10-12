@@ -19,9 +19,9 @@ import type { Metadata } from 'next';
 import BlogClient from './BlogClient';
 
 export const metadata: Metadata = {
-  title: 'Blog Técnico — Escuela de Baterías Maresa',
+  title: 'Guías sobre baterías',
   description:
-    'Guías técnicas automotrices: cómo elegir batería por altitud, diagnóstico de alternador, Start-Stop AGM vs EFB, reciclaje ecológico y más consejos para Ecuador.',
+    'Artículos introductorios sobre selección, uso y mantenimiento de baterías automotrices.',
 };
 
 export default function BlogPage() {

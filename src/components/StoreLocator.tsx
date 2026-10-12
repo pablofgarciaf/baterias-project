@@ -38,9 +38,9 @@ import {
   PhoneCall
 } from 'lucide-react';
 import { motion } from 'motion/react';
-import { defaultDistributors } from '@/data/sinergiaData';
 import { provinces } from '@/data/provinces';
 import { DistributorLocation } from '@/types/sinergia';
+import { defaultDistributors } from '@/data/sinergiaData';
 import { useSiteContent } from '@/context/SiteContentContext';
 import { getDistributors } from '@/lib/firebaseStore';
 import { useTheme } from '@/context/ThemeContext';
@@ -53,7 +53,7 @@ export default function StoreLocator({ initialProvince }: StoreLocatorProps) {
   const [distributorsList, setDistributorsList] = useState<DistributorLocation[]>(defaultDistributors);
   const [selectedProvince, setSelectedProvince] = useState<string>(initialProvince || 'Todas');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [selectedDistributor, setSelectedDistributor] = useState<DistributorLocation | null>(defaultDistributors[0]);
+  const [selectedDistributor, setSelectedDistributor] = useState<DistributorLocation | null>(defaultDistributors[0] || null);
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 

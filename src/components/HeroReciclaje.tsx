@@ -44,7 +44,7 @@ export default function HeroReciclaje() {
   ];
 
   return (
-    <section className="relative h-screen min-h-[600px] flex items-center overflow-hidden -mt-14 lg:-mt-16">
+    <section className="relative h-screen min-h-[600px] flex items-center overflow-hidden">
       {/* Background Image — hero-reciclaje.webp */}
       <picture className="absolute inset-0 z-0" suppressHydrationWarning>
         <source suppressHydrationWarning media="(max-width: 767px)" srcSet={rec.backgroundImage || '/hero-reciclaje.webp'} type="image/webp" />
@@ -131,11 +131,11 @@ export default function HeroReciclaje() {
               </Link>
 
               <Link
-                href="tel:1800228374"
+                href="/agencias"
                 className="w-full sm:hidden inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold shadow-lg hover:shadow-xl transition-all duration-200 active:scale-[0.97]"
               >
                 <PhoneCall className="w-4 h-4" />
-                1-800-BATERIA
+                Ver puntos de venta
               </Link>
             </div>
             </div>
@@ -224,21 +224,21 @@ export default function HeroReciclaje() {
                 Plan Canje Verde
               </span>
               <span className="text-emerald-200">
-                <strong>Entrega tu batería usada:</strong> bono inmediato de -$10 en tu nueva batería en cualquier agencia autorizada.
+                <strong>Entrega tu batería usada:</strong> consulta los puntos de recepción y las condiciones cuando estén confirmados.
               </span>
             </div>
             <div className="flex items-center gap-4 text-emerald-300 flex-wrap">
               <span className="flex items-center gap-1 hover:text-white transition-colors">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                Garantía Oficial
+                Condiciones por confirmar
               </span>
               <span className="flex items-center gap-1 hover:text-white transition-colors">
                 <Leaf className="w-3.5 h-3.5 text-emerald-400" />
                 Eco-friendly
               </span>
-              <a href="tel:1800228374" className="flex items-center gap-1 text-emerald-300 hover:text-emerald-200 font-medium transition-colors">
+              <a href="/agencias" className="flex items-center gap-1 text-emerald-300 hover:text-emerald-200 font-medium transition-colors">
                 <PhoneCall className="w-3 h-3" />
-                1-800-BATERIA
+                Puntos de venta
               </a>
             </div>
           </div>

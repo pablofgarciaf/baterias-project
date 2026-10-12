@@ -74,7 +74,7 @@ export default function About() {
             <div className="mt-5 lg:hidden rounded-2xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-800">
               <img suppressHydrationWarning
                 src={about.aboutImage || '/quienes-somos-section-landing.webp'}
-                alt="Instalaciones de Corporación Maresa Ecuador"
+                alt="Imagen de referencia sobre baterías"
                 className="w-full h-[220px] sm:h-[280px] object-cover"
                 loading="lazy"
               />
@@ -133,7 +133,7 @@ export default function About() {
             <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800">
               <img suppressHydrationWarning
                 src={about.aboutImage || '/quienes-somos-section-landing.webp'}
-                alt="Instalaciones de Corporación Maresa Ecuador"
+                alt="Imagen de referencia sobre baterías"
                 className="w-full h-[420px] sm:h-[500px] object-cover hover:scale-105 transition-transform duration-700 ease-out"
                 loading="lazy"
               />
@@ -148,7 +148,7 @@ export default function About() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className={`absolute -bottom-6 -right-6 rounded-2xl shadow-2xl p-5 sm:p-6 max-w-xs hidden sm:block border ${
+              className={`absolute -bottom-6 right-0 rounded-2xl shadow-2xl p-5 sm:p-6 max-w-xs hidden sm:block border ${
                 isDark
                   ? 'bg-slate-950/95 border-slate-700 text-white shadow-blue-900/20'
                   : 'bg-white border-slate-200 text-slate-900 shadow-slate-900/15'

@@ -19,9 +19,9 @@ import type { Metadata } from 'next';
 import ProductsClient from './ProductsClient';
 
 export const metadata: Metadata = {
-  title: 'Catálogo de Baterías — Todos los Modelos',
+  title: 'Catálogo de baterías',
   description:
-    'Explora el catálogo completo de baterías Maresa: AGM, EFB, Calcio-Plata y Heavy Duty. Compara especificaciones y solicita cotización directa por WhatsApp.',
+    'Consulta las categorías de baterías y compara características generales. Referencias y disponibilidad sujetas a confirmación.',
 };
 
 export default function ProductosPage() {

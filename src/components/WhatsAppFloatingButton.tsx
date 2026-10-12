@@ -29,10 +29,12 @@ export default function WhatsAppFloatingButton() {
   const [isOpen, setIsOpen] = useState(false);
   const { theme } = useTheme();
 
-  const whatsappUrl =
-    'https://wa.me/593998123456?text=Hola%20Maresa,%20deseo%20consultar%20sobre%20una%20bater%C3%ADa%20para%20mi%20veh%C3%ADculo.';
-  const tollFreeNumber = 'tel:1800228374';
-  const emergencyMobile = 'tel:+593998123456';
+  const whatsapp = process.env.NEXT_PUBLIC_CONTACT_WHATSAPP;
+  const whatsappUrl = `https://wa.me/${whatsapp}?text=Hola%2C%20deseo%20consultar%20sobre%20una%20bater%C3%ADa.`;
+  const tollFreeNumber = `tel:${process.env.NEXT_PUBLIC_CONTACT_PHONE || ''}`;
+  const emergencyMobile = tollFreeNumber;
+
+  if (!whatsapp || !/^\d{8,15}$/.test(whatsapp)) return null;
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
@@ -63,7 +65,7 @@ export default function WhatsAppFloatingButton() {
               <div className="flex items-center gap-2 mb-1">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
                 <span className="text-[11px] uppercase tracking-wider font-extrabold text-blue-200">
-                  Atención Inmediata Maresa
+                  Contacto Baterías Maresa
                 </span>
               </div>
               <h4 className="text-base font-extrabold leading-tight">
@@ -71,7 +73,7 @@ export default function WhatsAppFloatingButton() {
               </h4>
               <p className="text-xs text-blue-100/90 mt-1 flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-emerald-300" />
-                Atención 24/7 en las 24 provincias de Ecuador
+                Consulta horarios y disponibilidad
               </p>
             </div>
 
@@ -97,7 +99,7 @@ export default function WhatsAppFloatingButton() {
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-sm">Chatear por WhatsApp</span>
                     <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-emerald-500 text-white">
-                      En línea
+                      Consultar
                     </span>
                   </div>
                   <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
@@ -106,8 +108,8 @@ export default function WhatsAppFloatingButton() {
                 </div>
               </a>
 
-              {/* Option 2: Llamada Nacional Gratuita 1-800 */}
-              <a
+              {/* Option 2: Phone, when confirmed */}
+              {process.env.NEXT_PUBLIC_CONTACT_PHONE && <a
                 href={tollFreeNumber}
                 onClick={() => setIsOpen(false)}
                 className={`flex items-center gap-3 p-3 rounded-2xl border transition-all duration-150 group ${
@@ -121,19 +123,19 @@ export default function WhatsAppFloatingButton() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-sm">Llamar 1-800 BATERÍA</span>
+                    <span className="font-bold text-sm">Llamar</span>
                     <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-blue-600 text-white">
-                      Gratis
+                      Teléfono
                     </span>
                   </div>
                   <p className="text-xs text-slate-500 dark:text-slate-400 font-mono mt-0.5">
-                    1-800-228-3742 (Fijo y Celular)
+                    {process.env.NEXT_PUBLIC_CONTACT_PHONE}
                   </p>
                 </div>
-              </a>
+              </a>}
 
               {/* Option 3: Auxilio Vial y Batería a Domicilio */}
-              <a
+              {process.env.NEXT_PUBLIC_CONTACT_PHONE && <a
                 href={emergencyMobile}
                 onClick={() => setIsOpen(false)}
                 className={`flex items-center gap-3 p-3 rounded-2xl border transition-all duration-150 group ${
@@ -147,16 +149,16 @@ export default function WhatsAppFloatingButton() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-sm">Emergencia en Ruta</span>
+                    <span className="font-bold text-sm">Contacto telefónico</span>
                     <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-amber-500 text-white">
                       Móvil
                     </span>
                   </div>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                    099-812-3456 • Asistencia y reemplazo
+                    {process.env.NEXT_PUBLIC_CONTACT_PHONE}
                   </p>
                 </div>
-              </a>
+              </a>}
 
             </div>
 
@@ -165,7 +167,7 @@ export default function WhatsAppFloatingButton() {
               theme === 'dark' ? 'bg-slate-950/80 text-slate-400 border-slate-800' : 'bg-slate-50 text-slate-600 border-slate-100'
             }`}>
               <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
-              <span>Garantía nacional directa de Corporación Maresa.</span>
+              <span>Condiciones de atención y garantía pendientes de confirmación.</span>
             </div>
           </motion.div>
         )}
@@ -175,7 +177,7 @@ export default function WhatsAppFloatingButton() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         aria-label={isOpen ? 'Cerrar menú de contacto' : 'Abrir opciones de llamada y WhatsApp'}
-        title="Contactar a Corporación Maresa"
+        title="Contactar a Baterías Maresa"
         className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white flex items-center justify-center shadow-2xl shadow-emerald-600/40 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer relative"
       >
         {/* Animated Ring Beacon */}

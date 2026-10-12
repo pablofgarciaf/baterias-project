@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ═══════════════════════════════════════════════════════════════
  * 📄 ARCHITECTURE MAP — SiteContentContext.tsx
  * ═══════════════════════════════════════════════════════════════
@@ -21,6 +21,8 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { collection, doc, getDocs, serverTimestamp, setDoc, writeBatch } from 'firebase/firestore';
+import { auth, db, isFirebaseConfigured } from '@/lib/firebase';
 
 export interface SiteContent {
   hero: {
@@ -125,87 +127,98 @@ export interface SiteContent {
     title: string;
     subtitle: string;
   };
+  marquee: {
+    enabled: boolean;
+    badge: string;
+    speedSeconds: number;
+    items: Array<{
+      id: string;
+      title: string;
+      subtitle: string;
+      tag?: string;
+    }>;
+  };
 }
 
 export const defaultSiteContent: SiteContent = {
   hero: {
-    badgeText: 'Servicio técnico en todo el país • Red Oficial Maresa',
+    badgeText: 'Baterías Maresa · Guía de elección',
     titleMain: 'Energía confiable',
     titleHighlight: 'para cada kilómetro',
-    subtitle: 'Baterías para autos, camiones, motos, lanchas y maquinaria. Distribución directa a las 24 provincias del Ecuador con garantía y soporte técnico.',
+    subtitle: 'Encuentra información para comparar baterías por tecnología, capacidad y corriente de arranque. Empieza por las especificaciones de tu vehículo.',
     ctaButtonText: 'Buscar batería',
     secondaryButtonText: 'Puntos de venta',
     ctaButtonColor: '#e11d48',
     backgroundImage: 'https://images.pexels.com/photos/37177070/pexels-photo-37177070.jpeg?auto=compress&cs=tinysrgb&w=1920',
-    stat1Value: '70+',
-    stat1Label: 'Años de experiencia',
-    stat2Value: '150+',
-    stat2Label: 'Distribuidores en Ecuador',
-    stat3Value: 'Na cional',
-    stat3Label: 'Cobertura'
+    stat1Value: 'AGM',
+    stat1Label: 'Tecnología',
+    stat2Value: 'EFB',
+    stat2Label: 'Tecnología',
+    stat3Value: '12 V',
+    stat3Label: 'Opciones'
   },
   about: {
     badge: 'Sobre Nosotros',
-    title: 'Cuatro décadas energizando el país',
-    paragraph1: 'Baterías Andinas nació en Quito en 1985 con una misión simple: llevar baterías confiables a cada esquina del Ecuador. Hoy contamos con una amplia red de distribución nacional, con cobertura en las 24 provincias y más de 150 puntos de venta.',
-    paragraph2: 'Trabajamos con tecnología comprobada y procesos certificados para entregar productos que aguantan la altitud de los Andes, el calor de la Costa, la humedad de la Amazonía y la salinidad de Galápagos.',
-    yearsBadge: 'Desde 1985',
-    yearsSubtext: 'Energizando el Ecuador',
+    title: 'Elegir una batería empieza por conocer tu vehículo',
+    paragraph1: 'Una buena elección combina tecnología, capacidad, corriente de arranque, dimensiones y polaridad. Aquí puedes entender cada dato antes de comparar referencias.',
+    paragraph2: 'Usa la ficha de tu vehículo y el manual del fabricante como punto de partida. La compatibilidad y las condiciones comerciales de cada modelo deben comprobarse antes de comprar.',
+    yearsBadge: '5 claves',
+    yearsSubtext: 'para elegir mejor',
     aboutImage: '/hero-reciclaje.webp',
-    missionTitle: 'Misión',
-    missionText: 'Proveer energía confiable a cada ecuatoriano, sin importar dónde esté.',
-    visionTitle: 'Visión',
-    visionText: 'Ser una marca de baterías confiable y comprometida con el medio ambiente en el país.',
-    teamTitle: 'Equipo',
-    teamText: 'Más de 500 colaboradores comprometidos con la calidad.',
-    awardsTitle: 'Reconocimientos',
-    awardsText: 'Certificación ISO 9001 y premio Nacional de Calidad.'
+    missionTitle: 'Compara con criterio',
+    missionText: 'Revisa tecnología, CCA, Ah, tamaño y polaridad junto a la recomendación del fabricante.',
+    visionTitle: 'Evita errores comunes',
+    visionText: 'Una batería que cabe físicamente puede no cumplir los requisitos eléctricos del vehículo.',
+    teamTitle: 'Consulta informada',
+    teamText: 'Lleva el año, modelo, motor y referencia actual cuando solicites una cotización.',
+    awardsTitle: 'Datos verificables',
+    awardsText: 'Comprueba siempre ficha técnica, disponibilidad, precio y garantía del producto ofrecido.'
   },
   vehicleFinder: {
     badge: 'Buscador Inteligente de Baterías',
-    title: 'Encuentra la batería exacta para tu vehículo',
-    subtitle: 'Filtro en cascada (Año > Marca > Modelo) con especificaciones oficiales de amperaje (CCA), tecnología y dimensiones para Ecuador.',
+    title: 'Explora baterías compatibles con tu vehículo',
+    subtitle: 'Selecciona año, marca y modelo para una orientación inicial. Confirma la referencia en el manual del vehículo y con el catálogo oficial.',
     technicalHelpTitle: '¿Dudas sobre el modelo de tu vehículo?',
-    technicalHelpSubtitle: 'Nuestros ingenieros de producto te asisten en vivo por WhatsApp para asegurar el grupo BCI y amperaje perfecto.',
+    technicalHelpSubtitle: 'La recomendación automática es orientativa y debe comprobarse antes de comprar.',
     whatsappButtonText: 'Consultar con un Técnico Especialista',
     whatsappButtonColor: '#059669'
   },
   storeLocator: {
-    badge: 'Estrategia Drive-To-Store • Inteligencia Geoespacial',
+    badge: 'Ubicaciones y contacto',
     title: 'Puntos de Venta y Red de Distribuidores',
-    subtitle: 'Localiza el centro de instalación y distribuidor autorizado más cercano con stock inmediato en las 24 provincias de Ecuador.',
+    subtitle: 'Consulta el directorio para encontrar un punto de atención. Confirma horario, ubicación y disponibilidad antes de desplazarte.',
     searchPlaceholder: 'Buscar por ciudad, local o dirección...',
     whatsappCtaText: 'Contactar por WhatsApp',
     heroDesktop: '/hero-agencias-desktop.webp',
     heroMobile: '/hero-agencias-mobile.webp'
   },
   b2b: {
-    badge: 'Módulo B2B • Expansión Comercial Ecuador',
-    title: 'Únete a la Red de Distribuidores Maresa',
-    subtitle: 'Multiplica la rentabilidad de tu taller, lubricadora o repuestera con el respaldo de una marca de confianza en baterías automotrices, pesadas e industriales.',
-    benefit1Title: 'Márgenes de ganancia preferenciales',
-    benefit1Desc: 'Precios mayoristas competitivos con escalas por volumen y bonificaciones.',
-    benefit2Title: 'Logística y despacho en 24-48 horas',
-    benefit2Desc: 'Entrega directa en tu local comercial en cualquiera de las 24 provincias.',
-    benefit3Title: 'Garantía Nacional y Recambio Inmediato',
-    benefit3Desc: 'Soporte técnico posventa que respalda tu reputación ante tus clientes.',
-    benefit4Title: 'Integración en Panel CRM y Exportación',
-    benefit4Desc: 'Gestión transparente y atención comercial personalizada de nuestro equipo.',
+    badge: 'Contacto para negocios',
+    title: 'Hablemos de las necesidades de tu negocio',
+    subtitle: 'Si tienes un taller, lubricadora o tienda de repuestos, describe lo que buscas para evaluar una propuesta comercial.',
+    benefit1Title: 'Catálogo adecuado',
+    benefit1Desc: 'Indica las tecnologías y referencias que necesitan tus clientes.',
+    benefit2Title: 'Volumen y frecuencia',
+    benefit2Desc: 'Cuéntanos cuánto compras y con qué frecuencia para preparar una propuesta pertinente.',
+    benefit3Title: 'Condiciones por escrito',
+    benefit3Desc: 'Solicita precio, disponibilidad, entrega y garantía antes de cerrar un pedido.',
+    benefit4Title: 'Un canal de consulta',
+    benefit4Desc: 'Deja tus datos y el detalle de tu negocio en el formulario de contacto.',
     submitButtonText: 'Enviar Solicitud Comercial',
     submitButtonColor: '#2563eb'
   },
   recycling: {
     badge: 'Compromiso Ambiental',
-    titleLine1: 'Reciclamos cada batería',
-    titleLine2: 'para proteger el Ecuador',
-    subtitle: 'Una batería abandonada contamina hasta 190 litros de agua. Por eso recibimos tu batería usada en cualquier distribuidor del país y la procesamos en plantas certificadas. Tú ganas, el planeta gana.',
+    titleLine1: 'Una batería usada',
+    titleLine2: 'necesita una entrega responsable',
+    subtitle: 'No la abandones ni la abras. Consulta dónde puedes entregarla de acuerdo con las opciones disponibles en tu localidad.',
     backgroundImage: 'https://images.pexels.com/photos/35520664/pexels-photo-35520664.jpeg?auto=compress&cs=tinysrgb&w=1920',
-    metricValue: '190L',
-    metricLabel: 'Litros de agua que una batería puede contaminar si no se recicla',
-    point1Text: 'Reciclaje certificado bajo normas ambientales ecuatorianas',
-    point2Text: 'Puntos de entrega en las 24 provincias',
-    point3Text: 'Hasta 99% de los materiales son reutilizados',
-    ctaButtonText: 'Encuentra un punto de reciclaje',
+    metricValue: '♻',
+    metricLabel: 'Entrega responsable de baterías usadas',
+    point1Text: 'Mantén la batería en posición vertical',
+    point2Text: 'Evita golpes, fugas y contacto con el contenido',
+    point3Text: 'Consulta un punto de recepción autorizado',
+    ctaButtonText: 'Consultar puntos de atención',
     secondaryButtonText: 'Contactar B2B',
     ctaButtonColor: '#059669'
   },
@@ -213,79 +226,80 @@ export const defaultSiteContent: SiteContent = {
     badge: 'Blog y Consejos',
     title: 'Todo lo que necesitas saber sobre baterías',
     subtitle: 'Guías, consejos de mantenimiento y novedades del mundo automotriz ecuatoriano.'
+  },
+  marquee: {
+    enabled: true,
+    badge: 'BENEFICIOS EXCLUSIVOS',
+    speedSeconds: 30,
+    items: [
+      { id: '1', title: 'INSTALACIÓN A DOMICILIO', subtitle: 'Sin recargo en zonas urbanas principales', tag: 'GRATIS' },
+      { id: '2', title: 'DIAGNÓSTICO COMPUTARIZADO', subtitle: 'Chequeo de alternador y arranque', tag: '30 MIN' },
+      { id: '3', title: 'GARANTÍA DE FÁBRICA', subtitle: 'Hasta 24 meses de respaldo directo', tag: 'OFICIAL' },
+      { id: '4', title: 'PLAN CANJE VERDE', subtitle: 'Recibe descuento entregando tu batería usada', tag: 'RECICLAJE' },
+      { id: '5', title: 'COBERTURA NACIONAL', subtitle: 'Red de agencias y talleres en todo Ecuador', tag: '24/7' },
+      { id: '6', title: 'TECNOLOGÍAS AGM & EFB', subtitle: 'Especialistas en sistemas Start-Stop', tag: 'PREMIUM' }
+    ]
   }
 };
 
-const STORAGE_KEY = 'maresa_site_content_v1';
-
 interface ContentContextType {
   content: SiteContent;
-  updateSection: <K extends keyof SiteContent>(section: K, data: Partial<SiteContent[K]>) => void;
-  resetToDefaults: () => void;
-  saveContent: () => void;
+  updateSection: <K extends keyof SiteContent>(section: K, data: Partial<SiteContent[K]>) => Promise<void>;
+  resetToDefaults: () => Promise<void>;
   isSaved: boolean;
 }
 
 const ContentContext = createContext<ContentContextType | undefined>(undefined);
 
 export const SiteContentProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [content, setContent] = useState<SiteContent>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          return { ...defaultSiteContent, ...parsed };
-        } catch {
-          return defaultSiteContent;
-        }
-      }
-    }
-    return defaultSiteContent;
-  });
+  const [content, setContent] = useState<SiteContent>(defaultSiteContent);
 
   const [isSaved, setIsSaved] = useState(false);
 
-  const updateSection = <K extends keyof SiteContent>(section: K, data: Partial<SiteContent[K]>) => {
-    setContent(prev => {
-      const updated = {
-        ...prev,
-        [section]: {
-          ...prev[section],
-          ...data
+  useEffect(() => {
+    if (!isFirebaseConfigured) return;
+    getDocs(collection(db, 'site_content')).then((snapshot) => {
+      setContent((previous) => {
+        const next = { ...previous };
+        for (const item of snapshot.docs) {
+          const section = item.id as keyof SiteContent;
+          if (section in defaultSiteContent && item.data().content) {
+            next[section] = { ...defaultSiteContent[section], ...item.data().content } as never;
+          }
         }
-      };
-      // Auto-persist to localStorage
-      if (typeof window !== 'undefined') {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-      }
-      return updated;
+        return next;
+      });
+    }).catch((error) => console.error('No se pudo cargar el contenido público:', error));
+  }, []);
+
+  const updateSection = async <K extends keyof SiteContent>(section: K, data: Partial<SiteContent[K]>) => {
+    if (!isFirebaseConfigured || !auth.currentUser?.emailVerified) throw new Error('El CMS no está conectado o la sesión no está verificada.');
+    const merged = { ...content[section], ...data };
+    await setDoc(doc(db, 'site_content', section), {
+      content: merged, updatedAt: serverTimestamp(), updatedBy: auth.currentUser.uid,
     });
+    setContent((previous) => ({ ...previous, [section]: merged }));
     setIsSaved(true);
     setTimeout(() => setIsSaved(false), 2500);
   };
 
-  const saveContent = () => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(content));
-      setIsSaved(true);
-      setTimeout(() => setIsSaved(false), 2500);
+  const resetToDefaults = async () => {
+    if (!window.confirm('¿Seguro que deseas restablecer todos los textos, imágenes y colores originales?')) return;
+    if (!isFirebaseConfigured || !auth.currentUser?.emailVerified) throw new Error('El CMS no está conectado o la sesión no está verificada.');
+    const batch = writeBatch(db);
+    for (const section of Object.keys(defaultSiteContent) as (keyof SiteContent)[]) {
+      batch.set(doc(db, 'site_content', section), {
+        content: defaultSiteContent[section], updatedAt: serverTimestamp(), updatedBy: auth.currentUser.uid,
+      });
     }
-  };
-
-  const resetToDefaults = () => {
-    if (window.confirm('¿Seguro que deseas restablecer todos los textos, imágenes y colores originales?')) {
-      setContent(defaultSiteContent);
-      if (typeof window !== 'undefined') {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultSiteContent));
-      }
-      setIsSaved(true);
-      setTimeout(() => setIsSaved(false), 2500);
-    }
+    await batch.commit();
+    setContent(defaultSiteContent);
+    setIsSaved(true);
+    setTimeout(() => setIsSaved(false), 2500);
   };
 
   return (
-    <ContentContext.Provider value={{ content, updateSection, resetToDefaults, saveContent, isSaved }}>
+    <ContentContext.Provider value={{ content, updateSection, resetToDefaults, isSaved }}>
       {children}
     </ContentContext.Provider>
   );

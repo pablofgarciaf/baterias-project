@@ -1,417 +1,156 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { User, UserPlus, Shield, CheckCircle, Mail, Key, X, Edit, Trash2 } from 'lucide-react';
+import { useCallback, useEffect, useState, type FormEvent } from 'react';
+import { CheckCircle2, Edit3, KeyRound, Loader2, Shield, UserPlus, X } from 'lucide-react';
+import { sendSignInLinkToEmail } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 import { useTheme } from '@/context/ThemeContext';
 
-interface UserData {
-  id: string;
-  name: string;
-  email: string;
-  role: 'Admin' | 'Editor';
-  status: 'Activo' | 'Inactivo';
-  createdAt: string;
+type Role = 'admin' | 'editor';
+type StaffUser = { uid: string; name: string; email: string; cedulaLast4?: string; role: Role; active: boolean; emailVerified: boolean; forcePasswordChange?: boolean };
+
+async function adminRequest(path: string, options?: RequestInit) {
+  const user = auth.currentUser;
+  if (!user) throw new Error('La sesión expiró. Vuelve a iniciar sesión.');
+  const token = await user.getIdToken();
+  const response = await fetch(path, {
+    ...options,
+    cache: 'no-store',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}`, ...options?.headers },
+  });
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.error || 'No se pudo completar la operación.');
+  return result;
 }
 
-export default function UsersManager() {
+async function sendActivationLink(email: string) {
+  auth.languageCode = 'es';
+  await sendSignInLinkToEmail(auth, email.trim().toLowerCase(), {
+    url: `${window.location.origin}/admin`,
+    handleCodeInApp: true,
+  });
+}
+
+export default function UsersManager({ onCountChange }: { onCountChange?: (count: number) => void }) {
   const { theme } = useTheme();
-  const darkMode = theme === 'dark';
-
-  const [users, setUsers] = useState<UserData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Modal states
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingUser, setEditingUser] = useState<UserData | null>(null);
-
-  // Form states
+  const dark = theme === 'dark';
+  const [users, setUsers] = useState<StaffUser[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
+  const [editing, setEditing] = useState<StaffUser | null>(null);
+  const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [role, setRole] = useState<'Admin' | 'Editor'>('Admin');
-  const [password, setPassword] = useState('');
-  const [formError, setFormError] = useState('');
-  const [formSuccess, setFormSuccess] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [cedula, setCedula] = useState('');
+  const [role, setRole] = useState<Role>('editor');
 
-  const modalRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    // Mock load
-    setTimeout(() => {
-      setUsers([
-        { id: '1', name: 'Pablo García', email: 'pablofgarciaf@gmail.com', role: 'Admin', status: 'Activo', createdAt: new Date().toISOString() }
-      ]);
-      setIsLoading(false);
-    }, 500);
-  }, []);
-
-  // Handle ESC key
-  useEffect(() => {
-    const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') closeModal();
-    };
-    window.addEventListener('keydown', handleEsc);
-    return () => window.removeEventListener('keydown', handleEsc);
-  }, []);
-
-  // Handle outside click
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-        closeModal();
-      }
-    };
-    if (isModalOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isModalOpen]);
-
-  const openNewUserModal = () => {
-    setEditingUser(null);
-    setName('');
-    setEmail('');
-    setRole('Admin');
-    setPassword('');
-    setFormError('');
-    setFormSuccess('');
-    setIsModalOpen(true);
-  };
-
-  const openEditModal = (u: UserData) => {
-    setEditingUser(u);
-    setName(u.name);
-    setEmail(u.email);
-    setRole(u.role);
-    setPassword(''); // leave blank if not changing
-    setFormError('');
-    setFormSuccess('');
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setTimeout(() => {
-      setFormError('');
-      setFormSuccess('');
-    }, 300);
-  };
-
-  const handleSaveUser = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setFormError('');
-    setFormSuccess('');
-    
-    if (!name || !email || (!editingUser && !password)) {
-      setFormError('Por favor completa los campos obligatorios.');
-      return;
-    }
-
-    setIsSubmitting(true);
-
+  const reload = useCallback(async () => {
+    setLoading(true);
     try {
-      // Simulate API call
-      await new Promise(r => setTimeout(r, 800));
+      const result = await adminRequest('/api/admin/users');
+      setUsers(result.users);
+      onCountChange?.(result.users.length);
+      setError('');
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'No se pudieron cargar usuarios.');
+    } finally { setLoading(false); }
+  }, [onCountChange]);
 
-      if (editingUser) {
-        setUsers(users.map(u => u.id === editingUser.id ? { ...u, name, email, role } : u));
-        setFormSuccess('Usuario actualizado con éxito.');
+  useEffect(() => { void reload(); }, [reload]);
+
+  const showForm = (user: StaffUser | null) => {
+    setEditing(user);
+    setName(user?.name || '');
+    setEmail(user?.email || '');
+    setCedula('');
+    setRole(user?.role || 'editor');
+    setError('');
+    setOpen(true);
+  };
+
+  const save = async (event: FormEvent) => {
+    event.preventDefault();
+    setSaving(true);
+    setError('');
+    setNotice('');
+    try {
+      if (editing) {
+        await adminRequest(`/api/admin/users/${encodeURIComponent(editing.uid)}`, {
+          method: 'PATCH', body: JSON.stringify({ name, role }),
+        });
+        setNotice('Usuario actualizado en Authentication y Firestore.');
       } else {
-        const newUser: UserData = {
-          id: Math.random().toString(),
-          name,
-          email,
-          role,
-          status: 'Activo',
-          createdAt: new Date().toISOString()
-        };
-        setUsers([...users, newUser]);
-        setFormSuccess('Usuario creado con éxito.');
+        await adminRequest('/api/admin/users', {
+          method: 'POST', body: JSON.stringify({ name, email, cedula, role }),
+        });
+        setCedula('');
+        try {
+          auth.languageCode = 'es';
+          await sendActivationLink(email);
+          setNotice('Usuario creado. Se envió un enlace de activación al correo indicado.');
+        } catch {
+          setNotice('Usuario creado en Firebase, pero no se pudo enviar el enlace. Activa el método Enlace por correo en Authentication y usa Reenviar invitación.');
+        }
       }
-
-      setTimeout(() => {
-        closeModal();
-        setIsSubmitting(false);
-      }, 1000);
-    } catch (err: any) {
-      setFormError(err.message || 'Error al guardar el usuario.');
-      setIsSubmitting(false);
-    }
+      setOpen(false);
+      await reload();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'No se pudo guardar el usuario.');
+    } finally { setSaving(false); }
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
-      
-      {/* Header */}
+    <section className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className={`text-2xl font-extrabold tracking-tight ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-            Usuarios y Accesos
-          </h2>
-          <p className={`text-sm mt-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-            Gestiona los administradores y operadores autorizados de Corporación Maresa.
-          </p>
+          <h2 className={`text-2xl font-extrabold tracking-tight ${dark ? 'text-white' : 'text-slate-900'}`}>Usuarios y Accesos</h2>
+          <p className="text-sm mt-1 text-slate-400">Cuentas reales de Firebase Authentication vinculadas a documentos por UID en Firestore.</p>
         </div>
-
-        <button
-          onClick={openNewUserModal}
-          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold shadow-[0_0_20px_rgba(37,99,235,0.3)] active:scale-95 transition-all cursor-pointer"
-        >
-          <UserPlus className="w-4 h-4" />
-          <span>Nuevo Usuario</span>
+        <button type="button" onClick={() => showForm(null)} className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold">
+          <UserPlus className="w-4 h-4" /> Nuevo usuario
         </button>
       </div>
 
-      {/* Users List Card */}
-      <div
-        className={`rounded-[24px] border overflow-hidden shadow-2xl transition-colors ${
-          darkMode ? 'bg-slate-900/40 border-white/5 backdrop-blur-xl' : 'bg-white/80 border-slate-200 shadow-[0_20px_40px_rgba(0,0,0,0.04)] backdrop-blur-xl'
-        }`}
-      >
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead
-              className={`border-b text-[11px] font-bold uppercase tracking-wider ${
-                darkMode ? 'bg-slate-950/50 border-white/5 text-slate-400' : 'bg-slate-50/50 border-slate-200 text-slate-500'
-              }`}
-            >
-              <tr>
-                <th className="py-4 px-6">Usuario</th>
-                <th className="py-4 px-6">Correo</th>
-                <th className="py-4 px-6">Rol</th>
-                <th className="py-4 px-6">Estado</th>
-                <th className="py-4 px-6 text-right">Acciones</th>
+      {error && !open && <p role="alert" className="rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-400">{error}</p>}
+      {notice && <p role="status" className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-400">{notice}</p>}
+
+      <div className={`rounded-3xl border overflow-x-auto ${dark ? 'bg-slate-900/40 border-white/10' : 'bg-white border-slate-200'}`}>
+        <table className="w-full text-left text-sm">
+          <thead className={`border-b text-xs uppercase tracking-wider ${dark ? 'border-white/10 text-slate-400' : 'border-slate-200 text-slate-500'}`}>
+            <tr><th className="p-5">Usuario</th><th className="p-5">Correo / UID</th><th className="p-5">Rol</th><th className="p-5">Estado</th><th className="p-5">Acciones</th></tr>
+          </thead>
+          <tbody>
+            {loading && <tr><td colSpan={5} className="p-8 text-center text-slate-400"><Loader2 className="inline-block w-4 h-4 animate-spin mr-2" />Cargando usuarios...</td></tr>}
+            {!loading && users.length === 0 && <tr><td colSpan={5} className="p-8 text-center text-slate-400">No hay usuarios vinculados por UID.</td></tr>}
+            {users.map((user) => (
+              <tr key={user.uid} className={`border-t ${dark ? 'border-white/5' : 'border-slate-100'}`}>
+                <td className="p-5 font-semibold">{user.name}</td>
+                <td className="p-5"><span className="block">{user.email}</span><code className="block mt-1 text-xs text-slate-500 break-all">{user.uid}</code>{user.cedulaLast4 && <span className="block mt-1 text-xs text-slate-500">Cédula: ••••••{user.cedulaLast4}</span>}</td>
+                <td className="p-5"><span className="inline-flex items-center gap-1 rounded-full border border-blue-500/30 bg-blue-500/10 px-3 py-1 text-xs text-blue-400"><Shield className="w-3 h-3" />{user.role === 'admin' ? 'Admin' : 'Editor'}</span></td>
+                <td className="p-5 text-xs">{user.active ? (!user.emailVerified ? 'Correo pendiente' : user.forcePasswordChange ? 'Primer ingreso pendiente' : 'Activo') : 'Desactivado'}</td>
+                <td className="p-5"><div className="flex items-center gap-2"><button type="button" onClick={() => showForm(user)} aria-label={`Editar ${user.name}`} className="rounded-xl border border-slate-600 p-2 hover:border-blue-500"><Edit3 className="w-4 h-4" /></button>{user.forcePasswordChange && <button type="button" onClick={() => { void sendActivationLink(user.email).then(() => setNotice('Invitación enviada.')).catch(() => setError('No se pudo enviar la invitación. Revisa Authentication.')); }} className="rounded-xl border border-blue-500/40 px-2 py-1 text-xs text-blue-400">Reenviar invitación</button>}</div></td>
               </tr>
-            </thead>
-            <tbody className={`divide-y ${darkMode ? 'divide-white/5' : 'divide-slate-200'}`}>
-              {isLoading ? (
-                <tr>
-                  <td colSpan={5} className="py-12 text-center text-slate-500">
-                    Cargando usuarios...
-                  </td>
-                </tr>
-              ) : users.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="py-12 text-center text-slate-500">
-                    No hay usuarios registrados.
-                  </td>
-                </tr>
-              ) : (
-                users.map((u) => (
-                  <motion.tr
-                    key={u.id}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className={`transition-colors hover:bg-black/5 dark:hover:bg-white/5`}
-                  >
-                    <td className="py-4 px-6">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-md">
-                          {u.name.charAt(0).toUpperCase()}
-                        </div>
-                        <span className={`font-semibold ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-                          {u.name}
-                        </span>
-                      </div>
-                    </td>
-                    <td className={`py-4 px-6 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
-                      {u.email}
-                    </td>
-                    <td className="py-4 px-6">
-                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold border ${
-                        darkMode ? 'bg-blue-900/20 border-blue-500/30 text-blue-400' : 'bg-blue-50 border-blue-200 text-blue-700'
-                      }`}>
-                        <Shield className="w-3.5 h-3.5" />
-                        {u.role}
-                      </span>
-                    </td>
-                    <td className="py-4 px-6">
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
-                        <CheckCircle className="w-3.5 h-3.5" />
-                        {u.status}
-                      </span>
-                    </td>
-                    <td className="py-4 px-6 text-right">
-                      <button
-                        onClick={() => openEditModal(u)}
-                        className={`p-2 rounded-xl border transition-all ${
-                          darkMode ? 'bg-slate-800 border-slate-700 text-slate-300 hover:text-white hover:border-blue-500' : 'bg-white border-slate-200 text-slate-600 hover:text-blue-600 hover:border-blue-500'
-                        }`}
-                        title="Editar usuario"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-                    </td>
-                  </motion.tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       </div>
 
-      {/* POPUP MODAL: Crear/Editar Usuario */}
-      <AnimatePresence>
-      {isModalOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md"
-        >
-          <motion.div
-            ref={modalRef}
-            initial={{ opacity: 0, scale: 0.95, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
-            className={`w-full max-w-lg rounded-[32px] border shadow-[0_0_60px_rgba(0,0,0,0.5)] overflow-hidden ${
-              darkMode ? 'bg-[#0f172a] border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'
-            }`}
-          >
-            {/* Modal Header */}
-            <div className={`px-6 py-5 border-b flex items-center justify-between ${
-              darkMode ? 'border-slate-800 bg-slate-900/50' : 'border-slate-200 bg-slate-50'
-            }`}>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-600/15 text-blue-500 flex items-center justify-center">
-                  {editingUser ? <Edit className="w-5 h-5" /> : <UserPlus className="w-5 h-5" />}
-                </div>
-                <div>
-                  <h3 className="font-extrabold text-lg tracking-tight">
-                    {editingUser ? 'Editar Usuario' : 'Crear Nuevo Usuario'}
-                  </h3>
-                  <p className="text-xs opacity-60">Acceso administrativo</p>
-                </div>
-              </div>
-              <button
-                onClick={closeModal}
-                className="p-2 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Modal Body Form */}
-            <form onSubmit={handleSaveUser} className="p-6 space-y-5">
-              
-              {formError && (
-                <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500 text-sm font-semibold flex items-center gap-2">
-                  <Shield className="w-4 h-4 shrink-0" />
-                  {formError}
-                </div>
-              )}
-              {formSuccess && (
-                <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-sm font-semibold flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 shrink-0" />
-                  {formSuccess}
-                </div>
-              )}
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-widest mb-1.5 opacity-60">
-                    Nombre Completo *
-                  </label>
-                  <div className="relative">
-                    <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 opacity-40" />
-                    <input
-                      type="text"
-                      required
-                      placeholder="Ej: Ing. Juan Pérez"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      className={`w-full pl-10 pr-4 py-3 rounded-2xl border text-sm outline-none transition-all focus:ring-2 focus:ring-blue-500/20 ${
-                        darkMode ? 'bg-slate-900 border-slate-800 focus:border-blue-500' : 'bg-slate-50 border-slate-200 focus:border-blue-500'
-                      }`}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-widest mb-1.5 opacity-60">
-                    Correo Electrónico *
-                  </label>
-                  <div className="relative">
-                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 opacity-40" />
-                    <input
-                      type="email"
-                      required
-                      placeholder="usuario@dominio.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className={`w-full pl-10 pr-4 py-3 rounded-2xl border text-sm outline-none transition-all focus:ring-2 focus:ring-blue-500/20 ${
-                        darkMode ? 'bg-slate-900 border-slate-800 focus:border-blue-500' : 'bg-slate-50 border-slate-200 focus:border-blue-500'
-                      }`}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-[11px] font-bold uppercase tracking-widest mb-1.5 opacity-60">
-                      Rol del Sistema *
-                    </label>
-                    <select
-                      value={role}
-                      onChange={(e) => setRole(e.target.value as 'Admin' | 'Editor')}
-                      className={`w-full px-4 py-3 rounded-2xl border text-sm outline-none transition-all cursor-pointer focus:ring-2 focus:ring-blue-500/20 ${
-                        darkMode ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-slate-200'
-                      }`}
-                    >
-                      <option value="Admin">Administrador (Total)</option>
-                      <option value="Editor">Editor (Contenidos)</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-[11px] font-bold uppercase tracking-widest mb-1.5 opacity-60">
-                      {editingUser ? 'Nueva Clave (Opcional)' : 'Clave Inicial *'}
-                    </label>
-                    <div className="relative">
-                      <Key className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 opacity-40" />
-                      <input
-                        type="password"
-                        required={!editingUser}
-                        placeholder="********"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className={`w-full pl-10 pr-4 py-3 rounded-2xl border text-sm outline-none transition-all focus:ring-2 focus:ring-blue-500/20 ${
-                          darkMode ? 'bg-slate-900 border-slate-800 focus:border-blue-500' : 'bg-slate-50 border-slate-200 focus:border-blue-500'
-                        }`}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-4 border-t border-slate-800 flex justify-end gap-3 mt-6">
-                <button
-                  type="button"
-                  onClick={closeModal}
-                  className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${
-                    darkMode ? 'bg-slate-800 hover:bg-slate-700 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-800'
-                  }`}
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className={`px-6 py-2.5 rounded-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-500 shadow-[0_0_15px_rgba(37,99,235,0.3)] transition-all flex items-center gap-2 ${
-                    isSubmitting ? 'opacity-70 cursor-wait' : ''
-                  }`}
-                >
-                  {isSubmitting ? 'Guardando...' : editingUser ? 'Actualizar Usuario' : 'Crear Usuario'}
-                </button>
-              </div>
-            </form>
-          </motion.div>
-        </motion.div>
-      )}
-      </AnimatePresence>
-    </div>
+      {open && <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/75 p-4" onMouseDown={(event) => { if (event.target === event.currentTarget) setOpen(false); }}>
+        <div role="dialog" aria-modal="true" aria-labelledby="user-dialog-title" className={`w-full max-w-lg rounded-3xl border p-6 shadow-2xl ${dark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
+          <div className="flex justify-between items-center mb-5"><h3 id="user-dialog-title" className="text-xl font-bold">{editing ? 'Editar usuario' : 'Crear usuario'}</h3><button type="button" onClick={() => setOpen(false)} aria-label="Cerrar"><X className="w-5 h-5" /></button></div>
+          {error && <p role="alert" className="mb-4 text-sm text-red-400">{error}</p>}
+          <form onSubmit={save} className="space-y-4">
+            <label className="block text-sm font-medium">Nombre<input required minLength={2} maxLength={100} value={name} onChange={(event) => setName(event.target.value)} className="mt-1 block w-full rounded-xl border border-slate-600 bg-transparent px-3 py-2" /></label>
+            <label className="block text-sm font-medium">Correo<input required type="email" disabled={Boolean(editing)} value={email} onChange={(event) => setEmail(event.target.value)} className="mt-1 block w-full rounded-xl border border-slate-600 bg-transparent px-3 py-2 disabled:opacity-60" /></label>
+            {!editing && <label className="block text-sm font-medium">Cédula<input required inputMode="numeric" pattern="[0-9]{10}" minLength={10} maxLength={10} autoComplete="off" value={cedula} onChange={(event) => setCedula(event.target.value.replace(/\D/g, ''))} className="mt-1 block w-full rounded-xl border border-slate-600 bg-transparent px-3 py-2" /><span className="block mt-1 text-xs text-slate-400">10 dígitos. El panel solo conservará los últimos cuatro.</span></label>}
+            <label className="block text-sm font-medium">Rol<select value={role} onChange={(event) => setRole(event.target.value as Role)} className={`mt-1 block w-full rounded-xl border border-slate-600 px-3 py-2 ${dark ? 'bg-slate-900' : 'bg-white'}`}><option value="editor">Editor de contenidos</option><option value="admin">Administrador</option></select></label>
+            {!editing && <p className="flex gap-2 text-xs text-slate-400"><KeyRound className="w-4 h-4 shrink-0" />Se enviará un enlace que verifica el correo y permite crear una contraseña en el primer ingreso.</p>}
+            <div className="flex justify-end gap-3 pt-3"><button type="button" onClick={() => setOpen(false)} className="rounded-xl px-4 py-2 text-sm">Cancelar</button><button disabled={saving} className="rounded-xl bg-blue-600 px-5 py-2 text-sm font-bold text-white disabled:opacity-60">{saving ? 'Guardando...' : editing ? 'Guardar cambios' : 'Crear usuario'}</button></div>
+          </form>
+        </div>
+      </div>}
+    </section>
   );
 }

@@ -19,9 +19,9 @@ import type { Metadata } from 'next';
 import ReciclajeClient from './ReciclajeClient';
 
 export const metadata: Metadata = {
-  title: 'Reciclaje Ecológico — Plan Canje Verde Maresa',
+  title: 'Reciclaje de baterías',
   description:
-    'Programa de reciclaje de baterías usadas de Corporación Maresa. Entrega tu batería vieja y recibe un bono inmediato de -$10 en tu nueva batería en cualquier agencia de Ecuador.',
+    'Información general sobre la entrega responsable de baterías usadas. Condiciones del programa pendientes de confirmación.',
 };
 
 export default function ReciclajePage() {

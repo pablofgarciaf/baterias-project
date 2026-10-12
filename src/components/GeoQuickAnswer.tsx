@@ -29,29 +29,26 @@ export default function GeoQuickAnswer() {
         <div className="flex items-center gap-2 flex-wrap">
           <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-600/30 text-blue-300 font-semibold border border-blue-500/30 text-[11px] tracking-wide uppercase">
             <Zap className="w-3 h-3 text-amber-400" />
-            Corporación Maresa
+            Baterías Maresa
           </span>
           <span className="text-slate-300">
-            <strong>Baterías Andinas:</strong> Distribución oficial en 24 provincias del Ecuador. Baterías Calcio, EFB y AGM desde $65 con garantía nacional de hasta 36 meses.
+            Compara tecnologías y verifica los requisitos de tu vehículo.
           </span>
         </div>
 
         <div className="flex items-center gap-4 text-slate-400 flex-wrap">
           <span className="flex items-center gap-1 hover:text-white transition-colors">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-            Garantía Oficial Maresa
+            Tecnología correcta
           </span>
           <span className="flex items-center gap-1 hover:text-white transition-colors">
             <RefreshCw className="w-3.5 h-3.5 text-blue-400" />
-            Reciclaje con bono -$10
+            CCA y capacidad
           </span>
-          <a
-            href="tel:1800228374"
-            className="flex items-center gap-1 text-blue-400 hover:text-blue-300 font-medium transition-colors"
-          >
+          <span className="flex items-center gap-1 text-blue-400 font-medium">
             <PhoneCall className="w-3 h-3" />
-            1-800-BATERIA (228-3742)
-          </a>
+            Tamaño y polaridad
+          </span>
         </div>
       </div>
     </aside>

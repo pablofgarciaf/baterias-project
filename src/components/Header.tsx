@@ -40,6 +40,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useTheme } from '@/context/ThemeContext';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import Marquee from './Marquee';
 
 const navLinks = [
   { label: 'Inicio', href: '/' },
@@ -86,7 +87,7 @@ export default function Header() {
     return pathname.startsWith(href);
   };
 
-  const hasDarkHero = pathname === '/' || pathname === '/nosotros';
+  const hasDarkHero = pathname === '/' || pathname === '/nosotros' || pathname === '/reciclaje';
   const solid = scrolled || !hasDarkHero;
 
   const headerBg = solid
@@ -112,9 +113,14 @@ export default function Header() {
     : 'bg-white';
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${headerBg}`}>
-      <div className="container-max">
-        <div className="flex items-center justify-between h-14 lg:h-16">
+    <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+      {/* 1. Marquesina en el tope: solo en la página principal, se oculta al scrollear */}
+      {pathname === '/' && <Marquee scrolled={scrolled} />}
+
+      {/* 2. Barra de navegación después: transparente sobre el hero, sólida con blur al scrollear */}
+      <div className={`transition-all duration-500 ${headerBg}`}>
+        <div className="container-max">
+          <div className="flex items-center justify-between h-14 lg:h-16">
 
           {/* Brand — compact */}
           <Link href="/" className="flex items-center gap-2 group shrink-0">
@@ -313,6 +319,7 @@ export default function Header() {
           </motion.div>
         )}
       </AnimatePresence>
+      </div>
     </header>
   );
 }

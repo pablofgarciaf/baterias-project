@@ -1,0 +1,76 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isStaff() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && exists(/databases/$(database)/documents/usuarios/$(request.auth.uid))
+        && get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.active == true
+        && get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.forcePasswordChange != true
+        && get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.role in ['admin', 'editor'];
+    }
+
+    function isAdmin() {
+      return isStaff()
+        && get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    match /usuarios/{uid} {
+      allow get: if isAdmin() || (isStaff() && request.auth.uid == uid);
+      allow list: if isAdmin();
+      // Firebase Admin SDK is the sole writer. Client users cannot grant roles.
+      allow create, update, delete: if false;
+    }
+
+    match /b2b_leads/{leadId} {
+      allow create: if request.resource.data.keys().hasAll([
+          'companyName', 'contactName', 'email', 'phone', 'province',
+          'city', 'businessType', 'estimatedVolume', 'status', 'createdAt'
+        ])
+        && request.resource.data.keys().hasOnly([
+          'id', 'companyName', 'contactName', 'email', 'phone', 'province',
+          'city', 'businessType', 'estimatedVolume', 'notes', 'status',
+          'createdAt', 'firebaseTimestamp'
+        ])
+        && request.resource.data.status == 'Pendiente'
+        && request.resource.data.companyName is string
+        && request.resource.data.companyName.size() >= 2
+        && request.resource.data.companyName.size() <= 120
+        && request.resource.data.contactName is string
+        && request.resource.data.contactName.size() >= 2
+        && request.resource.data.contactName.size() <= 120
+        && request.resource.data.email is string
+        && request.resource.data.email.size() <= 254
+        && request.resource.data.phone is string
+        && request.resource.data.phone.size() <= 40
+        && (!('notes' in request.resource.data) || (request.resource.data.notes is string && request.resource.data.notes.size() <= 2000));
+      allow get, list: if isAdmin();
+      allow update: if isAdmin()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+        && request.resource.data.status in ['Pendiente', 'Contactado', 'Aprobado', 'Descartado', 'Aplica', 'No Aplica'];
+      allow delete: if false;
+    }
+
+    match /distributors/{distributorId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /site_content/{sectionId} {
+      allow read: if true;
+      allow create, update: if isStaff()
+        && request.resource.data.keys().hasOnly(['content', 'updatedAt', 'updatedBy'])
+        && request.resource.data.content is map;
+      allow delete: if isAdmin();
+    }
+
+    match /catalog/{itemId} {
+      allow get, list: if isAdmin() || resource.data.published == true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

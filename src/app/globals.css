@@ -270,3 +270,30 @@ h1, h2, h3, h4, h5, h6 {
     line-height: 1.75rem;
   }
 }
+
+/* ─── Infinite Marquee Animation ─── */
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 60s linear infinite;
+  will-change: transform;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* ─── Luxury Dark Map Filter ─── */
+.map-dark-filter {
+  filter: invert(90%) hue-rotate(180deg) contrast(92%) brightness(88%);
+}
+

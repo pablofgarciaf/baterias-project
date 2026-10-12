@@ -19,9 +19,9 @@ import type { Metadata } from 'next';
 import AgenciasClient from './AgenciasClient';
 
 export const metadata: Metadata = {
-  title: 'Agencias y Puntos de Venta — 24 Provincias',
+  title: 'Puntos de venta',
   description:
-    'Encuentra tu agencia Baterías Maresa más cercana en Ecuador. Red de distribuidores autorizados en las 24 provincias con mapa, horarios, teléfono y WhatsApp directo.',
+    'Explora el directorio de puntos de venta de referencia. Direcciones y canales de atención pendientes de validación.',
 };
 
 export default function AgenciasPage() {

@@ -48,9 +48,9 @@ const teaserSections = [
   {
     id: 'catalogo',
     title: 'Catálogo de Baterías',
-    subtitle: 'Línea completa para autos, camiones, motos y maquinaria',
+    subtitle: 'Tecnologías y fichas de referencia',
     description:
-      'Explora nuestra gama premium: desde baterías convencionales hasta tecnología AGM y EFB para vehículos Start-Stop. Todas con garantía real de fábrica.',
+      'Conoce diferencias generales entre tecnologías AGM, EFB y convencionales. El catálogo comercial se publicará tras su aprobación.',
     href: '/productos',
     cta: 'Ver Catálogo Completo',
     icon: Package,
@@ -58,14 +58,14 @@ const teaserSections = [
     gradient: 'from-secondary-500 to-secondary-700',
     lightBg: 'from-secondary-50/40 via-white to-orange-50/20',
     darkBg: 'from-slate-900 via-slate-900/95 to-secondary-950/30',
-    highlights: ['Tecnología AGM & EFB', 'Para todo tipo de vehículo', 'Garantía hasta 24 meses'],
+    highlights: ['Tecnología AGM & EFB', 'CCA y capacidad', 'Cómo comparar'],
   },
   {
     id: 'puntos-de-venta',
     title: 'Puntos de Venta',
-    subtitle: 'Red de distribuidores en las 24 provincias del Ecuador',
+    subtitle: 'Consulta ubicaciones y datos de atención',
     description:
-      'Encuentra tu agencia más cercana con mapa interactivo, horarios, teléfono directo y WhatsApp. Más de 150 puntos autorizados en todo el país.',
+      'El directorio mostrará direcciones, horarios y contactos cuando la empresa confirme cada punto de venta.',
     href: '/agencias',
     cta: 'Encontrar Agencia Cercana',
     icon: MapPin,
@@ -73,15 +73,15 @@ const teaserSections = [
     gradient: 'from-accent-500 to-accent-700',
     lightBg: 'from-accent-50/30 via-white to-emerald-50/20',
     darkBg: 'from-slate-900 via-slate-900/95 to-accent-950/30',
-    highlights: ['Mapa interactivo', '150+ distribuidores', 'WhatsApp directo'],
+    highlights: ['Mapa interactivo', 'Busca por ciudad', 'Información de contacto'],
   },
 
   {
     id: 'reciclaje',
     title: 'Reciclaje Ecológico',
-    subtitle: 'Programa Canje Verde: entrega tu batería usada y ahorra',
+    subtitle: 'Entrega responsable de baterías usadas',
     description:
-      'Contribuye al medio ambiente y recibe un bono de descuento inmediato al entregar tu batería usada en cualquier agencia autorizada.',
+      'Conoce las recomendaciones para manejar una batería usada y consulta los puntos de recepción cuando estén confirmados.',
     href: '/reciclaje',
     cta: 'Conocer Programa Verde',
     icon: Recycle,
@@ -89,7 +89,7 @@ const teaserSections = [
     gradient: 'from-emerald-600 to-teal-700',
     lightBg: 'from-emerald-50/30 via-white to-teal-50/20',
     darkBg: 'from-slate-900 via-slate-900/95 to-emerald-950/30',
-    highlights: ['Bono -$10 inmediato', 'Eco-friendly', 'En cualquier agencia'],
+    highlights: ['Entrega responsable', 'Precauciones básicas', 'Puntos de recepción'],
   },
   {
     id: 'blog',
@@ -104,7 +104,7 @@ const teaserSections = [
     gradient: 'from-sky-600 to-cyan-700',
     lightBg: 'from-sky-50/30 via-white to-cyan-50/20',
     darkBg: 'from-slate-900 via-slate-900/95 to-sky-950/30',
-    highlights: ['Guías paso a paso', 'Videos técnicos', 'Tips de mantenimiento'],
+    highlights: ['Guías paso a paso', 'Tecnologías', 'Consejos de mantenimiento'],
   },
 ];
 
@@ -242,7 +242,7 @@ export default function HomePage() {
                 isDark ? 'text-slate-400' : 'text-gray-500'
               }`}
             >
-              Baterías, asesoría técnica, puntos de venta y programas especiales para ti y tu negocio.
+              Explora tecnologías, compatibilidades, puntos de atención, reciclaje y guías de cuidado.
             </p>
           </div>
 
@@ -277,13 +277,13 @@ export default function HomePage() {
                   Oportunidad de Negocio
                 </div>
                 <h2 className={`text-2xl sm:text-3xl font-extrabold tracking-tight mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                  Únete a nuestra red de{' '}
+                  Hablemos de las necesidades de{' '}
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-accent-500">
-                    distribuidores autorizados
+                    tu negocio
                   </span>
                 </h2>
                 <p className={`text-sm sm:text-base ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-                  Márgenes competitivos, capacitación técnica y soporte logístico a nivel nacional.
+                  Cuéntanos qué referencias, tecnologías y volumen necesitas para evaluar una propuesta comercial.
                 </p>
               </div>
               

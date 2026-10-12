@@ -34,6 +34,7 @@ import {
   Trash2,
   Palette,
   Eye,
+  Megaphone,
 } from 'lucide-react';
 import ImageUploader from './ImageUploader';
 import {
@@ -54,6 +55,7 @@ const TABS: EditorTabConfig[] = [
   { id: 'b2b', label: 'B2B', icon: Briefcase },
   { id: 'recycling', label: 'Reciclaje', icon: Recycle },
   { id: 'blog', label: 'Blog', icon: BookOpen },
+  { id: 'marquee', label: 'Marquesina', icon: Megaphone },
 ];
 
 const BLOG_FIELDS = [
@@ -804,6 +806,178 @@ export default function ContentEditor({ darkMode }: ContentEditorProps) {
   );
 
   /* ═══════════════════════════════════════════════════
+     TAB: MARQUESINA (BANDA CONTINUA SUPERIOR)
+     ═══════════════════════════════════════════════════ */
+  const renderMarqueeTab = () => {
+    const marqueeData = sectionDraft || (content as any).marquee || {
+      enabled: true,
+      badge: 'BENEFICIOS EXCLUSIVOS',
+      speedSeconds: 30,
+      items: [],
+    };
+    const items = marqueeData.items || [];
+
+    const updateMarquee = (updated: any) => {
+      handleDraftChange({
+        ...marqueeData,
+        ...updated,
+      });
+    };
+
+    return (
+      <div className="space-y-6">
+        <GlassSection darkMode={darkMode}>
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className={`text-base font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+                Configuración General de la Marquesina
+              </h3>
+              <p className={`text-xs ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                Aparece en la cabecera superior al tope de la página y se desvanece suavemente al hacer scroll.
+              </p>
+            </div>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <span className={`text-xs font-semibold ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+                {marqueeData.enabled ? 'Activa' : 'Oculta'}
+              </span>
+              <input
+                type="checkbox"
+                checked={marqueeData.enabled}
+                onChange={(e) => updateMarquee({ enabled: e.target.checked })}
+                className="w-5 h-5 rounded text-blue-600 focus:ring-blue-500 cursor-pointer"
+              />
+            </label>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className={`block text-xs font-semibold uppercase tracking-wider mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+                Etiqueta / Badge General
+              </label>
+              <input
+                type="text"
+                value={marqueeData.badge || ''}
+                onChange={(e) => updateMarquee({ badge: e.target.value })}
+                className={`w-full px-3.5 py-2.5 rounded-xl text-sm font-medium border outline-none transition-all ${
+                  darkMode ? 'bg-white/[0.04] border-white/10 text-white focus:border-blue-500' : 'bg-slate-50 border-slate-200 text-slate-900 focus:border-blue-500'
+                }`}
+                placeholder="BENEFICIOS EXCLUSIVOS"
+              />
+            </div>
+            <div>
+              <label className={`block text-xs font-semibold uppercase tracking-wider mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+                Velocidad del Bucle (segundos)
+              </label>
+              <input
+                type="number"
+                min="10"
+                max="120"
+                value={marqueeData.speedSeconds || 30}
+                onChange={(e) => updateMarquee({ speedSeconds: Number(e.target.value) || 30 })}
+                className={`w-full px-3.5 py-2.5 rounded-xl text-sm font-medium border outline-none transition-all ${
+                  darkMode ? 'bg-white/[0.04] border-white/10 text-white focus:border-blue-500' : 'bg-slate-50 border-slate-200 text-slate-900 focus:border-blue-500'
+                }`}
+              />
+            </div>
+          </div>
+        </GlassSection>
+
+        {/* ITEMS LIST */}
+        <GlassSection darkMode={darkMode}>
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className={`text-base font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+                Mensajes y Beneficios en Rotación ({items.length})
+              </h3>
+              <p className={`text-xs ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                Pasan de forma continua e infinita con efecto difuminado y pausa al pasar el cursor.
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                const newItem = {
+                  id: Date.now().toString(),
+                  title: 'NUEVO BENEFICIO',
+                  subtitle: 'Descripción corta del servicio o beneficio',
+                  tag: 'NUEVO',
+                };
+                updateMarquee({ items: [...items, newItem] });
+              }}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-blue-600 text-white hover:bg-blue-500 cursor-pointer transition-all active:scale-95"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              Añadir Mensaje
+            </button>
+          </div>
+
+          <div className="space-y-3">
+            {items.map((item: any, idx: number) => (
+              <div
+                key={item.id || idx}
+                className={`p-3.5 rounded-xl border flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between ${
+                  darkMode ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-slate-50 border-slate-200'
+                }`}
+              >
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 w-full">
+                  <input
+                    type="text"
+                    value={item.tag || ''}
+                    onChange={(e) => {
+                      const copy = [...items];
+                      copy[idx] = { ...copy[idx], tag: e.target.value };
+                      updateMarquee({ items: copy });
+                    }}
+                    placeholder="TAG (Ej: GRATIS)"
+                    className={`px-3 py-1.5 text-xs font-mono font-bold uppercase rounded-lg border outline-none ${
+                      darkMode ? 'bg-white/[0.05] border-white/10 text-blue-400' : 'bg-white border-slate-200 text-blue-600'
+                    }`}
+                  />
+                  <input
+                    type="text"
+                    value={item.title || ''}
+                    onChange={(e) => {
+                      const copy = [...items];
+                      copy[idx] = { ...copy[idx], title: e.target.value };
+                      updateMarquee({ items: copy });
+                    }}
+                    placeholder="Título principal"
+                    className={`px-3 py-1.5 text-xs font-bold rounded-lg border outline-none ${
+                      darkMode ? 'bg-white/[0.05] border-white/10 text-white' : 'bg-white border-slate-200 text-slate-900'
+                    }`}
+                  />
+                  <input
+                    type="text"
+                    value={item.subtitle || ''}
+                    onChange={(e) => {
+                      const copy = [...items];
+                      copy[idx] = { ...copy[idx], subtitle: e.target.value };
+                      updateMarquee({ items: copy });
+                    }}
+                    placeholder="Subtítulo o detalle"
+                    className={`px-3 py-1.5 text-xs rounded-lg border outline-none ${
+                      darkMode ? 'bg-white/[0.05] border-white/10 text-slate-300' : 'bg-white border-slate-200 text-slate-600'
+                    }`}
+                  />
+                </div>
+                <button
+                  onClick={() => {
+                    const copy = items.filter((_: any, i: number) => i !== idx);
+                    updateMarquee({ items: copy });
+                  }}
+                  className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-500/10 transition-colors shrink-0 cursor-pointer"
+                  title="Eliminar elemento"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        </GlassSection>
+      </div>
+    );
+  };
+
+  /* ═══════════════════════════════════════════════════
      TAB ROUTER
      ═══════════════════════════════════════════════════ */
   const renderActiveTab = () => {
@@ -815,6 +989,7 @@ export default function ContentEditor({ darkMode }: ContentEditorProps) {
       case 'b2b': return renderB2BTab();
       case 'recycling': return renderRecyclingTab();
       case 'blog': return renderBlogTab();
+      case 'marquee': return renderMarqueeTab();
     }
   };
 

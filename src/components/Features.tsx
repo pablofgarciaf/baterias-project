@@ -26,39 +26,39 @@ import { useEffect, useRef } from 'react';
 const features = [
   {
     icon: ShieldCheck,
-    title: 'Garantía Real',
+    title: 'Tecnología adecuada',
     description:
-      'Hasta 24 meses de garantía en todas nuestras baterías. Si falla, la reemplazamos sin preguntas.',
+      'Comprueba si el vehículo requiere AGM, EFB o una batería convencional.',
   },
   {
     icon: Clock,
-    title: 'Entrega 24 Horas',
+    title: 'Corriente de arranque',
     description:
-      'Despacho express a cualquier provincia del Ecuador. En Quito y Guayaquil, entrega el mismo día.',
+      'Compara el CCA exigido por el vehículo con la ficha de la batería.',
   },
   {
     icon: Headphones,
-    title: 'Soporte Técnico',
+    title: 'Capacidad correcta',
     description:
-      'Asesoría especializada por teléfono, WhatsApp y en cada punto de venta. Sabemos de baterías.',
+      'Revisa los Ah recomendados y las necesidades eléctricas de tu vehículo.',
   },
   {
     icon: BadgeCheck,
-    title: 'Calidad Certificada',
+    title: 'Medidas y bornes',
     description:
-      'Baterías con certificación ISO 9001 y normas internacionales. Confianza respaldada por laboratorios.',
+      'Confirma tamaño, sujeción y polaridad antes de instalar la batería.',
   },
   {
     icon: Wrench,
-    title: 'Instalación Gratis',
+    title: 'Instalación segura',
     description:
-      'Instalamos tu batería sin costo adicional en cualquiera de nuestros distribuidores autorizados.',
+      'Algunos vehículos necesitan registrar la batería nueva o revisar el sistema de carga.',
   },
   {
     icon: Truck,
-    title: 'Red de Distribución',
+    title: 'Compra informada',
     description:
-      'Más de 150 distribuidores en todo el país. Siempre hay un punto Baterías Andinas cerca de ti.',
+      'Pide precio, disponibilidad y garantía de la referencia exacta antes de decidir.',
   },
 ];
 
@@ -157,22 +157,21 @@ export default function Features() {
               }`}
             >
               <span className="w-6 h-px bg-current" />
-              ¿Por qué elegirnos?
+              Antes de comprar
             </span>
             <h2
               className={`text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-[0.95] max-w-xl ${
                 isDark ? 'text-white' : 'text-slate-950'
               }`}
             >
-              Confianza que arranca en cada encendido
+              Seis claves para elegir con seguridad
             </h2>
             <p
               className={`mt-4 text-base sm:text-lg max-w-xl leading-relaxed ${
                 isDark ? 'text-slate-400' : 'text-slate-500'
               }`}
             >
-              No solo vendemos baterías: somos tu socio de energía en cada viaje, ruta y aventura
-              a lo largo del Ecuador.
+              Una batería compatible debe cumplir los requisitos eléctricos y físicos de tu vehículo.
             </p>
           </div>
         </div>

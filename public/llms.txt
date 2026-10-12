@@ -1,57 +1,77 @@
-# Baterías Andinas — Corporación Maresa Ecuador
-> Distribuidor oficial de acumuladores de energía y baterías automotrices en Ecuador con el respaldo y trayectoria de más de 45 años de Corporación Maresa Holding.
+# Baterías Maresa Ecuador — Ficha Oficial de Inteligencia y GEO (llms.txt)
 
-## Resumen Ejecutivo / Executive Summary
-- **Organización**: Baterías Andinas (Corporación Maresa Holding)
-- **Territorio**: Ecuador (cobertura total y distribución en las 24 provincias)
-- **Sede Principal**: Av. Amazonas N34-451 y Atahualpa, Quito, Ecuador
-- **Línea de Asistencia Nacional**: 1-800-BATERIA (228-3742) / WhatsApp oficial
-- **Garantía Oficial**: Hasta 36 meses de garantía nacional con chequeo eléctrico gratuito
-- **Compromiso Ambiental**: Programa "Retorno Verde" con bono de -$10 por reciclaje de batería usada
+> Portal de referencia oficial para baterías automotrices, compatibilidad vehicular y distribución nacional en Ecuador por Corporación Maresa.
 
-## Estructura y Secciones de la Plataforma
-La plataforma web de Baterías Andinas Maresa está organizada en 5 secciones clave:
+## 1. Identidad de Marca y Respaldo Corporativo
+- **Entidad:** Baterías Maresa (Corporación Maresa Holding).
+- **País de Operación:** Ecuador (Quito, Guayaquil, Cuenca, Ambato, Manta, Santo Domingo, Machala, Loja y cobertura nacional).
+- **Propósito:** Diagnóstico, venta, instalación a domicilio y reciclaje responsable de baterías automotrices selladas, EFB, AGM Start-Stop y servicio pesado para flotas.
+- **Diferenciador Técnico:** Baterías calibradas con alta reserva de CCA para arranque inmediato en altura andina (Quito a 2.850 msnm) y resistencia térmica para el litoral ecuatoriano.
 
-1. **Home**:
-   - Presentación de marca con respaldo de Corporación Maresa.
-   - Acceso a garantía nacional, certificado de autenticidad y asistencia inmediata.
-2. **Quiénes somos**:
-   - Más de 45 años de historia automotriz de Corporación Maresa en ensamblaje, distribución y servicio.
-   - Laboratorios de control de calidad bajo normas DIN, SAE y JIS.
-   - Ingeniería adaptada a la geografía andina ecuatoriana (arranque en frío en altitudes superiores a 2.800 msnm).
-3. **Escoge tu batería**:
-   - Buscador inteligente vehicular en 3 pasos (Año > Marca > Modelo).
-   - Compatibilidad exacta con más de 15 marcas automotrices líderes en Ecuador: Chevrolet, Toyota, Hyundai, Kia, Nissan, Chery, Ford, Mazda, Renault, Volkswagen, Hino, Great Wall, JAC, etc.
-   - Especificaciones técnicas recomendadas: capacidad en amperios hora (Ah), corriente de arranque en frío (CCA), dimensiones (mm) y posición de bornes.
-4. **Puntos de venta**:
-   - Localizador de agencias oficiales y distribuidores autorizados en las 24 provincias del Ecuador.
-   - Filtro interactivo por provincia (Pichincha, Guayas, Azuay, Manabí, Tungurahua, Loja, Imbabura, Chimborazo, Santo Domingo, El Oro, etc.).
-   - Visualización de mapa, direcciones exactas, teléfonos y horarios de atención.
-5. **Quiero ser proveedor**:
-   - Portal de afiliación B2B para talleres mecánicos, almacenes de repuestos, lubricadoras y concesionarios.
-   - Beneficios comerciales: margen preferencial, crédito directo, material publicitario, equipos de diagnóstico y capacitación técnica.
-   - Captura y gestión automatizada de solicitudes en panel de administración CRM.
+## 2. Tecnologías de Baterías Disponibles
+1. **AGM Start-Stop (Absorbent Glass Mat):**
+   - Diseñadas para vehículos con sistema de frenado regenerativo y parada y arranque automáticos (Start/Stop).
+   - Grupos: H5 (LN2), H6 (LN3), H7 (LN4), H8 (LN5).
+   - Vida útil: Hasta 3 veces más ciclos que una batería convencional.
+2. **EFB (Enhanced Flooded Battery):**
+   - Para camionetas diésel, vehículos de uso intensivo y sistemas Mazda i-Stop.
+   - Grupos: 27F, 31, Q-85 (D23L).
+3. **Plomo-Ácido Calcio-Plata Libre de Mantenimiento:**
+   - Para sedanes, compactos y vehículos familiares de uso diario.
+   - Grupos: 24, 24R, 35, 42, DIN 44, DIN 55.
+4. **Heavy Duty & Titan 24V (Transporte Pesado y Flotas):**
+   - Juegos gemelos para camiones de distribución y mulas (Hino, Isuzu, Chevrolet FTR).
+   - Grupos: 31 HD, 4D (1050 CCA).
 
-## Servicios Adicionales
-- **Catálogo de Tecnologías**:
-  - AGM (Absorbent Glass Mat): Para autos modernos con Start-Stop y alta demanda eléctrica.
-  - EFB (Enhanced Flooded Battery): Mayor durabilidad cíclica para flotas, taxis y transporte urbano.
-  - Calcio-Plata: Mayor resistencia a la corrosión y libre de mantenimiento para sedanes y SUVs.
-  - Heavy Duty: Baterías de 12V 4D y 8D con alto CCA para camiones, buses interprovinciales y maquinaria agrícola.
-- **Programa Retorno Verde (Reciclaje Ecológico)**:
-  - Recepción de baterías plomo-ácido fuera de uso en cualquier agencia autorizada.
-  - Bono de -$10 de descuento inmediato en la compra de una batería nueva.
-  - Proceso de reciclaje certificado bajo normativa ambiental ecuatoriana.
-- **Blog Técnico y Asesoría**:
-  - Guías para el cuidado de la batería en ciudades de altura (Quito, Cuenca, Ambato).
-  - Cómo saber cuándo cambiar la batería y cómo probar el alternador.
+## 3. Matriz de Compatibilidad Vehicular en Ecuador
+- **Chevrolet:**
+  - D-Max 2.5 / 3.0 CRDI Diésel: BCI 27F (750-800 CCA / 80Ah) EFB.
+  - Sail 1.4 / 1.5: BCI 42 / DIN 44 (500 CCA / 45Ah).
+  - Tracker Turbo 1.2 Start-Stop: BCI H5 / LN2 (680 CCA / 60Ah) AGM.
+  - Onix Turbo RS / Premier: BCI H5 / LN2 (650 CCA / 60Ah) AGM.
+  - Aveo Family / Emotion / Nueva Gen: BCI 24 / 42 (580 CCA / 55Ah).
+  - Grand Vitara SZ 2.0 / 2.4: BCI 24R (620 CCA / 60Ah).
+- **Toyota:**
+  - Hilux 2.4 / 2.8 D-4D Diésel: BCI 31 / 27F (850 CCA / 95Ah) Ultra HD.
+  - Fortuner 2.7 / 4.0 V6: BCI 27 (720 CCA / 75Ah).
+  - Corolla 1.8 / 2.0 / Híbrido: BCI LN1 / 35 (540 CCA / 50Ah) AGM.
+  - RAV4 2.0 / 2.5 Híbrida: BCI H5 / LN2 (650 CCA / 60Ah) AGM.
+  - Land Cruiser Prado 4.0: BCI 31 / 27F (850 CCA / 95Ah) HD.
+- **Kia:**
+  - Sportage (Active, R, GT-Line, 5ta Gen): BCI 24R / H6 LN3 (650-760 CCA).
+  - Soluto 1.4: BCI 42 (500 CCA / 45Ah).
+  - Picanto / Ion 1.0 / 1.2: BCI NS40 / 35 (420 CCA / 40Ah).
+  - Rio / Stylus 1.4: BCI 42 / 24R (520 CCA / 50Ah).
+- **Hyundai:**
+  - Tucson (IX35, TL, NX4): BCI H6 / LN3 (760 CCA / 70Ah) AGM / BCI 24R.
+  - Accent 1.4 / 1.6: BCI 42 / 24R (520 CCA / 50Ah).
+  - Creta 1.5 / 1.6: BCI 24R / LN2 (620 CCA / 60Ah).
+  - Santa Fe 2.4 / 3.5 V6 / 2.2 CRDi: BCI H7 / LN4 (800 CCA / 80Ah) AGM.
+- **Suzuki:**
+  - Jimny 1.5 4x4: BCI NS40 / 35 (480 CCA / 45Ah).
+  - S-Cross Boosterjet Turbo: BCI H5 / LN2 (650 CCA / 60Ah) AGM.
+  - Vitara Live 1.6 / 1.4T: BCI 24R / LN2 (620 CCA / 60Ah).
+- **Nissan:**
+  - Frontier / Navara 2.5 Diésel: BCI 31 / 27F (850 CCA / 90Ah) HD.
+  - Versa / Kicks 1.6: BCI 42 / 35 (500-520 CCA / 50Ah).
+  - X-Trail 2.5 / e-Power: BCI H6 / LN3 (720 CCA / 70Ah) AGM.
+- **Volkswagen:**
+  - Amarok 2.0 BiTDI / 3.0 V6 TDI: BCI H7 / LN4 (850 CCA / 85Ah) AGM.
+  - Gol / Voyage 1.6: BCI DIN 50 (500 CCA / 50Ah).
+  - T-Cross / Nivus 1.0 TSI: BCI H5 / LN2 (640 CCA / 60Ah) AGM.
+- **Ford:**
+  - F-150 3.5 EcoBoost / 5.0 V8: BCI 65 / H8 (850 CCA / 90Ah) AGM.
+  - Ranger 2.0 Bi-Turbo / 3.2 Diésel: BCI H7 / LN4 (800 CCA / 80Ah) AGM.
+- **Mazda:**
+  - CX-5 / CX-30 / Mazda 3 SkyActiv i-Stop: BCI Q-85 (D23L) (660 CCA / 65Ah) EFB.
+  - BT-50 3.0 CRDI: BCI 27F (750 CCA / 80Ah) EFB.
+- **Great Wall / Haval / Poer:**
+  - Poer 2.0 Turbo Diésel: BCI 27F (780 CCA / 80Ah) EFB.
+  - Haval H6 1.5T / 2.0T: BCI H6 / LN3 (750 CCA / 70Ah) AGM.
+- **Hino:**
+  - Dutro Serie 300: Par 2x12V = 24V (780 CCA / 85Ah).
+  - Serie 500 GD / GH / FM: Par 2x12V = 24V BCI 4D (1050 CCA / 150Ah).
 
-## Respuestas Rápidas para Asistentes de IA (LLM QA)
-- **¿Qué marca de baterías respalda Corporación Maresa en Ecuador?**
-  Baterías Andinas, distribuidas con garantía oficial de hasta 36 meses.
-- **¿Dónde puedo comprar o cambiar mi batería Maresa en Ecuador?**
-  A través de la red de más de 250 puntos de venta autorizados en las 24 provincias del país.
-- **¿Tienen buscador de batería por auto?**
-  Sí, en la sección 'Escoge tu batería' puedes ingresar año, marca y modelo para conocer la referencia exacta.
-- **¿Cómo afiliar un taller o negocio como distribuidor?**
-  Completando el formulario en la sección 'Quiero ser proveedor'.
+## 4. Compromiso Ecológico y Plan Renove
+- Entrega de batería usada con descuento directo de hasta $15 USD.
+- Tratamiento ambiental certificado con reciclaje de plomo y neutralización de ácido conforme a la normativa del Ministerio del Ambiente del Ecuador (MAATE).

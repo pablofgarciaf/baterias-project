@@ -39,11 +39,18 @@ import { GlassCard } from './ui/GlassCard';
 import { GLASS_TOKENS } from '@/types/admin';
 import { DistributorLocation } from '@/types/sinergia';
 import { provinces } from '@/data/provinces';
-import { getDistributors, saveDistributor, removeDistributor } from '@/lib/firebaseStore';
+import {
+  getDistributors,
+  saveDistributor,
+  removeDistributor,
+  isDistributorsCollectionEmpty,
+  seedDefaultDistributors,
+} from '@/lib/firebaseStore';
 
 export default function DistributorsManager({ darkMode }: { darkMode: boolean }) {
   const [distributors, setDistributors] = useState<DistributorLocation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [needsSeed, setNeedsSeed] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editedDistributor, setEditedDistributor] = useState<Partial<DistributorLocation>>({});
@@ -57,7 +64,7 @@ export default function DistributorsManager({ darkMode }: { darkMode: boolean })
     schedule: 'Lunes a Sábado 08:00 - 18:00',
     latitude: -0.1807,
     longitude: -78.4678,
-    services: ['Diagnóstico gratis', 'Instalación express', 'Reciclaje con bono -$10'],
+    services: [],
     isAuthorized: true,
     rating: 4.9,
     mapsIframe: '',
@@ -71,12 +78,24 @@ export default function DistributorsManager({ darkMode }: { darkMode: boolean })
   const loadDistributors = async () => {
     setIsLoading(true);
     try {
+      setNeedsSeed(await isDistributorsCollectionEmpty());
       const data = await getDistributors();
       setDistributors(data);
     } catch (err) {
       console.error('Error loading distributors:', err);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleSeed = async () => {
+    if (!window.confirm('Se guardarán en la base de datos las agencias base del sitio. ¿Continuar?')) return;
+    try {
+      await seedDefaultDistributors();
+      await loadDistributors();
+    } catch (err) {
+      console.error('Error seeding distributors:', err);
+      alert('Error al cargar las agencias base');
     }
   };
 
@@ -96,7 +115,7 @@ export default function DistributorsManager({ darkMode }: { darkMode: boolean })
         city: newDistributor.city || '',
         address: newDistributor.address || '',
         phone: newDistributor.phone || '(02) 225-8800',
-        whatsapp: newDistributor.whatsapp || '593998123456',
+        whatsapp: newDistributor.whatsapp || '',
         schedule: newDistributor.schedule || 'Lunes a Sábado 08:00 - 18:00',
         latitude: Number(newDistributor.latitude) || -0.1807,
         longitude: Number(newDistributor.longitude) || -78.4678,
@@ -387,6 +406,14 @@ export default function DistributorsManager({ darkMode }: { darkMode: boolean })
             </p>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
+            {needsSeed && (
+              <button
+                onClick={handleSeed}
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-600 hover:bg-slate-500 text-white font-semibold text-xs transition-colors cursor-pointer"
+              >
+                Guardar agencias base en la base de datos
+              </button>
+            )}
             <button
               onClick={exportToExcel}
               disabled={distributors.length === 0}

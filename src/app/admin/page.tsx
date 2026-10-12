@@ -29,15 +29,18 @@ import {
   X,
 } from 'lucide-react';
 import AdminShell from '@/components/admin/AdminShell';
+import { isSignInWithEmailLink, onAuthStateChanged, signInWithEmailLink, signOut } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 import {
   loginAdminUser,
   completePasswordChange,
   requestPasswordReset,
-  ensurePrimaryAdminSeed,
+  verifyAdminUser,
 } from '@/lib/authService';
 
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [adminRole, setAdminRole] = useState<'admin' | 'editor'>('editor');
   const [darkMode, setDarkMode] = useState(true);
 
   // Form states
@@ -46,6 +49,8 @@ export default function AdminPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [authError, setAuthError] = useState('');
+  const [activationNotice, setActivationNotice] = useState('');
+  const [invitationLink, setInvitationLink] = useState(false);
 
   // Force Password Change Modal
   const [showChangeModal, setShowChangeModal] = useState(false);
@@ -65,12 +70,21 @@ export default function AdminPage() {
   const [forgotError, setForgotError] = useState('');
 
   useEffect(() => {
-    ensurePrimaryAdminSeed();
-    try {
-      if (sessionStorage.getItem('maresa_admin_auth') === 'true') {
-        setIsAuthenticated(true);
+    setInvitationLink(isSignInWithEmailLink(auth, window.location.href));
+    return onAuthStateChanged(auth, async (user) => {
+      try {
+        const status = await verifyAdminUser(user);
+        if (status.role) setAdminRole(status.role);
+        setIsAuthenticated(status.authorized && !status.forcePasswordChange);
+        if (status.authorized && status.forcePasswordChange) {
+          setPendingEmail(user?.email || '');
+          setShowChangeModal(true);
+        }
+      } catch (error) {
+        setIsAuthenticated(false);
+        if (error instanceof Error && error.message.includes('credencial privada')) setAuthError(error.message);
       }
-    } catch {}
+    });
   }, []);
 
   useEffect(() => {
@@ -101,6 +115,7 @@ export default function AdminPage() {
           return;
         }
         setIsAuthenticated(true);
+        if (res.role) setAdminRole(res.role);
       } else {
         setAuthError(res.error || 'Credenciales inválidas.');
       }
@@ -111,12 +126,37 @@ export default function AdminPage() {
     }
   };
 
+  const handleInvitation = async (event: FormEvent) => {
+    event.preventDefault();
+    setAuthError('');
+    setIsLoading(true);
+    try {
+      const credential = await signInWithEmailLink(auth, email.trim().toLowerCase(), window.location.href);
+      window.history.replaceState({}, '', '/admin');
+      setInvitationLink(false);
+      const status = await verifyAdminUser(credential.user);
+      if (!status.authorized || !status.forcePasswordChange) {
+        await signOut(auth);
+        setIsAuthenticated(false);
+        setAuthError('La invitación no corresponde a una cuenta pendiente de activación.');
+        return;
+      }
+      setAdminRole(status.role || 'editor');
+      setPendingEmail(credential.user.email || email);
+      setShowChangeModal(true);
+    } catch {
+      setAuthError('El enlace no es válido o expiró. Pide al administrador que reenvíe la invitación.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handlePasswordUpdate = async (e: FormEvent) => {
     e.preventDefault();
     setChangeError('');
 
-    if (newPassword.length < 6) {
-      setChangeError('La nueva contraseña debe tener al menos 6 caracteres.');
+    if (newPassword.length < 12) {
+      setChangeError('La nueva contraseña debe tener al menos 12 caracteres.');
       return;
     }
     if (newPassword !== confirmPassword) {
@@ -126,10 +166,14 @@ export default function AdminPage() {
 
     setIsChangingPassword(true);
     try {
-      const res = await completePasswordChange(pendingEmail, newPassword);
+      const res = await completePasswordChange(newPassword);
       if (res.success) {
         setShowChangeModal(false);
-        setIsAuthenticated(true);
+        setIsAuthenticated(false);
+        setEmail(pendingEmail);
+        setNewPassword('');
+        setConfirmPassword('');
+        setActivationNotice('Contraseña creada. Ingresa ahora con tu correo y la nueva contraseña.');
       } else {
         setChangeError(res.error || 'Error al actualizar contraseña.');
       }
@@ -242,12 +286,12 @@ export default function AdminPage() {
                   darkMode ? 'text-slate-400' : 'text-slate-500'
                 }`}
               >
-                Ingresa con tu correo y credenciales autorizadas de Corporación Maresa.
+                {invitationLink ? 'Confirma el correo que recibió esta invitación y crea tu clave de acceso.' : 'Ingresa con el correo autorizado para este panel.'}
               </p>
             </div>
 
             {/* Login Form */}
-            <form onSubmit={handleLogin} className="space-y-4">
+            <form onSubmit={invitationLink ? handleInvitation : handleLogin} className="space-y-4">
               {/* Email Input */}
               <div>
                 <label
@@ -275,7 +319,7 @@ export default function AdminPage() {
               </div>
 
               {/* Password Input with Eye toggle */}
-              <div>
+              {!invitationLink && <div>
                 <div className="flex items-center justify-between mb-1.5 px-0.5">
                   <label
                     className={`block text-[11px] font-bold uppercase tracking-wider ${
@@ -318,9 +362,12 @@ export default function AdminPage() {
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
-              </div>
+              </div>}
 
               {/* Error Message */}
+              {activationNotice && (
+                <p role="status" className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-3 text-xs text-emerald-400">{activationNotice}</p>
+              )}
               {authError && (
                 <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs">
                   <AlertCircle className="w-4 h-4 shrink-0" />
@@ -337,24 +384,16 @@ export default function AdminPage() {
                 {isLoading ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>Verificando credenciales...</span>
+                    <span>{invitationLink ? 'Validando invitación...' : 'Verificando credenciales...'}</span>
                   </>
                 ) : (
                   <>
-                    <span>Iniciar Sesión</span>
+                    <span>{invitationLink ? 'Confirmar invitación' : 'Iniciar sesión'}</span>
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}
               </button>
 
-              {/* Helper quick hint for initial admin setup */}
-              <div
-                className={`mt-4 pt-4 border-t text-center text-[11px] ${
-                  darkMode ? 'border-slate-800 text-slate-500' : 'border-slate-200 text-slate-400'
-                }`}
-              >
-                Cuenta principal: <span className="font-semibold text-slate-400">pablofgarciaf@gmail.com</span>
-              </div>
             </form>
           </div>
         </main>
@@ -392,7 +431,7 @@ export default function AdminPage() {
                     <input
                       type={showNewPassword ? 'text' : 'password'}
                       required
-                      placeholder="Mínimo 6 caracteres"
+                      placeholder="Mínimo 12 caracteres"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                       className={`w-full px-3.5 pr-10 py-2.5 rounded-xl border text-sm outline-none ${
@@ -524,7 +563,7 @@ export default function AdminPage() {
                     <input
                       type="email"
                       required
-                      placeholder="pablofgarciaf@gmail.com"
+                      placeholder="usuario@dominio.com"
                       value={forgotEmail}
                       onChange={(e) => setForgotEmail(e.target.value)}
                       className={`w-full px-3.5 py-2.5 rounded-xl border text-sm outline-none ${
@@ -557,5 +596,5 @@ export default function AdminPage() {
     );
   }
 
-  return <AdminShell />;
+  return <AdminShell role={adminRole} />;
 }

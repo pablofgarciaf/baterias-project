@@ -41,16 +41,18 @@ import UsersManager from './UsersManager';
 import { AdminSidebarSection, GLASS_TOKENS } from '@/types/admin';
 import { getDistributors, getB2BLeads } from '@/lib/firebaseStore';
 import { getAdminUsers } from '@/lib/authService';
+import { signOut } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 import { useSiteContent } from '@/context/SiteContentContext';
 
-export default function AdminShell() {
+export default function AdminShell({ role }: { role: 'admin' | 'editor' }) {
   const [darkMode, setDarkMode] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
   const [activeNav, setActiveNav] = useState<AdminSidebarSection>('content');
   const [distributors, setDistributors] = useState<any[]>([]);
   const [leads, setLeads] = useState<any[]>([]);
-  const [usersCount, setUsersCount] = useState<number>(1);
+  const [usersCount, setUsersCount] = useState<number>(0);
   const [isLoadingData, setIsLoadingData] = useState(true);
   const { isSaved, resetToDefaults } = useSiteContent();
 
@@ -68,8 +70,9 @@ export default function AdminShell() {
   }, [darkMode]);
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (role === 'admin') loadData();
+    else setIsLoadingData(false);
+  }, [role]);
 
   const loadData = async () => {
     try {
@@ -96,7 +99,7 @@ export default function AdminShell() {
     { id: 'leads' as const, icon: UsersIcon, label: 'CRM B2B', badge: pendingLeadsCount, highlight: true },
     { id: 'catalog' as const, icon: Car, label: 'Catálogo', badge: '0' },
     { id: 'users' as const, icon: UserCheck, label: 'Usuarios', badge: usersCount },
-  ];
+  ].filter((item) => role === 'admin' || item.id === 'content');
 
   const getModuleInfo = (nav: AdminSidebarSection) => {
     switch (nav) {
@@ -115,9 +118,8 @@ export default function AdminShell() {
 
   const moduleInfo = getModuleInfo(activeNav);
 
-  const handleLogout = () => {
-    sessionStorage.removeItem('maresa_admin_auth');
-    sessionStorage.removeItem('maresa_admin_email');
+  const handleLogout = async () => {
+    await signOut(auth);
     window.location.href = '/admin';
   };
 
@@ -132,7 +134,7 @@ export default function AdminShell() {
       case 'catalog':
         return <CatalogManager darkMode={darkMode} />;
       case 'users':
-        return <UsersManager />;
+        return <UsersManager onCountChange={setUsersCount} />;
     }
   };
 
@@ -207,15 +209,15 @@ export default function AdminShell() {
             {isSidebarOpen ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
           </button>
 
-          <button
-            onClick={resetToDefaults}
+          {role === 'admin' && <button
+            onClick={() => { void resetToDefaults().catch(() => window.alert('No se pudo restablecer el contenido.')); }}
             className={`hidden sm:flex px-2.5 py-1.5 rounded-xl text-xs font-medium items-center gap-1.5 transition-colors cursor-pointer ${
               darkMode ? 'text-slate-400 hover:text-white hover:bg-white/[0.06]' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
             <RotateCw className="w-3.5 h-3.5" />
             <span className="hidden md:inline">Restablecer</span>
-          </button>
+          </button>}
 
           <button
             onClick={handleLogout}
@@ -344,7 +346,7 @@ export default function AdminShell() {
           {(isSidebarOpen || isMobileDrawerOpen) && (
             <div className="flex items-center gap-2 px-1">
               <Shield className="w-3.5 h-3.5 text-blue-500" />
-              <span className="truncate font-medium">pablofgarciaf@gmail.com</span>
+              <span className="truncate font-medium">{auth.currentUser?.email || 'Usuario verificado'}</span>
             </div>
           )}
         </div>

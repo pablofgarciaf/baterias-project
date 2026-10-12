@@ -40,15 +40,43 @@ import { GLASS_TOKENS } from '@/types/admin';
 import { VehicleBatteryMatch } from '@/types/sinergia';
 import ImageUploader from './ImageUploader';
 import * as XLSX from 'xlsx';
+import { collection, deleteDoc, doc, getDocs, setDoc, writeBatch } from 'firebase/firestore';
+import { db, isFirebaseConfigured } from '@/lib/firebase';
+import { uploadSiteImage } from '@/lib/siteImageUpload';
 
 // Tipos para el catálogo
 interface CatalogItem extends VehicleBatteryMatch {
   id: string;
+  published?: boolean;
   imageUrl?: string;
   _imageFile?: File;
 }
 
+function stripFile(item: CatalogItem) {
+  const { _imageFile, ...data } = item;
+  void _imageFile;
+  return JSON.parse(JSON.stringify(data)) as Omit<CatalogItem, '_imageFile'>;
+}
+
+function updateItemField(item: CatalogItem, key: string, value: string | number | boolean): CatalogItem {
+  if (key.startsWith('recommendedBattery.')) {
+    const field = key.slice('recommendedBattery.'.length) as keyof CatalogItem['recommendedBattery'];
+    return { ...item, recommendedBattery: { ...item.recommendedBattery, [field]: value } };
+  }
+  if (key === 'year') return { ...item, year: Number(value) || 0 };
+  return { ...item, [key]: value };
+}
+
+async function persistImported(items: CatalogItem[]) {
+  if (!isFirebaseConfigured) throw new Error('Firebase no está configurado.');
+  if (items.length > 400) throw new Error('Importa máximo 400 filas por lote.');
+  const batch = writeBatch(db);
+  for (const item of items) batch.set(doc(db, 'catalog', item.id), stripFile({ ...item, published: false }));
+  await batch.commit();
+}
+
 const DEFAULT_ITEM: Omit<CatalogItem, 'id'> = {
+  published: false,
   brand: '',
   model: '',
   year: 0,
@@ -80,7 +108,7 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Cargar catálogo desde Firebase (simulado por ahora, se conecta a firebaseStore)
+  // Cargar catálogo persistido en Firestore.
   useEffect(() => {
     loadCatalog();
   }, []);
@@ -88,11 +116,11 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
   const loadCatalog = async () => {
     setIsLoading(true);
     try {
-      // Por ahora array vacío, luego conectar a Firebase
-      // const data = await getCatalog(); // Implementar en firebaseStore
-      setCatalog([]);
+      if (!isFirebaseConfigured) throw new Error('Firebase no está configurado.');
+      const snapshot = await getDocs(collection(db, 'catalog'));
+      setCatalog(snapshot.docs.map((item) => ({ ...(item.data() as CatalogItem), id: item.id })));
     } catch (err) {
-      console.error('Error loading catalog:', err);
+      setError(err instanceof Error ? err.message : 'No se pudo cargar el catálogo.');
     } finally {
       setIsLoading(false);
     }
@@ -112,11 +140,12 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
         setError('No se pudieron parsear datos válidos');
         return;
       }
-      const newItems = parsed.map((item, i) => ({ ...item, id: `cat-${Date.now()}-${i}` }));
+      const newItems = parsed.map((item) => ({ ...item, id: crypto.randomUUID() }));
+      await persistImported(newItems);
       setCatalog(prev => [...newItems, ...prev]);
     } catch (err) {
       console.error('Error pasting:', err);
-      setError('Error al leer portapapeles. Permite acceso al portapapeles.');
+      setError(err instanceof Error ? err.message : 'No se pudo importar el catálogo.');
     } finally {
       setPasting(false);
     }
@@ -131,10 +160,10 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
 
     const mapHeader = (h: string) => {
       if (h.includes('marca') || h === 'brand') return 'brand';
+      if (h.includes('modelo bat') || h.includes('batería') || h.includes('battery')) return 'batteryModel';
       if (h.includes('modelo') || h === 'model') return 'model';
       if (h.includes('año') || h.includes('year')) return 'year';
       if (h.includes('motor') || h === 'engine') return 'engine';
-      if (h.includes('batería') || h.includes('battery') || h.includes('modelo bat')) return 'batteryModel';
       if (h.includes('bci') || h === 'bcigroup') return 'bciGroup';
       if (h.includes('cca')) return 'cca';
       if (h.includes('ah')) return 'ah';
@@ -148,21 +177,22 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
     const items: Omit<CatalogItem, 'id'>[] = [];
 
     rows.forEach(row => {
-      const item: any = { ...DEFAULT_ITEM };
+      const item: Omit<CatalogItem, 'id'> = { ...DEFAULT_ITEM, recommendedBattery: { ...DEFAULT_ITEM.recommendedBattery } };
       row.forEach((cell, i) => {
         const key = headerMap[i];
         if (!key) return;
-        if (key === 'cca' || key === 'ah' || key === 'price' || key === 'warranty' || key === 'year') {
-          item[key] = parseFloat(cell) || 0;
-        } else if (key.startsWith('battery') || key === 'bciGroup' || key === 'technology') {
-          item.recommendedBattery = item.recommendedBattery || {};
-          item.recommendedBattery[key.replace('battery', '').toLowerCase() || key] = cell;
-        } else {
-          item[key] = cell;
-        }
+        if (key === 'brand') item.brand = cell;
+        else if (key === 'model') item.model = cell;
+        else if (key === 'year') item.year = Number(cell) || 0;
+        else if (key === 'engine') item.engine = cell;
+        else if (key === 'batteryModel') item.recommendedBattery.model = cell;
+        else if (key === 'bciGroup') item.recommendedBattery.bciGroup = cell;
+        else if (key === 'cca') item.recommendedBattery.cca = Number(cell) || 0;
+        else if (key === 'ah') item.recommendedBattery.ah = Number(cell) || 0;
+        else if (key === 'technology') item.recommendedBattery.technology = cell as CatalogItem['recommendedBattery']['technology'];
+        else if (key === 'price') item.recommendedBattery.priceEcuador = Number(cell) || 0;
+        else if (key === 'warranty') item.recommendedBattery.warrantyMonths = Number(cell) || 0;
       });
-      // Normalizar battery fields
-      if (item.batteryModel) item.recommendedBattery.model = item.batteryModel;
       items.push(item);
     });
 
@@ -173,7 +203,7 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (event) => {
+    reader.onload = async (event) => {
       try {
         const data = new Uint8Array(event.target?.result as ArrayBuffer);
         const workbook = XLSX.read(data, { type: 'array' });
@@ -184,7 +214,8 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
         const text = json.map(r => r.join('\t')).join('\n');
         const parsed = parseExcelText(text);
         if (parsed.length > 0) {
-          const newItems = parsed.map((item, i) => ({ ...item, id: `cat-${Date.now()}-${i}` }));
+          const newItems = parsed.map((item) => ({ ...item, id: crypto.randomUUID() }));
+          await persistImported(newItems);
           setCatalog(prev => [...newItems, ...prev]);
         }
       } catch (err) {
@@ -204,13 +235,13 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
     }
     setSaving('new');
     try {
-      const item: CatalogItem = { ...newItem, id: `cat-${Date.now()}` };
-      // await saveCatalogItem(item); // Firebase
+      const item: CatalogItem = { ...newItem, id: crypto.randomUUID() };
+      await setDoc(doc(db, 'catalog', item.id), stripFile(item));
       setCatalog(prev => [item, ...prev]);
       setAdding(false);
       setNewItem({ ...DEFAULT_ITEM, id: '' });
     } catch (err) {
-      console.error('Error saving:', err);
+      setError(err instanceof Error ? err.message : 'No se pudo guardar.');
     } finally {
       setSaving(null);
     }
@@ -223,14 +254,18 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
 
   const handleEditSave = async (id: string) => {
     if (!editedItem) return;
+    if (editedItem.published && (!editedItem.brand.trim() || !editedItem.model.trim() || !editedItem.year || !editedItem.recommendedBattery.model.trim() || !editedItem.recommendedBattery.bciGroup.trim() || editedItem.recommendedBattery.cca <= 0 || editedItem.recommendedBattery.ah <= 0)) {
+      setError('Para publicar, completa marca, modelo, año, batería, BCI, CCA y Ah con datos confirmados.');
+      return;
+    }
     setSaving(id);
     try {
-      // await saveCatalogItem(editedItem); // Firebase
+      await setDoc(doc(db, 'catalog', id), stripFile(editedItem));
       setCatalog(prev => prev.map(item => item.id === id ? { ...editedItem } : item));
       setEditingId(null);
       setEditedItem(null);
     } catch (err) {
-      console.error('Error saving:', err);
+      setError(err instanceof Error ? err.message : 'No se pudo guardar.');
     } finally {
       setSaving(null);
     }
@@ -239,10 +274,10 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
   const handleDelete = async (id: string) => {
     if (!window.confirm('¿Eliminar este vehículo del catálogo?')) return;
     try {
-      // await deleteCatalogItem(id); // Firebase
+      await deleteDoc(doc(db, 'catalog', id));
       setCatalog(prev => prev.filter(item => item.id !== id));
     } catch (err) {
-      console.error('Error deleting:', err);
+      setError(err instanceof Error ? err.message : 'No se pudo eliminar.');
     }
   };
 
@@ -440,15 +475,20 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
             <ImageUploader
               label="Catálogo"
               currentPreview={item.imageUrl}
-              onFileSelect={(file) => {
-                const url = URL.createObjectURL(file);
-                onChange('imageUrl', url);
-                onChange('_imageFile', file);
+              onFileSelect={async (file) => {
+                try { onChange('imageUrl', await uploadSiteImage(file)); }
+                catch (error) { setError(error instanceof Error ? error.message : 'No se pudo subir la imagen.'); }
               }}
               onUrlChange={(url) => onChange('imageUrl', url)}
             />
           </div>
         </div>
+        {!isNew && (
+          <label className="flex items-start gap-3 rounded-xl border border-amber-500/30 p-3 text-xs">
+            <input type="checkbox" checked={item.published === true} onChange={e => onChange('published', e.target.checked)} />
+            <span>Publicar esta compatibilidad en el buscador. Actívalo únicamente después de verificar la ficha técnica y sus condiciones.</span>
+          </label>
+        )}
       </div>
     );
   };
@@ -463,7 +503,7 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
               Catálogo Vehicular ({catalog.length})
             </h2>
             <p className="text-xs mt-0.5" style={{ color: styles.textSecondary }}>
-              CCA, tecnología y PVP oficial Ecuador. Empieza vacío, datos en Firebase.
+              CCA, tecnología y precios de referencia. Publica únicamente datos confirmados.
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
@@ -510,7 +550,7 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
       {adding && (
         <form onSubmit={handleSaveNew} style={styles.card} className="p-4 sm:p-6 mb-6">
           <h3 className="text-base font-semibold mb-4" style={{ color: styles.textPrimary }}>Nuevo Vehículo</h3>
-          {renderFormFields(newItem, (key, value) => setNewItem(prev => ({ ...prev, [key]: value })), true)}
+          {renderFormFields(newItem, (key, value) => setNewItem(prev => updateItemField(prev, key, value)), true)}
           <div className="flex justify-end gap-3 pt-4">
             <button
               type="button"
@@ -591,7 +631,7 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
                 {editingId === item.id ? (
                   <form onSubmit={e => { e.preventDefault(); handleEditSave(item.id); }} className="p-4 space-y-3">
                     <h4 className="font-semibold" style={{ color: styles.textPrimary }}>Editando: {item.brand} {item.model}</h4>
-                    {renderFormFields(editedItem!, (key, value) => setEditedItem(prev => prev ? { ...prev, [key]: value } : null))}
+                    {renderFormFields(editedItem!, (key, value) => setEditedItem(prev => prev ? updateItemField(prev, key, value) : null))}
                     <div className="flex justify-end gap-2 pt-2">
                       <button
                         type="button"
@@ -632,18 +672,19 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
                         <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-slate-800 text-slate-400">{item.engine}</span>
                       </div>
                       <h3 className="text-base font-bold mb-2" style={{ color: styles.textPrimary }}>{item.model}</h3>
+                      <span className={`mb-3 inline-block rounded-full px-2 py-1 text-xs font-semibold ${item.published ? 'bg-emerald-500/15 text-emerald-400' : 'bg-amber-500/15 text-amber-400'}`}>{item.published ? 'Publicado' : 'Borrador'}</span>
                       <div className="p-3 rounded-lg mb-3" style={{ background: darkMode ? 'rgba(15, 23, 42, 0.6)' : 'rgba(255, 255, 255, 0.6)', border: `1px solid ${border}` }}>
                         <div className="flex items-center justify-between text-xs font-semibold mb-1" style={{ color: styles.textPrimary }}>
                           <span>{item.recommendedBattery.model}</span>
-                          <span className="text-blue-500">${item.recommendedBattery.priceEcuador.toFixed(2)}</span>
+                          <span className="text-blue-500">{item.recommendedBattery.priceEcuador > 0 ? `$${item.recommendedBattery.priceEcuador.toFixed(2)}` : 'Precio pendiente'}</span>
                         </div>
                         <p className="text-[0.6875rem]" style={{ color: styles.textSecondary }}>
                           BCI: {item.recommendedBattery.bciGroup} • {item.recommendedBattery.cca} CCA • {item.recommendedBattery.ah} Ah • {item.recommendedBattery.technology}
                         </p>
                       </div>
                       <div className="flex items-center justify-between text-xs" style={{ color: styles.textSecondary, borderTop: `1px solid ${border}`, paddingTop: '0.5rem' }}>
-                        <span>Garantía: <strong>{item.recommendedBattery.warrantyMonths}m</strong></span>
-                        <span className="text-emerald-500 font-medium">Calibrado Ecuador</span>
+                        <span>Garantía: <strong>{item.recommendedBattery.warrantyMonths > 0 ? `${item.recommendedBattery.warrantyMonths}m` : 'pendiente'}</strong></span>
+                        <span className="text-emerald-500 font-medium">{item.published ? 'Visible en buscador' : 'Solo panel'}</span>
                       </div>
                     </div>
                     <div className="absolute top-2 right-2 flex gap-1">

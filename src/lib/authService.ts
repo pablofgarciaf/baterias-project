@@ -1,339 +1,99 @@
-/**
- * ═══════════════════════════════════════════════════════════════
- * 📄 AUTH SERVICE — authService.ts
- * ═══════════════════════════════════════════════════════════════
- * 📁 Path: src/lib/authService.ts
- * 🏷️ Type: Library / Auth & Users Management
- * 📦 Module: Admin
- * ─────────────────────────────────────────────────────────────
- * 🔍 Direct integration with Firebase Auth & Firestore `usuarios`
- * 🛡️ Force password change detection (EnergyEngine standard)
- * ─────────────────────────────────────────────────────────────
- */
-
-import {
-  signInWithEmailAndPassword,
-  signOut,
-  updatePassword,
-  sendPasswordResetEmail,
-  createUserWithEmailAndPassword,
-} from 'firebase/auth';
-import {
-  doc,
-  getDoc,
-  setDoc,
-  updateDoc,
-  collection,
-  getDocs,
-  serverTimestamp,
-} from 'firebase/firestore';
-import { auth, db } from './firebase';
+import { sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword, signOut, type User } from 'firebase/auth';
+import { auth, isFirebaseConfigured } from './firebase';
 
 export interface AdminUser {
   email: string;
   name: string;
   cedula?: string;
-  role: 'admin' | 'operator';
+  role: 'admin' | 'editor';
   roles?: string[];
   forcePasswordChange: boolean;
-  createdAt?: any;
-  updatedAt?: any;
+  createdAt?: unknown;
+  updatedAt?: unknown;
 }
 
-const LOCAL_STORAGE_USERS_KEY = 'maresa_admin_users';
-
-export const checkIsAuthorizedAdmin = (userData: any): boolean => {
-  if (!userData) return false;
-  let rolesArray: any[] = [];
-  if (Array.isArray(userData.roles)) {
-    rolesArray = userData.roles;
-  } else if (userData.roles && typeof userData.roles === 'object') {
-    rolesArray = Object.values(userData.roles);
-  } else if (typeof userData.roles === 'string') {
-    rolesArray = userData.roles.split(',');
-  }
-  if (userData.role) rolesArray.push(userData.role);
-
-  return rolesArray.some((r: any) => {
-    const val = typeof r === 'string' ? r : (r?.value || r?.id || '');
-    const norm = String(val).toLowerCase().trim();
-    return norm === 'admin' || norm === 'super';
-  });
+export const checkIsAuthorizedAdmin = (data: unknown): boolean => {
+  if (!data || typeof data !== 'object') return false;
+  const user = data as Record<string, unknown>;
+  return user.role === 'admin' || (Array.isArray(user.roles) && user.roles.includes('admin'));
 };
 
-/**
- * Ensures the primary admin account exists in Firestore and Local Cache.
- */
-export const ensurePrimaryAdminSeed = async () => {
-  const primaryEmail = 'pablofgarciaf@gmail.com';
-  const initialCedula = '1721790721';
-
-  try {
-    const userRef = doc(db, 'usuarios', primaryEmail);
-    const snap = await getDoc(userRef);
-    if (!snap.exists()) {
-      await setDoc(userRef, {
-        email: primaryEmail,
-        name: 'Pablo García',
-        cedula: initialCedula,
-        role: 'admin',
-        roles: ['admin'],
-        forcePasswordChange: true,
-        createdAt: serverTimestamp(),
-      });
-    }
-  } catch (err) {
-    console.warn('Could not seed admin in Firestore, saving local cache:', err);
+export const verifyAdminUser = async (user: User | null): Promise<{ authorized: boolean; forcePasswordChange: boolean; role: 'admin' | 'editor' | null }> => {
+  if (!isFirebaseConfigured || !user?.email) {
+    return { authorized: false, forcePasswordChange: false, role: null };
   }
-
-  // Also seed local cache for resilience
-  try {
-    const local = localStorage.getItem(LOCAL_STORAGE_USERS_KEY);
-    const users: AdminUser[] = local ? JSON.parse(local) : [];
-    if (!users.some((u) => u.email.toLowerCase() === primaryEmail)) {
-      users.push({
-        email: primaryEmail,
-        name: 'Pablo García',
-        cedula: initialCedula,
-        role: 'admin',
-        roles: ['admin'],
-        forcePasswordChange: true,
-      });
-      localStorage.setItem(LOCAL_STORAGE_USERS_KEY, JSON.stringify(users));
-    }
-  } catch {}
+  if (!user.emailVerified) {
+    return { authorized: false, forcePasswordChange: false, role: null };
+  }
+  const token = await user.getIdToken();
+  const response = await fetch('/api/admin/session', { headers: { Authorization: `Bearer ${token}` }, cache: 'no-store' });
+  if (response.status === 503) throw new Error('El servidor administrativo necesita la credencial privada de Firebase. Configura la cuenta de servicio para continuar.');
+  if (!response.ok) return { authorized: false, forcePasswordChange: false, role: null };
+  const data = await response.json();
+  return {
+    authorized: data.role === 'admin' || data.role === 'editor',
+    forcePasswordChange: data?.forcePasswordChange === true,
+    role: data.role,
+  };
 };
 
-/**
- * Authenticates user, checks credentials, and returns forcePasswordChange status.
- */
-export const loginAdminUser = async (
-  emailInput: string,
-  passwordInput: string
-): Promise<{ success: boolean; forcePasswordChange?: boolean; error?: string }> => {
-  const cleanEmail = emailInput.trim().toLowerCase();
-  await ensurePrimaryAdminSeed();
-
-  // 1. Try Firebase Auth
+export const loginAdminUser = async (email: string, password: string): Promise<{ success: boolean; forcePasswordChange?: boolean; role?: 'admin' | 'editor'; error?: string }> => {
+  if (!isFirebaseConfigured) return { success: false, error: 'El acceso administrativo aún no está configurado.' };
   try {
-    const cred = await signInWithEmailAndPassword(auth, cleanEmail, passwordInput);
-    if (cred.user) {
-      // Check firestore for forcePasswordChange
-      try {
-        const userRef = doc(db, 'usuarios', cleanEmail);
-        const snap = await getDoc(userRef);
-        if (snap.exists()) {
-          const data = snap.data();
-          if (data.forcePasswordChange) {
-            return { success: true, forcePasswordChange: true };
-          }
-        }
-      } catch (err) {
-        console.warn('Error reading Firestore user doc:', err);
-      }
-
-      sessionStorage.setItem('maresa_admin_auth', 'true');
-      sessionStorage.setItem('maresa_admin_email', cleanEmail);
-      return { success: true, forcePasswordChange: false };
+    const credential = await signInWithEmailAndPassword(auth, email.trim().toLowerCase(), password);
+    if (!credential.user.emailVerified) {
+      const sent = await sendEmailVerification(credential.user).then(() => true).catch(() => false);
+      await signOut(auth);
+      return { success: false, error: sent ? 'Verifica tu correo. Te enviamos un enlace de confirmación.' : 'Verifica tu correo. No se pudo enviar el enlace; contacta al administrador.' };
     }
-  } catch (fbErr: any) {
-    // If user not in Firebase Auth yet, check for initial seed match (e.g. initial cedula login)
-    if (
-      cleanEmail === 'pablofgarciaf@gmail.com' &&
-      (passwordInput === '1721790721' || passwordInput === 'maresa2026')
-    ) {
-      // Try to create the Firebase Auth user if it was not created yet
-      try {
-        await createUserWithEmailAndPassword(auth, cleanEmail, passwordInput);
-      } catch (createErr) {
-        // If already exists or error, continue
-      }
-
-      // Check local or Firestore forcePasswordChange state
-      let forceChange = true;
-      try {
-        const local = localStorage.getItem(LOCAL_STORAGE_USERS_KEY);
-        if (local) {
-          const users: AdminUser[] = JSON.parse(local);
-          const found = users.find((u) => u.email.toLowerCase() === cleanEmail);
-          if (found && found.forcePasswordChange === false) {
-            forceChange = false;
-          }
-        }
-      } catch {}
-
-      if (forceChange) {
-        return { success: true, forcePasswordChange: true };
-      }
-
-      sessionStorage.setItem('maresa_admin_auth', 'true');
-      sessionStorage.setItem('maresa_admin_email', cleanEmail);
-      return { success: true, forcePasswordChange: false };
+    const status = await verifyAdminUser(credential.user);
+    if (!status.authorized) {
+      await signOut(auth);
+      return { success: false, error: 'Tu cuenta no tiene acceso administrativo verificado.' };
     }
-
-    // Check local fallback users
-    try {
-      const local = localStorage.getItem(LOCAL_STORAGE_USERS_KEY);
-      if (local) {
-        const users: AdminUser[] = JSON.parse(local);
-        const match = users.find(
-          (u) =>
-            u.email.toLowerCase() === cleanEmail &&
-            (u.cedula === passwordInput || passwordInput === 'maresa2026')
-        );
-        if (match) {
-          if (match.forcePasswordChange) {
-            return { success: true, forcePasswordChange: true };
-          }
-          sessionStorage.setItem('maresa_admin_auth', 'true');
-          sessionStorage.setItem('maresa_admin_email', cleanEmail);
-          return { success: true, forcePasswordChange: false };
-        }
-      }
-    } catch {}
-
-    const errorMsg =
-      fbErr.code === 'auth/invalid-credential' || fbErr.code === 'auth/wrong-password'
-        ? 'Contraseña o correo incorrectos.'
-        : fbErr.code === 'auth/user-not-found'
-        ? 'Usuario no registrado.'
-        : 'Error de autenticación. Verifica tus credenciales.';
-
-    return { success: false, error: errorMsg };
+    return { success: true, forcePasswordChange: status.forcePasswordChange, role: status.role || undefined };
+  } catch (error) {
+    await signOut(auth).catch(() => undefined);
+    return { success: false, error: error instanceof Error && error.message.includes('credencial privada') ? error.message : 'No se pudo iniciar sesión. Revisa tus credenciales y la configuración.' };
   }
-
-  return { success: false, error: 'Credenciales inválidas.' };
 };
 
-/**
- * Forces password update and clears forcePasswordChange flag.
- */
-export const completePasswordChange = async (
-  email: string,
-  newPasswordInput: string
-): Promise<{ success: boolean; error?: string }> => {
-  const cleanEmail = email.trim().toLowerCase();
-
+export const completePasswordChange = async (password: string): Promise<{ success: boolean; error?: string }> => {
+  const user = auth.currentUser;
+  if (!user || password.length < 12) return { success: false, error: 'La contraseña debe tener al menos 12 caracteres.' };
   try {
-    if (auth.currentUser) {
-      await updatePassword(auth.currentUser, newPasswordInput);
-    }
-  } catch (err: any) {
-    console.warn('Firebase Auth password update note:', err?.message);
-  }
-
-  // Update Firestore
-  try {
-    const userRef = doc(db, 'usuarios', cleanEmail);
-    await updateDoc(userRef, {
-      forcePasswordChange: false,
-      updatedAt: serverTimestamp(),
+    const status = await verifyAdminUser(user);
+    if (!status.authorized) return { success: false, error: 'Acceso no autorizado.' };
+    const token = await user.getIdToken();
+    const response = await fetch('/api/admin/change-password', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password }),
     });
-  } catch (err) {
-    console.warn('Firestore update warning:', err);
+    if (!response.ok) throw new Error('No se pudo confirmar el cambio.');
+    await signOut(auth);
+    return { success: true };
+  } catch {
+    return { success: false, error: 'No se pudo actualizar la contraseña. Vuelve a iniciar sesión e inténtalo.' };
   }
-
-  // Update local storage cache
-  try {
-    const local = localStorage.getItem(LOCAL_STORAGE_USERS_KEY);
-    if (local) {
-      const users: AdminUser[] = JSON.parse(local);
-      const updated = users.map((u) =>
-        u.email.toLowerCase() === cleanEmail ? { ...u, forcePasswordChange: false } : u
-      );
-      localStorage.setItem(LOCAL_STORAGE_USERS_KEY, JSON.stringify(updated));
-    }
-  } catch {}
-
-  sessionStorage.setItem('maresa_admin_auth', 'true');
-  sessionStorage.setItem('maresa_admin_email', cleanEmail);
-  return { success: true };
 };
 
-/**
- * Sends a password recovery email via Firebase Auth.
- */
 export const requestPasswordReset = async (email: string): Promise<{ success: boolean; error?: string }> => {
+  if (!isFirebaseConfigured) return { success: false, error: 'La recuperación aún no está configurada.' };
   try {
     await sendPasswordResetEmail(auth, email.trim().toLowerCase());
     return { success: true };
-  } catch (err: any) {
-    const msg =
-      err.code === 'auth/user-not-found'
-        ? 'No existe una cuenta con este correo electrónico.'
-        : 'Error al enviar correo de recuperación. Intenta más tarde.';
-    return { success: false, error: msg };
+  } catch {
+    return { success: false, error: 'No se pudo enviar el correo de recuperación.' };
   }
 };
 
-/**
- * Gets all administrative users.
- */
 export const getAdminUsers = async (): Promise<AdminUser[]> => {
-  await ensurePrimaryAdminSeed();
-
-  try {
-    const usersCol = collection(db, 'usuarios');
-    const snap = await getDocs(usersCol);
-    if (!snap.empty) {
-      const list = snap.docs.map((d) => d.data() as AdminUser);
-      localStorage.setItem(LOCAL_STORAGE_USERS_KEY, JSON.stringify(list));
-      return list;
-    }
-  } catch (err) {
-    console.warn('Error reading Firestore users:', err);
-  }
-
-  try {
-    const local = localStorage.getItem(LOCAL_STORAGE_USERS_KEY);
-    if (local) return JSON.parse(local);
-  } catch {}
-
-  return [
-    {
-      email: 'pablofgarciaf@gmail.com',
-      name: 'Pablo García',
-      cedula: '1721790721',
-      role: 'admin',
-      roles: ['admin'],
-      forcePasswordChange: true,
-    },
-  ];
-};
-
-/**
- * Creates a new user in Firestore and Local Cache.
- */
-export const createAdminUser = async (
-  user: Omit<AdminUser, 'forcePasswordChange' | 'createdAt'>
-): Promise<{ success: boolean; error?: string }> => {
-  const cleanEmail = user.email.trim().toLowerCase();
-  const newUser: AdminUser = {
-    ...user,
-    email: cleanEmail,
-    role: user.role || 'admin',
-    roles: [user.role || 'admin'],
-    forcePasswordChange: true,
-    createdAt: new Date().toISOString(),
-  };
-
-  try {
-    const userRef = doc(db, 'usuarios', cleanEmail);
-    await setDoc(userRef, {
-      ...newUser,
-      createdAt: serverTimestamp(),
-    });
-  } catch (err) {
-    console.warn('Could not save user to Firestore directly:', err);
-  }
-
-  try {
-    const local = localStorage.getItem(LOCAL_STORAGE_USERS_KEY);
-    const users: AdminUser[] = local ? JSON.parse(local) : [];
-    const filtered = users.filter((u) => u.email.toLowerCase() !== cleanEmail);
-    filtered.push(newUser);
-    localStorage.setItem(LOCAL_STORAGE_USERS_KEY, JSON.stringify(filtered));
-  } catch {}
-
-  return { success: true };
+  const status = await verifyAdminUser(auth.currentUser);
+  if (!status.authorized || status.role !== 'admin' || !auth.currentUser) throw new Error('Acceso no autorizado.');
+  const token = await auth.currentUser.getIdToken();
+  const response = await fetch('/api/admin/users', { headers: { Authorization: `Bearer ${token}` }, cache: 'no-store' });
+  if (!response.ok) throw new Error('No se pudo consultar usuarios.');
+  const data = await response.json();
+  return data.users as AdminUser[];
 };

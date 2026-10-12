@@ -33,7 +33,6 @@ import {
   Car, 
   Truck, 
   Search,
-  MessageCircle,
   FileText,
   X,
   Clock,
@@ -64,68 +63,68 @@ interface BatteryShowcaseItem {
 
 const batteryCatalogItems: BatteryShowcaseItem[] = [
   {
-    id: 'andina-agm-h5',
-    name: 'Andina AGM Start-Stop H5 / LN2',
-    category: 'Start-Stop Luxury & 4x4',
-    bciGroup: 'H5 / LN2',
-    cca: 680,
-    ah: 60,
+    id: 'referencia-agm',
+    name: 'Tecnología AGM',
+    category: 'Referencia educativa',
+    bciGroup: 'Por validar',
+    cca: 0,
+    ah: 0,
     voltage: 12,
-    warrantyMonths: 36,
-    priceEcuador: 165.00,
+    warrantyMonths: 0,
+    priceEcuador: 0,
     technology: 'AGM',
-    bestFor: 'SUVs modernos, Chevrolet Tracker, Hyundai Tucson, Chery, Audi, BMW',
+    bestFor: 'Vehículos que requieren AGM según el fabricante',
     features: [
-      'Microfibra de vidrio absorbente que triplica vida útil',
-      'Aceptación de recarga ultra rápida con frenado regenerativo',
-      '100% sellada a prueba de fugas y vibración'
+      'Comprueba tecnología y dimensiones originales antes de reemplazar',
+      'Algunos vehículos requieren registrar la batería nueva',
+      'La ficha comercial oficial está pendiente'
     ],
-    dimensions: '242 x 175 x 190 mm',
-    polarity: 'Positivo Derecho (+D)',
+    dimensions: 'Por validar',
+    polarity: 'Por validar',
     image: 'https://images.pexels.com/photos/37177072/pexels-photo-37177072.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
     icon: Car
   },
   {
-    id: 'andina-pro-27f',
-    name: 'Andina Pro HD-27F Max Diésel',
-    category: 'Pickups & Trabajo Duro',
-    bciGroup: '27F',
-    cca: 750,
-    ah: 80,
+    id: 'referencia-efb',
+    name: 'Tecnología EFB',
+    category: 'Referencia educativa',
+    bciGroup: 'Por validar',
+    cca: 0,
+    ah: 0,
     voltage: 12,
-    warrantyMonths: 24,
-    priceEcuador: 145.00,
+    warrantyMonths: 0,
+    priceEcuador: 0,
     technology: 'EFB',
-    bestFor: 'Chevrolet D-Max, Toyota Hilux, Nissan Frontier, Mazda BT-50',
+    bestFor: 'Vehículos que requieren EFB según el fabricante',
     features: [
-      'Potencia de arranque diésel a 2.800+ msnm en la Sierra',
-      'Mallas de aleación Calcio-Plata de alta densidad',
-      'Carcasa reforzada anti-impactos para caminos de tercer orden'
+      'Confirma la tecnología exigida por el sistema Start-Stop',
+      'Comprueba capacidad y corriente de arranque en el manual',
+      'La ficha comercial oficial está pendiente'
     ],
-    dimensions: '306 x 173 x 225 mm',
-    polarity: 'Positivo Derecho (+D)',
+    dimensions: 'Por validar',
+    polarity: 'Por validar',
     image: 'https://images.pexels.com/photos/6940962/pexels-photo-6940962.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
     icon: Truck
   },
   {
-    id: 'andina-gold-24',
-    name: 'Andina Gold Plus 24-600',
-    category: 'Automóviles Particulares & Taxis',
-    bciGroup: '24 / 24R',
-    cca: 600,
-    ah: 55,
+    id: 'referencia-convencional',
+    name: 'Batería convencional',
+    category: 'Referencia educativa',
+    bciGroup: 'Por validar',
+    cca: 0,
+    ah: 0,
     voltage: 12,
-    warrantyMonths: 24,
-    priceEcuador: 84.00,
+    warrantyMonths: 0,
+    priceEcuador: 0,
     technology: 'Calcio-Plata',
-    bestFor: 'Chevrolet Aveo, Sail, Kia Rio/Soluto, Hyundai Accent, Nissan Versa',
+    bestFor: 'Solo cuando sea compatible con el vehículo',
     features: [
-      'Libre de mantenimiento con indicador de carga incorporado',
-      'Excelente relación precio-durabilidad para uso intensivo diario',
-      'Diseño calibrado para tráfico pesado y temperatura urbana'
+      'Verifica tamaño, polaridad y sujeción',
+      'No sustituyas una AGM o EFB sin comprobar el requisito del fabricante',
+      'La ficha comercial oficial está pendiente'
     ],
-    dimensions: '260 x 173 x 225 mm',
-    polarity: 'Positivo Izquierdo (+I) / Derecho',
+    dimensions: 'Por validar',
+    polarity: 'Por validar',
     image: 'https://images.pexels.com/photos/37177070/pexels-photo-37177070.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
     icon: Car
   },
@@ -237,17 +236,17 @@ export default function Products() {
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/15 border border-blue-400/30 text-blue-600 dark:text-blue-300 text-xs sm:text-sm font-bold uppercase tracking-wider mb-4">
               <Zap className="w-4 h-4 text-amber-500 fill-amber-500" />
-              Línea Oficial Baterías Andinas · Corporación Maresa
+              Tecnologías de referencia · Baterías Maresa
             </div>
             <h2 className={`text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight ${
               isDark ? 'text-white' : 'text-slate-950'
             }`}>
-              Catálogo de Baterías de Alta Gama
+              Conoce las tecnologías de batería
             </h2>
             <p className={`mt-3 text-sm sm:text-base leading-relaxed ${
               isDark ? 'text-slate-300' : 'text-slate-600'
             }`}>
-              Tecnología de última generación diseñada para resistir las condiciones más exigentes del Ecuador: altitud andina, calor de costa y caminos de trocha.
+              Estas fichas explican diferencias generales. Los modelos, precios y garantías se publicarán cuando exista un catálogo oficial aprobado.
             </p>
           </div>
 
@@ -317,23 +316,23 @@ export default function Products() {
         {/* Fluid Responsive Carousel Track with Touch Swipe */}
         <div className="relative group">
           {/* Desktop Controls (flanking) */}
-          <button onClick={handlePrev} className={`hidden md:flex absolute left-3 lg:left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full items-center justify-center transition-all active:scale-95 cursor-pointer border shadow-lg backdrop-blur-md ${isDark ? 'bg-slate-900/90 hover:bg-slate-800 text-white border-slate-800' : 'bg-white/90 hover:bg-white text-slate-800 border-slate-200'}`}>
+          <button onClick={handlePrev} className={`${filteredItems.length > 3 ? 'hidden md:flex' : 'hidden'} absolute left-3 lg:left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full items-center justify-center transition-all active:scale-95 cursor-pointer border shadow-lg backdrop-blur-md ${isDark ? 'bg-slate-900/90 hover:bg-slate-800 text-white border-slate-800' : 'bg-white/90 hover:bg-white text-slate-800 border-slate-200'}`}>
             <ChevronLeft className="w-6 h-6" />
           </button>
-          <button onClick={handleNext} className="hidden md:flex absolute right-3 lg:right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-blue-600 hover:bg-blue-700 text-white items-center justify-center transition-all active:scale-95 cursor-pointer shadow-xl shadow-blue-600/30 backdrop-blur-md">
+          <button onClick={handleNext} className={`${filteredItems.length > 3 ? 'hidden md:flex' : 'hidden'} absolute right-3 lg:right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-blue-600 hover:bg-blue-700 text-white items-center justify-center transition-all active:scale-95 cursor-pointer shadow-xl shadow-blue-600/30 backdrop-blur-md`}>
             <ChevronRight className="w-6 h-6" />
           </button>
 
           <div 
             id="products-carousel-track"
-            className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-8 pt-4 -mx-4 px-4 sm:-mx-8 sm:px-8 no-scrollbar scroll-smooth"
+            className="flex justify-start md:justify-center overflow-x-auto snap-x snap-mandatory gap-6 lg:gap-8 pb-8 pt-4 px-4 sm:px-0 no-scrollbar scroll-smooth"
           >
             {filteredItems.map((item) => {
               const IconComp = item.icon;
               return (
                 <div
                   key={item.id}
-                  className="shrink-0 snap-center w-[280px] sm:w-[300px] md:w-[320px]"
+                  className="shrink-0 snap-center w-[290px] sm:w-[320px] lg:w-[360px]"
                 >
                   <div 
                     className={`h-full flex flex-col rounded-3xl overflow-hidden border transition-all duration-300 hover:-translate-y-1.5 ${
@@ -361,7 +360,7 @@ export default function Products() {
                       {/* Warranty Pill */}
                       <div className="absolute top-3.5 right-3.5 flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/90 backdrop-blur text-white text-[11px] font-bold shadow-md">
                         <ShieldCheck className="w-3.5 h-3.5" />
-                        <span>{item.warrantyMonths}m Garantía</span>
+                        <span>Ficha comercial pendiente</span>
                       </div>
 
                       {/* Category Label Bottom */}
@@ -407,7 +406,7 @@ export default function Products() {
                               CCA
                             </span>
                             <span className="text-xs sm:text-sm font-extrabold text-amber-500 block mt-0.5">
-                              {item.cca} A
+                              {item.cca > 0 ? `${item.cca} A` : 'Por validar'}
                             </span>
                           </div>
 
@@ -418,7 +417,7 @@ export default function Products() {
                               Ah
                             </span>
                             <span className="text-xs sm:text-sm font-extrabold block mt-0.5">
-                              {item.ah} Ah
+                              {item.ah > 0 ? `${item.ah} Ah` : 'Por validar'}
                             </span>
                           </div>
                         </div>
@@ -438,19 +437,16 @@ export default function Products() {
                       <div className={`pt-4 border-t ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
                         <div className="flex items-center justify-between mb-3">
                           <div>
-                            <span className={`text-[10px] block font-semibold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                              PVP Sugerido
-                            </span>
-                            <span className="text-xl sm:text-2xl font-extrabold text-blue-600 dark:text-blue-400">
-                              ${item.priceEcuador.toFixed(2)}
+                            <span className={`text-xs block font-semibold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                              Precio y disponibilidad por confirmar
                             </span>
                           </div>
                           <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-md border border-emerald-500/20">
-                            Bono Retorno -$10
+                            Programa de reciclaje por confirmar
                           </span>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-2">
+                        <div className="grid grid-cols-1 gap-2">
                           <button
                             onClick={() => setSelectedBatteryForSpecs(item)}
                             className={`w-full py-2.5 px-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
@@ -463,15 +459,6 @@ export default function Products() {
                             <span>Ficha</span>
                           </button>
 
-                          <a
-                            href={`https://wa.me/593998123456?text=Hola%20Maresa,%20deseo%20cotizar%20la%20bater%C3%ADa%20${encodeURIComponent(item.name)}%20(${item.technology},%20${item.cca}%20CCA).`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="w-full py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-md shadow-blue-600/25 transition-all active:scale-95 cursor-pointer"
-                          >
-                            <MessageCircle className="w-3.5 h-3.5" />
-                            <span>Cotizar</span>
-                          </a>
                         </div>
                       </div>
 
@@ -509,7 +496,7 @@ export default function Products() {
                   <X className="w-5 h-5" />
                 </button>
                 <span className="text-xs font-bold uppercase tracking-wider text-blue-200">
-                  Ficha Técnica Oficial • Corporación Maresa
+                  Ficha técnica de referencia • Baterías Maresa
                 </span>
                 <h3 className="text-xl font-extrabold mt-1">
                   {selectedBatteryForSpecs.name}
@@ -525,15 +512,15 @@ export default function Products() {
                   </div>
                   <div className={`p-3 rounded-xl border ${isDark ? 'bg-slate-800/80 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
                     <span className="text-slate-400 font-bold block">Capacidad / Voltaje</span>
-                    <span className="text-sm font-extrabold mt-0.5 block">{selectedBatteryForSpecs.ah} Ah • 12V</span>
+                    <span className="text-sm font-extrabold mt-0.5 block">Por validar</span>
                   </div>
                   <div className={`p-3 rounded-xl border ${isDark ? 'bg-slate-800/80 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
                     <span className="text-slate-400 font-bold block">Arranque Frío (CCA)</span>
-                    <span className="text-sm font-extrabold text-amber-500 mt-0.5 block">{selectedBatteryForSpecs.cca} Amperios</span>
+                    <span className="text-sm font-extrabold text-amber-500 mt-0.5 block">Por validar</span>
                   </div>
                   <div className={`p-3 rounded-xl border ${isDark ? 'bg-slate-800/80 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
-                    <span className="text-slate-400 font-bold block">Garantía Nacional</span>
-                    <span className="text-sm font-extrabold text-emerald-500 mt-0.5 block">{selectedBatteryForSpecs.warrantyMonths} Meses</span>
+                    <span className="text-slate-400 font-bold block">Garantía</span>
+                    <span className="text-sm font-extrabold text-emerald-500 mt-0.5 block">Por confirmar</span>
                   </div>
                   <div className={`p-3 rounded-xl border ${isDark ? 'bg-slate-800/80 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
                     <span className="text-slate-400 font-bold block">Dimensiones (L x An x Al)</span>
@@ -563,20 +550,8 @@ export default function Products() {
                   isDark ? 'bg-slate-800 border-slate-700' : 'bg-blue-50/60 border-blue-200'
                 }`}>
                   <div>
-                    <span className="text-xs text-slate-400 block font-semibold">PVP Sugerido Oficial</span>
-                    <span className="text-2xl font-extrabold text-blue-600 dark:text-blue-400">
-                      ${selectedBatteryForSpecs.priceEcuador.toFixed(2)}
-                    </span>
+                    <span className="text-xs text-slate-400 block font-semibold">Precio y disponibilidad pendientes de aprobación comercial</span>
                   </div>
-                  <a
-                    href={`https://wa.me/593998123456?text=Hola%20Maresa,%20deseo%20comprar%20la%20bater%C3%ADa%20${encodeURIComponent(selectedBatteryForSpecs.name)}.`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-emerald-600/30"
-                  >
-                    <MessageCircle className="w-4 h-4" />
-                    <span>Pedir por WhatsApp</span>
-                  </a>
                 </div>
               </div>
             </motion.div>

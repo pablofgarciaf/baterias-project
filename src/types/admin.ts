@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ═══════════════════════════════════════════════════════════════
  * 📄 ADMIN TYPES - Shared TypeScript interfaces for Admin Panel
  * ═══════════════════════════════════════════════════════════════
@@ -24,7 +24,7 @@ import { B2BLead, DistributorLocation, VehicleBatteryMatch } from './sinergia';
 // ============================================
 
 export type AdminSidebarSection = 'content' | 'distributors' | 'leads' | 'catalog' | 'users';
-export type ContentSectionKey = 'hero' | 'about' | 'vehicleFinder' | 'storeLocator' | 'b2b' | 'recycling' | 'blog';
+export type ContentSectionKey = 'hero' | 'about' | 'vehicleFinder' | 'storeLocator' | 'b2b' | 'recycling' | 'blog' | 'marquee';
 
 export interface NavItemConfig {
   id: AdminSidebarSection;

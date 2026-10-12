@@ -19,9 +19,9 @@ import type { Metadata } from 'next';
 import NosotrosClient from './NosotrosClient';
 
 export const metadata: Metadata = {
-  title: 'Quiénes Somos — 45 Años de Corporación Maresa',
+  title: 'Quiénes somos',
   description:
-    'Conoce la historia de Corporación Maresa en Ecuador: más de 45 años de liderazgo automotriz, laboratorios ISO 9001 y tecnología adaptada a la geografía andina.',
+    'Conoce el propósito, la propuesta de valor y los compromisos de Baterías Maresa. Información institucional pendiente de aprobación.',
 };
 
 export default function NosotrosPage() {

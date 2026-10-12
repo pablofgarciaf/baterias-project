@@ -19,9 +19,9 @@ import type { Metadata } from 'next';
 import ContactoB2BClient from './ContactoB2BClient';
 
 export const metadata: Metadata = {
-  title: 'Quiero ser Proveedor — Distribuidores B2B',
+  title: 'Contacto para negocios',
   description:
-    'Únete a la red de distribuidores autorizados de Baterías Maresa en Ecuador. Márgenes competitivos, crédito directo, capacitación técnica y logística nacional.',
+    'Conoce la propuesta comercial para talleres y distribuidores y deja tus datos cuando el formulario esté habilitado.',
 };
 
 export default function ContactoB2BPage() {
