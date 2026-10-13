@@ -36,11 +36,34 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const savedTheme = localStorage.getItem('maresa_theme') as Theme | null;
-    if (savedTheme === 'light' || savedTheme === 'dark') {
-      setThemeState(savedTheme);
+
+    if (isMobile) {
+      // EN MÓVIL: Efecto sensorial cinematográfico.
+      // Si el teléfono está en modo oscuro: empieza en modo claro y a los 1.8s pasa a oscuro.
+      // Si el teléfono está en modo claro: empieza en modo oscuro y a los 1.8s pasa a claro.
+      const initialMobileTheme: Theme = prefersDark ? 'light' : 'dark';
+      const targetMobileTheme: Theme = prefersDark ? 'dark' : 'light';
+
+      setThemeState(initialMobileTheme);
+      setMounted(true);
+
+      const timer = setTimeout(() => {
+        setThemeState(targetMobileTheme);
+      }, 1800);
+
+      return () => clearTimeout(timer);
+    } else {
+      // EN ESCRITORIO: Siempre empieza en modo claro
+      if (savedTheme === 'light' || savedTheme === 'dark') {
+        setThemeState(savedTheme);
+      } else {
+        setThemeState('light');
+      }
+      setMounted(true);
     }
-    setMounted(true);
   }, []);
 
   useEffect(() => {

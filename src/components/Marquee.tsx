@@ -49,28 +49,27 @@ export default function Marquee({ scrolled = false }: MarqueeProps) {
           } to-transparent`} 
         />
 
-        {/* Track de movimiento infinito continuo (velocidad calibrada a 60s en globals.css) */}
-        <div className="animate-marquee flex items-center gap-8 px-4">
+        <div className="animate-marquee flex items-center gap-10 px-6">
           {items.map((item, index) => (
             <div
               key={`${item.id}-${index}`}
               className="inline-flex items-center gap-3 shrink-0 group cursor-default"
             >
               {item.tag && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-wider uppercase bg-blue-500/20 text-blue-400 border border-blue-400/30 group-hover:bg-blue-500/30 transition-colors">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-widest uppercase bg-blue-600/20 text-blue-400 border border-blue-500/30 group-hover:bg-blue-600/30 transition-colors">
                   {item.tag}
                 </span>
               )}
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs font-bold tracking-tight text-white group-hover:text-blue-300 transition-colors">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold tracking-tight text-white/95 group-hover:text-blue-300 transition-colors">
                   {item.title}
                 </span>
-                <span className="text-white/40 text-xs">•</span>
-                <span className="text-xs font-medium text-slate-300/80">
+                <span className="text-blue-400/50 text-xs font-mono">•</span>
+                <span className="text-xs font-normal text-slate-300/90 tracking-wide">
                   {item.subtitle}
                 </span>
               </div>
-              <Sparkles className="w-3 h-3 text-amber-400/70 shrink-0 ml-4" />
+              <Sparkles className="w-3 h-3 text-amber-400/80 shrink-0 ml-4 opacity-70 group-hover:opacity-100 transition-opacity" />
             </div>
           ))}
         </div>
