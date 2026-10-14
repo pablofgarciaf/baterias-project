@@ -26,11 +26,22 @@ const PremiumMap = dynamic(() => import('@/components/PremiumMap'), {
   ),
 });
 
+// Direcciones publicadas en el directorio de Maresa Parts (consulta: 2026-10-14).
+const officialMaresaLocations = [
+  { name: 'Maresa Center Carlos Julio Arosemena', city: 'Guayaquil', address: 'Av. Carlos Julio Arosemena Tola Km 2 1/2, junto a la gasolinera Primax' },
+  { name: 'Maresa Center Juan Tanca Marengo', city: 'Guayaquil', address: 'Av. Juan Tanca Marengo Km 1 1/2, diagonal al Mall del Sol' },
+  { name: 'Maresa Center Express Granados', city: 'Quito', address: 'Av. de los Granados E11-67 y de las Hiedras, esquina' },
+  { name: 'Maresa Center Granados', city: 'Quito', address: 'E11-124 y Av. 6 de Diciembre, frente a Corporación Maresa' },
+  { name: 'Maresa Center Valle de los Chillos', city: 'Quito', address: 'Av. Gral. Rumiñahui y Giovanni Farina' },
+  { name: 'Maresa Center Manta', city: 'Manta', address: 'Av. 113 Calle 199 N1114' },
+];
+
 export default function AgenciasClient() {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 
   const [distributorsList, setDistributorsList] = useState<(DistributorLocation & { distance?: number })[]>([]);
+  const [locationsLoading, setLocationsLoading] = useState(true);
   const [selectedProvince, setSelectedProvince] = useState<string>('Todas');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedDistributor, setSelectedDistributor] = useState<(DistributorLocation & { distance?: number }) | null>(null);
@@ -49,7 +60,7 @@ export default function AgenciasClient() {
     getDistributors().then(data => {
       setDistributorsList(data);
       setSelectedDistributor(data[0] || null);
-    });
+    }).finally(() => setLocationsLoading(false));
   }, []);
 
   const filteredDistributors = useMemo(() => {
@@ -163,11 +174,36 @@ export default function AgenciasClient() {
     }, 100);
   };
 
+  if (!locationsLoading && distributorsList.length === 0) {
+    return (
+      <main className={`min-h-screen py-16 sm:py-20 ${isDark ? 'bg-primary-950 text-white' : 'bg-[#f6f6f4] text-primary-950'}`}>
+        <div className="container-max">
+          <p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-secondary-600">Encuentra un local</p>
+          <h1 className="max-w-3xl text-3xl font-extrabold tracking-tight sm:text-5xl">Locales publicados por Maresa</h1>
+          <p className={`mt-4 max-w-2xl text-base leading-relaxed ${isDark ? 'text-primary-300' : 'text-primary-600'}`}>
+            Consulta la dirección que te resulte más conveniente y pregunta directamente al local por la disponibilidad de baterías.
+          </p>
+          <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {officialMaresaLocations.map((location) => (
+              <article key={location.name} className={`flex h-full flex-col rounded-2xl border p-6 ${isDark ? 'border-primary-700 bg-primary-900' : 'border-primary-200 bg-white'}`}>
+                <span className="text-xs font-bold uppercase tracking-wide text-secondary-600">{location.city}</span>
+                <h2 className="mt-2 text-lg font-bold">{location.name}</h2>
+                <p className={`mt-3 flex items-start gap-2 text-sm leading-relaxed ${isDark ? 'text-primary-200' : 'text-primary-600'}`}><MapPin className="mt-0.5 h-4 w-4 shrink-0 text-secondary-500" />{location.address}</p>
+                <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${location.name}, ${location.address}, Ecuador`)}`} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex items-center gap-2 self-start text-sm font-bold text-secondary-600 hover:underline">Ver ubicación <ArrowRight className="h-4 w-4" /></a>
+              </article>
+            ))}
+          </div>
+          <a href="https://maresapartsb2c.corpmaresa.com.ec/locales" target="_blank" rel="noopener noreferrer" className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-secondary-600 underline underline-offset-4">Consultar el directorio completo de Maresa <ArrowRight className="h-4 w-4" /></a>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <div className={`min-h-screen pt-20 lg:pt-24 pb-20 transition-colors duration-300 ${
-      isDark 
-        ? 'bg-[#060e1a] text-white selection:bg-primary-600 selection:text-white' 
-        : 'bg-[#f4f7fb] text-slate-900 selection:bg-primary-600 selection:text-white'
+      isDark
+        ? 'bg-[#191919] text-white selection:bg-primary-600 selection:text-white'
+        : 'bg-[#f6f6f4] text-slate-900 selection:bg-primary-600 selection:text-white'
     }`}>
       <div className="container-max relative z-10 px-4 sm:px-6">
 
@@ -205,8 +241,8 @@ export default function AgenciasClient() {
             disabled={findingNearest || distributorsList.length === 0}
             className={`w-full sm:w-auto py-3.5 px-6 rounded-2xl text-xs sm:text-sm font-black flex items-center justify-center gap-2.5 transition-all duration-200 shrink-0 disabled:cursor-not-allowed disabled:shadow-none disabled:opacity-60 ${
               findingNearest
-                ? 'bg-secondary-600 text-white opacity-85'
-                : 'bg-secondary-500 hover:bg-secondary-600 text-white shadow-lg shadow-secondary-600/25 border border-secondary-400/20'
+                ? 'bg-secondary-600 text-primary-950 opacity-85'
+                : 'bg-secondary-500 hover:bg-secondary-400 text-primary-950 shadow-lg shadow-secondary-600/25 border border-secondary-400/20'
             }`}
           >
             {findingNearest ? (
@@ -225,8 +261,8 @@ export default function AgenciasClient() {
 
         {/* FILTROS Y BUSCADOR COMPACTOS CON ESTILO MARESA */}
         <div className={`mb-5 p-3.5 sm:p-4 rounded-2xl border shadow-sm backdrop-blur-xl transition-all duration-300 ${
-          isDark 
-            ? 'bg-[#0b192c]/80 border-primary-900/30 shadow-black/30' 
+          isDark
+            ? 'bg-[#252524]/80 border-primary-900/30 shadow-black/30'
             : 'bg-white border-slate-200 shadow-slate-200/60'
         }`}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -240,7 +276,7 @@ export default function AgenciasClient() {
                 onChange={(e) => { setSelectedProvince(e.target.value); setGpsActive(false); }}
                 className={`w-full py-2 px-3 rounded-xl border text-xs sm:text-sm font-semibold outline-none transition-all cursor-pointer ${
                   isDark
-                    ? 'bg-[#071326] border-primary-900/40 text-white focus:border-primary-500 focus:ring-1 focus:ring-primary-500/40'
+                    ? 'bg-[#1e1e1d] border-primary-900/40 text-white focus:border-primary-500 focus:ring-1 focus:ring-primary-500/40'
                     : 'bg-slate-50 border-slate-200 text-slate-900 focus:border-primary-500 focus:ring-1 focus:ring-primary-500/30'
                 }`}
               >
@@ -266,7 +302,7 @@ export default function AgenciasClient() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className={`w-full pl-9 pr-3 py-2 rounded-xl border text-xs sm:text-sm outline-none transition-all ${
                     isDark
-                      ? 'bg-[#071326] border-primary-900/40 text-white placeholder-slate-400 focus:border-primary-500 focus:ring-1 focus:ring-primary-500/40'
+                      ? 'bg-[#1e1e1d] border-primary-900/40 text-white placeholder-slate-400 focus:border-primary-500 focus:ring-1 focus:ring-primary-500/40'
                       : 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400 focus:border-primary-500 focus:ring-1 focus:ring-primary-500/30'
                   }`}
                 />
@@ -276,7 +312,7 @@ export default function AgenciasClient() {
         </div>
 
         {/* SELECTOR DE VISTA EN CELULAR (TABS ELEGANTES CON COLORES MARESA) */}
-        <div className="flex lg:hidden items-center p-1 rounded-2xl bg-slate-200 dark:bg-[#071326] border border-slate-300 dark:border-primary-900/40 mb-4 sticky top-16 z-30 shadow-md">
+        <div className="flex lg:hidden items-center p-1 rounded-2xl bg-slate-200 dark:bg-[#1e1e1d] border border-slate-300 dark:border-primary-900/40 mb-4 sticky top-16 z-30 shadow-md">
           <button
             type="button"
             onClick={() => setMobileView('map')}
@@ -311,8 +347,8 @@ export default function AgenciasClient() {
             mobileView === 'map' ? 'hidden lg:block' : 'block'
           }`}>
             <div className={`rounded-2xl border p-3.5 shadow-sm transition-all duration-300 ${
-              isDark 
-                ? 'bg-[#0b192c]/90 border-primary-900/30 shadow-black/40' 
+              isDark
+                ? 'bg-[#252524]/90 border-primary-900/30 shadow-black/40'
                 : 'bg-white border-slate-200 shadow-slate-200/50'
             }`}>
               <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-slate-200 dark:border-primary-900/30">
@@ -356,7 +392,7 @@ export default function AgenciasClient() {
                               ? 'bg-primary-950/70 border-primary-500 shadow-md shadow-primary-950/60 ring-1 ring-primary-500/50'
                               : 'bg-primary-50/90 border-primary-600 shadow-sm ring-1 ring-primary-600/30'
                             : isDark
-                              ? 'bg-[#0f233d]/50 border-primary-950/60 hover:border-primary-700/50 hover:bg-[#132c4c]/60'
+                              ? 'bg-[#30302e]/50 border-primary-950/60 hover:border-primary-700/50 hover:bg-[#41413e]/60'
                               : 'bg-slate-50/80 border-slate-200 hover:border-primary-300 hover:bg-white'
                         }`}
                       >
@@ -423,22 +459,22 @@ export default function AgenciasClient() {
           </div>
 
           {/* MAPA OFICIAL GOOGLE MAPS (Columna Derecha: altura calibrada exacta a ~440px) */}
-          <div 
+          <div
             ref={mapContainerRef}
             className={`w-full flex-1 ${
               mobileView === 'list' ? 'hidden lg:block' : 'block'
             }`}
           >
             <div className={`rounded-2xl border overflow-hidden shadow-xl sticky top-20 transition-all duration-300 ${
-              isDark 
-                ? 'bg-[#0b192c] border-primary-900/30' 
+              isDark
+                ? 'bg-[#252524] border-primary-900/30'
                 : 'bg-white border-slate-200'
             }`}>
-              
+
               {/* Tarjeta de Agencia Seleccionada sobre el Mapa */}
               {selectedDistributor && (
                 <div className={`px-4 py-3 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 ${
-                  isDark ? 'bg-[#071326] border-primary-900/30 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'
+                  isDark ? 'bg-[#1e1e1d] border-primary-900/30 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'
                 }`}>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 mb-0.5">

@@ -1,7 +1,7 @@
 // estado: ""
 import type { MetadataRoute } from 'next';
 
-const routes = ['', '/productos', '/buscador', '/agencias', '/nosotros', '/blog', '/contacto-b2b', '/reciclaje'];
+const routes = ['', '/productos', '/buscador', '/agencias', '/nosotros', '/blog', '/reciclaje'];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const siteUrl = process.env.SITE_URL?.replace(/\/$/, '');

@@ -1,210 +1,68 @@
 // estado: ""
-/**
- * ═══════════════════════════════════════════════════════════════
- * 📄 ARCHITECTURE MAP — Hero.tsx
- * ═══════════════════════════════════════════════════════════════
- * 📁 Path: src/components/Hero.tsx
- * 🏷️ Type: Client Component
- * 📦 Module: Public Site
- * ─────────────────────────────────────────────────────────────
- * 🔍 STRUCTURE:
- *   L024-L029  → Imports & dependencies
- *   L031-L041  → State, hooks, constants
- *   L043-L150  → JSX: Hero ~75vh with bg image, light overlay, Apple-clean layout
- * ─────────────────────────────────────────────────────────────
- * ⚠️ Images: replace /hero-desktop.webp and /hero-mobile.webp in public/
- * ─────────────────────────────────────────────────────────────
- * 📝 LAST UPDATED: 2026-09-24
- * ══════════════════════════════════════════════════════════════
- */
-
 'use client';
 
-import { ShieldCheck, Truck, MapPin, Search, ArrowRight, Zap, RefreshCw, PhoneCall } from 'lucide-react';
-import { motion } from 'motion/react';
-import { useSiteContent } from '@/context/SiteContentContext';
-import { useTheme } from '@/context/ThemeContext';
+import { ArrowRight, MapPin, Search } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import React from 'react';
+import { useSiteContent } from '@/context/SiteContentContext';
 
 export default function Hero() {
   const { content } = useSiteContent();
-  const { theme } = useTheme();
   const heroContent = content.hero;
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 640);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  const stats = [
-    { icon: ShieldCheck, value: heroContent.stat1Value, label: heroContent.stat1Label },
-    { icon: Truck, value: heroContent.stat2Value, label: heroContent.stat2Label },
-    { icon: MapPin, value: 'BCI', label: 'Medidas' },
-  ];
+  const desktopImage = !heroContent.backgroundImage || heroContent.backgroundImage === '/hero-desktop.webp'
+    ? '/hero-maresa-2026-desktop.png'
+    : heroContent.backgroundImage;
+  const mobileImage = !heroContent.mobileImage || heroContent.mobileImage === '/hero-mobile.webp'
+    ? '/hero-maresa-2026-mobile.png'
+    : heroContent.mobileImage;
 
   return (
-    <section className="relative h-[100dvh] min-h-[500px] md:min-h-[600px] flex items-end sm:items-center overflow-hidden">
-
-      {/* Background Image */}
-      <picture className="absolute inset-0 z-0" suppressHydrationWarning>
-        <source suppressHydrationWarning media="(max-width: 767px)" srcSet={heroContent.mobileImage || '/hero-mobile.webp'} type="image/webp" />
-        <source suppressHydrationWarning media="(min-width: 768px)" srcSet={heroContent.backgroundImage || '/hero-desktop.webp'} type="image/webp" />
-        <img suppressHydrationWarning
-          src={heroContent.backgroundImage || '/hero-desktop.webp'}
-          alt="Baterías Maresa — energía confiable para tu vehículo en Ecuador"
-          className="w-full h-full object-cover"
+    <section className="relative isolate flex min-h-[calc(100svh-3.5rem)] items-center overflow-hidden bg-primary-950 lg:min-h-[calc(100svh-4rem)]">
+      <picture className="absolute inset-0 -z-20">
+        <source media="(max-width: 767px)" srcSet={mobileImage} />
+        <source media="(min-width: 768px)" srcSet={desktopImage} />
+        <img
+          src={desktopImage}
+          alt="Vehículo y batería para ilustrar la guía de selección"
+          className="h-full w-full object-cover object-center"
           loading="eager"
           fetchPriority="high"
         />
       </picture>
+      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-primary-950/95 via-primary-950/75 to-primary-950/25" />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-primary-950/45 via-transparent to-primary-950/15" />
 
-      {/* Cinema gradient — dark left, lighter right */}
-      <div className="absolute inset-0 z-[1]">
-        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
-      </div>
-
-      {/* Content — vertically centered */}
-      <div className="container-max relative z-10 pt-14 lg:pt-16 pb-32 sm:pb-20 w-full">
+      <div className="container-max relative w-full py-20 sm:py-24 lg:py-28">
         <div className="max-w-2xl">
-
-          {/* Eyebrow */}
-          <motion.span
-            initial={{ opacity: 0, y: 8, filter: "blur(8px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ duration: 0.35, ease: [0.23, 1, 0.32, 1] }}
-            className="inline-block text-[11px] sm:text-xs font-semibold uppercase tracking-[0.2em] text-white/70 mb-3"
-          >
+          <p className="mb-5 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.16em] text-white/85 sm:text-sm">
+            <span className="h-1 w-7 rounded-full bg-secondary-500" aria-hidden="true" />
             {heroContent.badgeText}
-          </motion.span>
+          </p>
 
-          {/* H1 — editorial, large */}
-          <motion.h1
-            initial={{ opacity: 0, y: 16, filter: "blur(12px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ duration: 0.45, delay: 0.08, ease: [0.23, 1, 0.32, 1] }}
-            className="text-4xl sm:text-5xl lg:text-6xl xl:text-[4rem] font-display font-extrabold tracking-tighter leading-[1.05] text-white drop-shadow-sm"
-          >
+          <h1 className="font-display text-[clamp(2.35rem,7vw,4.5rem)] font-extrabold leading-[1.08] tracking-tight text-white">
             {heroContent.titleMain}{' '}
-            <span className="text-primary-300">
-              {heroContent.titleHighlight}
-            </span>
-          </motion.h1>
+            <span className="text-secondary-400">{heroContent.titleHighlight}</span>
+          </h1>
 
-          {/* Subtitle */}
-          <motion.p
-            initial={{ opacity: 0, y: 16, filter: "blur(12px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ duration: 0.45, delay: 0.15, ease: [0.23, 1, 0.32, 1] }}
-            className="mt-3 text-sm sm:text-base text-white/70 max-w-lg leading-relaxed"
-          >
+          <p className="mt-5 max-w-xl text-base leading-relaxed text-white/85 sm:text-lg">
             {heroContent.subtitle}
-          </motion.p>
+          </p>
 
-        {/* CTAs — Primary & Secondary */}
-        <motion.div
-          initial={{ opacity: 0, y: 16, filter: "blur(12px)" }}
-          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          transition={{ duration: 0.45, delay: 0.22, ease: [0.23, 1, 0.32, 1] }}
-          className="mt-6 md:mt-8"
-        >
-          <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 sm:items-center w-full sm:max-w-none">
-            {/* Primary CTA — Stronger feedback */}
+          <div className="mt-8 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
             <Link
               href="/buscador"
-              className="inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-2.5 sm:py-3.5 rounded-full bg-secondary-500 text-white text-xs sm:text-sm font-bold shadow-lg shadow-secondary-950/35 hover:bg-secondary-600 hover:shadow-xl transition-all duration-300 active:scale-[0.97]"
+              className="inline-flex min-h-12 max-w-full items-center justify-center gap-2 rounded-lg bg-secondary-500 px-5 py-3 text-sm font-bold text-primary-950 shadow-lg shadow-black/20 transition-colors hover:bg-secondary-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             >
-              <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <Search className="h-4 w-4" />
               {heroContent.ctaButtonText}
-              <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <ArrowRight className="h-4 w-4" />
             </Link>
-
-            {/* Secondary CTA — Glass morphism */}
             <Link
               href="/agencias"
-              className="inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-2.5 sm:py-3.5 rounded-full bg-white/10 backdrop-blur-xl text-white text-xs sm:text-sm font-semibold border border-white/20 hover:bg-white/20 hover:border-white/40 transition-all duration-300 active:scale-[0.97]"
+              className="inline-flex min-h-12 max-w-full items-center justify-center gap-2 rounded-lg border border-white/60 bg-primary-950/30 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             >
-              <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <MapPin className="h-4 w-4" />
               {heroContent.secondaryButtonText}
             </Link>
-          </div>
-        </motion.div>
-        </div>
-
-        {/* Mobile Stats — full-width cards, value on top, label below */}
-        <motion.div
-          initial={{ opacity: 0, y: 16, filter: "blur(12px)" }}
-          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="mt-8 grid grid-cols-3 gap-2 lg:hidden"
-        >
-          {stats.map((stat, i) => (
-            <div key={i} className="flex flex-col items-center justify-center py-4 px-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 text-center">
-              <stat.icon className="w-5 h-5 text-primary-300 mb-1.5" />
-              <span className="text-xl font-extrabold text-white tracking-tight leading-none">{stat.value}</span>
-              <span className="text-[10px] text-white/60 font-semibold uppercase tracking-wider mt-1">{stat.label}</span>
-            </div>
-          ))}
-        </motion.div>
-      </div>
-
-      {/* Desktop stats - floating row right side, uses CSS hidden lg:flex */}
-      <motion.div
-        initial={{ opacity: 0, y: 16, filter: "blur(12px)" }}
-        animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-        transition={{ duration: 0.5, delay: 0.35 }}
-        className="hidden lg:flex absolute bottom-20 right-8 xl:right-12 z-10 items-center gap-6 sm:gap-8 bg-white/10 backdrop-blur-xl rounded-2xl px-6 py-3 border border-white/15"
-      >
-        {stats.map((stat, i) => (
-          <div key={i} className="flex items-center gap-2.5">
-            <stat.icon className="w-4 h-4 text-primary-300" />
-            <div>
-              <div className="text-lg sm:text-xl font-bold text-white leading-none tracking-tight">
-                {stat.value}
-              </div>
-              {stat.label && (
-                <div className="text-[10px] text-white/50 font-medium uppercase tracking-wider">
-                  {stat.label}
-                </div>
-              )}
-            </div>
-            {i < stats.length - 1 && (
-              <div className="w-px h-8 bg-white/10 ml-3 sm:ml-5" />
-            )}
-          </div>
-        ))}
-      </motion.div>
-
-      {/* GeoQuickAnswer bar — integrated at hero bottom (moved outside container-max) */}
-      <div className="absolute bottom-0 left-0 right-0 z-20 bg-slate-950/80 backdrop-blur-md border-t border-white/10 py-2.5 px-4 text-xs text-slate-100">
-        <div className="container-max flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary-600/30 text-primary-300 font-semibold border border-primary-500/30 text-[11px] tracking-wide uppercase">
-              <Zap className="w-3 h-3 text-warning-400" />
-              Baterías Maresa
-            </span>
-            <span className="text-slate-300">
-              Compara las especificaciones antes de elegir una batería.
-            </span>
-          </div>
-          <div className="flex items-center gap-4 text-slate-400 flex-wrap hidden md:flex">
-            <span className="flex items-center gap-1 hover:text-white transition-colors">
-              <ShieldCheck className="w-3.5 h-3.5 text-success-400" />
-              Revisa el manual
-            </span>
-            <span className="flex items-center gap-1 hover:text-white transition-colors">
-              <RefreshCw className="w-3.5 h-3.5 text-primary-400" />
-              Entrega responsable
-            </span>
-            <span className="flex items-center gap-1 text-primary-400 font-medium">
-              <PhoneCall className="w-3 h-3" />
-              Consulta condiciones
-            </span>
           </div>
         </div>
       </div>

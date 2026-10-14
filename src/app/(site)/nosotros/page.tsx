@@ -22,7 +22,7 @@ import NosotrosClient from './NosotrosClient';
 export const metadata: Metadata = {
   title: 'Quiénes somos',
   description:
-    'Conoce el propósito, la propuesta de valor y los compromisos de Baterías Maresa. Información institucional pendiente de aprobación.',
+    'Conoce el propósito, la propuesta de valor y las guías de Baterías Maresa.',
 };
 
 export default function NosotrosPage() {

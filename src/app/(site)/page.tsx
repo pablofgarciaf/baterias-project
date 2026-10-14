@@ -24,8 +24,7 @@ import VehicleFinder from '@/components/VehicleFinder';
 import About from '@/components/About';
 import Features from '@/components/Features';
 import { useTheme } from '@/context/ThemeContext';
-import { motion } from 'motion/react';
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import {
   Search,
   Car,
@@ -41,6 +40,8 @@ import {
   Navigation,
   BookOpen,
   Leaf,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 
 /* ─── Teaser Section Data ─── */
@@ -51,7 +52,7 @@ const teaserSections = [
     title: 'Catálogo de Baterías',
     subtitle: 'Tecnologías y fichas de referencia',
     description:
-      'Conoce diferencias generales entre tecnologías AGM, EFB y convencionales. El catálogo comercial se publicará tras su aprobación.',
+      'Conoce las diferencias entre tecnologías AGM, EFB y convencionales y aprende a comparar especificaciones.',
     href: '/productos',
     cta: 'Ver Catálogo Completo',
     icon: Package,
@@ -66,14 +67,14 @@ const teaserSections = [
     title: 'Puntos de Venta',
     subtitle: 'Consulta ubicaciones y datos de atención',
     description:
-      'El directorio mostrará direcciones, horarios y contactos cuando la empresa confirme cada punto de venta.',
+      'Encuentra direcciones de locales publicadas por Maresa y consulta su canal oficial de atención.',
     href: '/agencias',
     cta: 'Encontrar Agencia Cercana',
     icon: MapPin,
     accentIcon: Navigation,
-    gradient: 'from-accent-500 to-accent-700',
-    lightBg: 'from-accent-50/30 via-white to-success-50/20',
-    darkBg: 'from-slate-900 via-slate-900/95 to-accent-950/30',
+    gradient: 'from-secondary-500 to-secondary-700',
+    lightBg: 'from-primary-50 via-white to-secondary-50/30',
+    darkBg: 'from-slate-900 via-slate-900/95 to-secondary-950/20',
     highlights: ['Mapa interactivo', 'Busca por ciudad', 'Información de contacto'],
   },
 
@@ -82,14 +83,14 @@ const teaserSections = [
     title: 'Reciclaje Ecológico',
     subtitle: 'Entrega responsable de baterías usadas',
     description:
-      'Conoce las recomendaciones para manejar una batería usada y consulta los puntos de recepción cuando estén confirmados.',
+      'Aprende cómo manipular y entregar una batería automotriz usada de manera responsable.',
     href: '/reciclaje',
     cta: 'Conocer Programa Verde',
     icon: Recycle,
     accentIcon: Leaf,
-    gradient: 'from-success-600 to-success-700',
-    lightBg: 'from-success-50/30 via-white to-success-50/20',
-    darkBg: 'from-slate-900 via-slate-900/95 to-success-950/30',
+    gradient: 'from-primary-600 to-primary-800',
+    lightBg: 'from-primary-50 via-white to-primary-50',
+    darkBg: 'from-slate-900 via-slate-900/95 to-primary-950/30',
     highlights: ['Entrega responsable', 'Precauciones básicas', 'Puntos de recepción'],
   },
   {
@@ -102,62 +103,33 @@ const teaserSections = [
     cta: 'Explorar Artículos',
     icon: GraduationCap,
     accentIcon: BookOpen,
-    gradient: 'from-accent-600 to-accent-700',
-    lightBg: 'from-accent-50/30 via-white to-accent-50/20',
-    darkBg: 'from-slate-900 via-slate-900/95 to-accent-950/30',
+    gradient: 'from-primary-600 to-primary-800',
+    lightBg: 'from-primary-50 via-white to-primary-50',
+    darkBg: 'from-slate-900 via-slate-900/95 to-primary-950/30',
     highlights: ['Guías paso a paso', 'Tecnologías', 'Consejos de mantenimiento'],
   },
 ];
 
 function InfiniteCarousel({ items, isDark }: { items: typeof teaserSections; isDark: boolean }) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const timerRef = useRef<ReturnType<typeof setInterval>>(undefined);
-  const idxRef = useRef(0);
-
-  useEffect(() => {
+  const move = (direction: -1 | 1) => {
     const el = scrollRef.current;
     if (!el) return;
-    const cards = el.querySelectorAll<HTMLElement>('[data-card]');
-    if (!cards.length) return;
-
-    const scrollToIdx = (i: number) => {
-      const card = cards[i % cards.length];
-      if (!card) return;
-      el.scrollTo({ left: card.offsetLeft - 16, behavior: 'smooth' });
-    };
-
-    timerRef.current = setInterval(() => {
-      idxRef.current++;
-      if (idxRef.current >= cards.length) idxRef.current = 0;
-      scrollToIdx(idxRef.current);
-    }, 3000);
-
-    const pause = () => clearInterval(timerRef.current);
-    const resume = () => {
-      pause();
-      timerRef.current = setInterval(() => {
-        idxRef.current++;
-        if (idxRef.current >= cards.length) idxRef.current = 0;
-        scrollToIdx(idxRef.current);
-      }, 3000);
-    };
-
-    el.addEventListener('mouseenter', pause);
-    el.addEventListener('mouseleave', resume);
-    el.addEventListener('touchstart', pause, { passive: true });
-    el.addEventListener('touchend', () => setTimeout(resume, 2000), { passive: true });
-
-    return () => {
-      clearInterval(timerRef.current);
-      el.removeEventListener('mouseenter', pause);
-      el.removeEventListener('mouseleave', resume);
-    };
-  }, []);
+    const cards = [...el.querySelectorAll<HTMLElement>('[data-card]')];
+    const current = cards.findIndex((card) => card.offsetLeft - el.offsetLeft >= el.scrollLeft - 8);
+    const next = (Math.max(current, 0) + direction + cards.length) % cards.length;
+    el.scrollTo({ left: cards[next].offsetLeft - el.offsetLeft, behavior: 'smooth' });
+  };
 
   return (
+    <div>
+      <div className="mb-5 flex justify-end gap-2">
+        <button type="button" onClick={() => move(-1)} aria-label="Servicio anterior" className="grid h-10 w-10 place-items-center rounded-full border border-primary-300 text-primary-800 transition-colors hover:border-secondary-500 hover:bg-secondary-500 hover:text-primary-950"><ChevronLeft className="h-5 w-5" /></button>
+        <button type="button" onClick={() => move(1)} aria-label="Servicio siguiente" className="grid h-10 w-10 place-items-center rounded-full bg-secondary-500 text-primary-950 transition-colors hover:bg-secondary-400"><ChevronRight className="h-5 w-5" /></button>
+      </div>
     <div
       ref={scrollRef}
-      className="flex gap-5 sm:gap-6 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-2"
+      className="flex gap-5 overflow-x-auto overscroll-x-contain snap-x snap-mandatory scrollbar-hide pb-2 sm:gap-6"
     >
       {items.map((section) => (
         <Link
@@ -194,6 +166,7 @@ function InfiniteCarousel({ items, isDark }: { items: typeof teaserSections; isD
           </div>
         </Link>
       ))}
+    </div>
     </div>
   );
 }
@@ -254,60 +227,6 @@ export default function HomePage() {
       {/* 6. Diferenciales de Servicio */}
       <Features />
 
-      {/* 7. CTA Distribuidores (links to /contacto-b2b) */}
-      <section className="py-12 sm:py-16">
-        <div className="container-max">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false, amount: 0.2 }}
-            transition={{ duration: 0.5 }}
-            className={`relative overflow-hidden rounded-3xl p-8 sm:p-12 border ${
-              isDark
-                ? 'bg-slate-900/60 border-slate-800'
-                : 'bg-white border-slate-200 shadow-xl shadow-primary-900/5'
-            }`}
-          >
-            {/* Background elements */}
-            <div className={`absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl opacity-20 pointer-events-none ${isDark ? 'bg-primary-500' : 'bg-primary-200'}`} />
-            
-            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-              <div className="text-center md:text-left flex-1 max-w-2xl">
-                <div className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4 border ${isDark ? 'bg-slate-800 text-primary-400 border-slate-700' : 'bg-primary-50 text-primary-700 border-primary-100'}`}>
-                  <Star className="w-3.5 h-3.5" />
-                  Oportunidad de Negocio
-                </div>
-                <h2 className={`text-2xl sm:text-3xl font-extrabold tracking-tight mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                  Hablemos de las necesidades de{' '}
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-accent-500">
-                    tu negocio
-                  </span>
-                </h2>
-                <p className={`text-sm sm:text-base ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-                  Cuéntanos qué referencias, tecnologías y volumen necesitas para evaluar una propuesta comercial.
-                </p>
-              </div>
-              
-              <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto shrink-0">
-                <Link
-                  href="/contacto-b2b"
-                  className="px-6 py-3.5 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-bold text-sm shadow-lg hover:shadow-xl shadow-primary-600/20 transition-all active:scale-95 flex items-center justify-center gap-2"
-                >
-                  Solicitar Información
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-                <Link
-                  href="/agencias"
-                  className={`px-6 py-3.5 rounded-xl border font-bold text-sm transition-colors flex items-center justify-center gap-2 ${isDark ? 'border-slate-700 hover:bg-slate-800 text-slate-300' : 'border-slate-200 hover:bg-slate-50 text-slate-700'}`}
-                >
-                  Ver Agencias
-                  <MapPin className="w-4 h-4" />
-                </Link>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
     </>
   );
 }

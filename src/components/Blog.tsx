@@ -24,7 +24,7 @@
 
 'use client';
 
-import { useState, useEffect, useRef, type TouchEvent } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { 
   ArrowRight, 
   Calendar, 
@@ -66,11 +66,9 @@ export default function Blog({ asPage = false }: { asPage?: boolean }) {
   const [activeCategory, setActiveCategory] = useState<string>('Todas');
   const [selectedArticle, setSelectedArticle] = useState<BlogPost | null>(null);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
-  const [isPaused, setIsPaused] = useState<boolean>(false);
-  const [itemsPerView, setItemsPerView] = useState<number>(3);
+  const [itemsPerView, setItemsPerView] = useState<number>(2);
 
-  const touchStartX = useRef<number | null>(null);
-  const touchEndX = useRef<number | null>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
 
   const categories = ['Todas', 'Altitud & Clima', 'Tecnología', 'Mantenimiento', 'Transporte Pesado', 'Sostenibilidad'];
 
@@ -83,10 +81,8 @@ export default function Blog({ asPage = false }: { asPage?: boolean }) {
     const handleResize = () => {
       if (window.innerWidth < 640) {
         setItemsPerView(1);
-      } else if (window.innerWidth < 1024) {
-        setItemsPerView(2);
       } else {
-        setItemsPerView(3);
+        setItemsPerView(2);
       }
     };
 
@@ -97,57 +93,26 @@ export default function Blog({ asPage = false }: { asPage?: boolean }) {
 
   useEffect(() => {
     setCurrentIndex(0);
+    trackRef.current?.scrollTo({ left: 0 });
   }, [activeCategory, itemsPerView]);
 
   const maxIndex = Math.max(0, filteredPosts.length - itemsPerView);
 
-  // Auto-play infinite carousel (every 5 seconds when not hovered)
-  useEffect(() => {
-    if (isPaused || maxIndex <= 0) return;
-
-    const timer = setInterval(() => {
-      setCurrentIndex(prev => (prev >= maxIndex ? 0 : prev + 1));
-    }, 5000);
-
-    return () => clearInterval(timer);
-  }, [isPaused, maxIndex]);
-
-  const handlePrev = () => {
-    const track = document.getElementById('blog-carousel-track');
-    if (track) {
-      track.scrollBy({ left: -340, behavior: 'smooth' });
-    }
+  const goTo = (index: number) => {
+    const track = trackRef.current;
+    const target = (index + maxIndex + 1) % (maxIndex + 1);
+    const card = track?.querySelector<HTMLElement>('[data-blog-card]');
+    if (track && card) track.scrollTo({ left: target * (card.offsetWidth + 24), behavior: 'smooth' });
+    setCurrentIndex(target);
   };
 
-  const handleNext = () => {
-    const track = document.getElementById('blog-carousel-track');
-    if (track) {
-      track.scrollBy({ left: 340, behavior: 'smooth' });
-    }
-  };
+  const handlePrev = () => goTo(currentIndex - 1);
+  const handleNext = () => goTo(currentIndex + 1);
 
-  // Touch gesture handlers
-  const handleTouchStart = (e: TouchEvent) => {
-    touchStartX.current = e.targetTouches[0].clientX;
-  };
-
-  const handleTouchMove = (e: TouchEvent) => {
-    touchEndX.current = e.targetTouches[0].clientX;
-  };
-
-  const handleTouchEnd = () => {
-    if (!touchStartX.current || !touchEndX.current) return;
-    const distance = touchStartX.current - touchEndX.current;
-    const minSwipeDistance = 45;
-
-    if (distance > minSwipeDistance) {
-      handleNext();
-    } else if (distance < -minSwipeDistance) {
-      handlePrev();
-    }
-
-    touchStartX.current = null;
-    touchEndX.current = null;
+  const handleScroll = () => {
+    const track = trackRef.current;
+    const first = track?.querySelector<HTMLElement>('[data-blog-card]');
+    if (track && first) setCurrentIndex(Math.min(maxIndex, Math.round(track.scrollLeft / (first.offsetWidth + 24))));
   };
 
   return (
@@ -158,8 +123,6 @@ export default function Blog({ asPage = false }: { asPage?: boolean }) {
           ? 'bg-slate-900 text-white border-slate-800' 
           : 'bg-white text-slate-900 border-slate-200'
       }`}
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
     >
       {/* Background ambient lighting */}
       <div className="absolute top-1/2 left-0 w-80 h-80 bg-primary-600/10 rounded-full blur-3xl pointer-events-none" />
@@ -224,7 +187,7 @@ export default function Blog({ asPage = false }: { asPage?: boolean }) {
                   {isActive && (
                     <motion.div
                       layoutId="active-blog-cat"
-                      className="absolute inset-0 bg-primary-600 rounded-xl shadow-md shadow-primary-600/25"
+                      className="absolute inset-0 bg-secondary-500 rounded-xl shadow-md shadow-secondary-500/25"
                       transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                     />
                   )}
@@ -235,51 +198,25 @@ export default function Blog({ asPage = false }: { asPage?: boolean }) {
           </div>
         </div>
 
-        {/* Mobile Controls (below tabs, aligned right) */}
-        <div className="flex md:hidden items-center justify-end gap-3 mb-6">
-            <span className={`text-xs font-mono font-bold px-3 py-1.5 rounded-lg border ${
-              isDark ? 'bg-slate-800 text-slate-300 border-slate-700' : 'bg-slate-50 text-slate-700 border-slate-200 shadow-sm'
-            }`}>
-              {String(currentIndex + 1).padStart(2, '0')} / {String(maxIndex + 1).padStart(2, '0')}
-            </span>
-            <button onClick={handlePrev} className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all active:scale-95 cursor-pointer border ${isDark ? 'bg-slate-800 hover:bg-slate-700 text-white border-slate-700' : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-200 shadow-sm'}`}>
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <button onClick={handleNext} className="w-10 h-10 rounded-xl bg-primary-600 hover:bg-primary-700 text-white flex items-center justify-center transition-all active:scale-95 cursor-pointer shadow-lg shadow-primary-600/30">
-              <ChevronRight className="w-5 h-5" />
-            </button>
-        </div>
-
-        {/* Fluid Responsive Carousel Track with Touch Swipe */}
-        <div className="relative group">
-          {/* Desktop Controls (flanking) */}
-          <button onClick={handlePrev} className={`hidden md:flex absolute left-3 lg:left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full items-center justify-center transition-all active:scale-95 cursor-pointer border shadow-lg backdrop-blur-md ${isDark ? 'bg-slate-800/90 hover:bg-slate-700 text-white border-slate-700' : 'bg-white/90 hover:bg-white text-slate-800 border-slate-200'}`}>
+        <div className="flex items-center gap-2 sm:gap-4">
+          <button type="button" onClick={handlePrev} disabled={maxIndex === 0} aria-label="Artículo anterior" className={`grid h-10 w-10 shrink-0 place-items-center rounded-full border transition-colors disabled:opacity-40 ${isDark ? 'bg-slate-800 text-white border-slate-700' : 'bg-white text-slate-800 border-slate-300 hover:border-secondary-500'}`}>
             <ChevronLeft className="w-6 h-6" />
           </button>
-          <button onClick={handleNext} className="hidden md:flex absolute right-3 lg:right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-primary-600 hover:bg-primary-700 text-white items-center justify-center transition-all active:scale-95 cursor-pointer shadow-xl shadow-primary-600/30 backdrop-blur-md">
-            <ChevronRight className="w-6 h-6" />
-          </button>
-
           <div 
-            className="relative overflow-hidden cursor-grab active:cursor-grabbing select-none -mx-4 px-4 sm:mx-0 sm:px-0"
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-          >
-          <div 
-            className="flex transition-transform duration-500 ease-out"
-            style={{
-              transform: `translateX(-${currentIndex * (100 / itemsPerView)}%)`,
-            }}
+            ref={trackRef}
+            id="blog-carousel-track"
+            onScroll={handleScroll}
+            aria-label="Guías técnicas; desliza para explorar"
+            className="flex min-w-0 max-w-[700px] flex-1 gap-6 overflow-x-auto overscroll-x-contain snap-x snap-mandatory scroll-smooth pb-6 pt-3 scrollbar-hide"
           >
             {filteredPosts.map((post) => (
               <div
                 key={post.id}
-                className="px-3 shrink-0"
-                style={{ width: `${100 / itemsPerView}%` }}
+                data-blog-card
+                className="w-[88%] shrink-0 snap-start sm:w-[calc(50%-12px)]"
               >
                 <div 
-                  className={`max-w-[360px] mx-auto h-full flex flex-col rounded-3xl overflow-hidden border transition-all duration-300 hover:-translate-y-1.5 ${
+                  className={`h-full flex flex-col rounded-2xl overflow-hidden border transition-all duration-300 hover:-translate-y-1 ${
                     isDark 
                       ? 'bg-slate-950/70 border-slate-800 hover:border-slate-700 shadow-xl' 
                       : 'bg-white border-slate-200 hover:border-primary-300 shadow-sm hover:shadow-xl text-slate-900'
@@ -294,7 +231,7 @@ export default function Blog({ asPage = false }: { asPage?: boolean }) {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent pointer-events-none" />
                     
-                    <span className="absolute top-3 left-3 px-3 py-1 rounded-full bg-primary-600/90 text-white text-[11px] font-bold uppercase tracking-wider backdrop-blur shadow-md">
+                    <span className="absolute top-3 left-3 px-3 py-1 rounded-full bg-secondary-500 text-primary-950 text-[11px] font-bold uppercase tracking-wider shadow-md">
                       {post.category}
                     </span>
 
@@ -356,7 +293,9 @@ export default function Blog({ asPage = false }: { asPage?: boolean }) {
               </div>
             ))}
           </div>
-        </div>
+          <button type="button" onClick={handleNext} disabled={maxIndex === 0} aria-label="Artículo siguiente" className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-secondary-500 text-primary-950 transition-colors hover:bg-secondary-400 disabled:opacity-40">
+            <ChevronRight className="w-6 h-6" />
+          </button>
       </div>
 
         {/* Carousel Indicators */}
@@ -364,11 +303,11 @@ export default function Blog({ asPage = false }: { asPage?: boolean }) {
           {Array.from({ length: maxIndex + 1 }).map((_, idx) => (
             <button
               key={idx}
-              onClick={() => setCurrentIndex(idx)}
+              onClick={() => goTo(idx)}
               aria-label={`Ir a artículo ${idx + 1}`}
               className={`h-2 rounded-full transition-all cursor-pointer ${
                 currentIndex === idx
-                  ? 'w-7 bg-primary-600'
+                  ? 'w-7 bg-secondary-500'
                   : isDark ? 'w-2 bg-slate-800 hover:bg-slate-700' : 'w-2 bg-slate-300 hover:bg-slate-400'
               }`}
             />

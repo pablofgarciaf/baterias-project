@@ -120,10 +120,10 @@ export default function NosotrosClient() {
   return (
     <>
       {/* Hero - Split on mobile, full on desktop */}
-      <section className="relative flex flex-col lg:h-screen lg:min-h-[600px] lg:flex-row lg:items-end overflow-hidden bg-slate-950">
+      <section className="relative flex flex-col lg:min-h-[calc(100svh-4rem)] lg:flex-row lg:items-end overflow-hidden bg-primary-950">
         
         {/* Mobile Text (Top) */}
-        <div className="lg:hidden container-max pt-32 pb-8 z-10 w-full relative">
+        <div className="lg:hidden container-max pt-12 pb-8 z-10 w-full relative">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -146,11 +146,11 @@ export default function NosotrosClient() {
         {/* Image */}
         <div className="relative w-full h-[300px] lg:absolute lg:inset-0 lg:h-full lg:z-0">
           <picture className="absolute inset-0">
-            <source media="(max-width: 767px)" srcSet="/quienes-somos-hero-mobile.webp" type="image/webp" />
-            <source media="(min-width: 768px)" srcSet="/quienes-somos-hero-desktop.webp" type="image/webp" />
+            <source media="(max-width: 767px)" srcSet="/hero-nosotros-2026.png" />
+            <source media="(min-width: 768px)" srcSet="/hero-nosotros-2026.png" />
             <img
-              src="/quienes-somos-hero-desktop.webp"
-              alt="Presentación de Baterías Maresa"
+              src="/hero-nosotros-2026.png"
+              alt="Ilustración fotográfica de una revisión de batería en taller"
               className="w-full h-full object-cover"
               loading="eager"
               fetchPriority="high"

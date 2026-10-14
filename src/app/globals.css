@@ -27,52 +27,53 @@
   --font-sans: var(--font-open-sans), 'Open Sans', system-ui, sans-serif;
   --font-display: var(--font-montserrat), Montserrat, system-ui, sans-serif;
 
-  /* Reference palette supplied for this project. Companion tones are design choices. */
-  --color-brand-navy: #0a2240;
-  --color-brand-red: #d31145;
+  /* Naranja observado en maresacenter.com; neutros de interfaz, no manual oficial. */
+  --color-brand-orange: #f7941d;
+  --color-brand-navy: #2c2c2c;
+  --color-brand-red: #f7941d;
   --color-brand-slate: #4a4a4a;
-  --color-brand-canvas: #f7f9fa;
+  --color-brand-canvas: #f6f6f4;
   --color-brand-surface: #ffffff;
-  --color-brand-mist: #e8f0f5;
-  --color-brand-border: #d9e3ea;
-  --color-brand-steel: #55758a;
-  --color-brand-night: #071a2e;
+  --color-brand-mist: #f1f1ed;
+  --color-brand-border: #e4e4df;
+  --color-brand-steel: #696969;
+  --color-brand-night: #191919;
 
-  --color-primary-50: #f5f8fa;
-  --color-primary-100: #e8f0f5;
-  --color-primary-200: #c5d5e1;
-  --color-primary-300: #9eb7ca;
-  --color-primary-400: #6488a6;
-  --color-primary-500: #244b70;
-  --color-primary-600: #0a2240;
-  --color-primary-700: #081d37;
-  --color-primary-800: #06182e;
-  --color-primary-900: #051326;
-  --color-primary-950: #030d19;
+  --color-primary-50: #f7f7f5;
+  --color-primary-100: #eeeeea;
+  --color-primary-200: #d7d7d2;
+  --color-primary-300: #b6b6b0;
+  --color-primary-400: #858580;
+  --color-primary-500: #5c5c58;
+  --color-primary-600: #3c3c39;
+  --color-primary-700: #30302e;
+  --color-primary-800: #252524;
+  --color-primary-900: #1e1e1d;
+  --color-primary-950: #171716;
 
-  --color-secondary-50: #fef4f6;
-  --color-secondary-100: #fbe2e9;
-  --color-secondary-200: #f6b6c7;
-  --color-secondary-300: #ee809d;
-  --color-secondary-400: #e33d68;
-  --color-secondary-500: #d31145;
-  --color-secondary-600: #b70e3b;
-  --color-secondary-700: #990b33;
-  --color-secondary-800: #790a29;
-  --color-secondary-900: #5e0821;
-  --color-secondary-950: #370413;
+  --color-secondary-50: #fff8ec;
+  --color-secondary-100: #ffebca;
+  --color-secondary-200: #ffd596;
+  --color-secondary-300: #ffbb60;
+  --color-secondary-400: #ffa638;
+  --color-secondary-500: #f7941d;
+  --color-secondary-600: #d8780a;
+  --color-secondary-700: #a95708;
+  --color-secondary-800: #783e0a;
+  --color-secondary-900: #512c0e;
+  --color-secondary-950: #2d1a0c;
 
-  --color-accent-50: #f4f8fa;
-  --color-accent-100: #e5edf2;
-  --color-accent-200: #cadbe4;
-  --color-accent-300: #a7c1d0;
-  --color-accent-400: #779aae;
-  --color-accent-500: #55758a;
-  --color-accent-600: #405f73;
-  --color-accent-700: #304c5e;
-  --color-accent-800: #243b4a;
-  --color-accent-900: #192b38;
-  --color-accent-950: #101d27;
+  --color-accent-50: #f8f8f6;
+  --color-accent-100: #efefec;
+  --color-accent-200: #dcdcd7;
+  --color-accent-300: #bfbfb8;
+  --color-accent-400: #96968f;
+  --color-accent-500: #70706b;
+  --color-accent-600: #575752;
+  --color-accent-700: #41413e;
+  --color-accent-800: #30302e;
+  --color-accent-900: #242423;
+  --color-accent-950: #191918;
 
   --color-success-50: #ecfdf5;
   --color-success-100: #d1fae5;
@@ -142,7 +143,7 @@ body {
 }
 
 .dark body {
-  color: #d3dee7;
+  color: #e5e5e1;
   background-color: var(--color-brand-night);
 }
 
@@ -180,14 +181,14 @@ h1, h2, h3, h4, h5, h6 {
   padding: 0.75rem 1.5rem;
   border-radius: 0.75rem;
   background-color: var(--color-secondary-500);
-  color: #ffffff;
+  color: #20201e;
   font-weight: 600;
   transition: all 0.2s ease-in-out;
   cursor: pointer;
 }
 .btn-primary:hover {
   background-color: var(--color-secondary-600);
-  box-shadow: 0 10px 15px -3px rgba(211, 17, 69, 0.24);
+  box-shadow: 0 10px 15px -3px rgba(247, 148, 29, 0.24);
 }
 .btn-primary:active {
   transform: scale(0.95);
@@ -230,7 +231,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 .btn-accent:hover {
   background-color: var(--color-primary-700);
-  box-shadow: 0 10px 15px -3px rgba(10, 34, 64, 0.24);
+  box-shadow: 0 10px 15px -3px rgba(30, 30, 29, 0.24);
 }
 .btn-accent:active {
   transform: scale(0.95);

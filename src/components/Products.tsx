@@ -24,7 +24,7 @@
 
 'use client';
 
-import { useState, useEffect, useRef, type TouchEvent } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { 
   Zap, 
   ChevronLeft, 
@@ -77,7 +77,7 @@ const batteryCatalogItems: BatteryShowcaseItem[] = [
     features: [
       'Comprueba tecnología y dimensiones originales antes de reemplazar',
       'Algunos vehículos requieren registrar la batería nueva',
-      'La ficha comercial oficial está pendiente'
+      'Suele requerir una instalación y configuración acordes al vehículo'
     ],
     dimensions: 'Por validar',
     polarity: 'Por validar',
@@ -99,7 +99,7 @@ const batteryCatalogItems: BatteryShowcaseItem[] = [
     features: [
       'Confirma la tecnología exigida por el sistema Start-Stop',
       'Comprueba capacidad y corriente de arranque en el manual',
-      'La ficha comercial oficial está pendiente'
+      'Compara las especificaciones de la batería original'
     ],
     dimensions: 'Por validar',
     polarity: 'Por validar',
@@ -121,7 +121,7 @@ const batteryCatalogItems: BatteryShowcaseItem[] = [
     features: [
       'Verifica tamaño, polaridad y sujeción',
       'No sustituyas una AGM o EFB sin comprobar el requisito del fabricante',
-      'La ficha comercial oficial está pendiente'
+      'Comprueba la fijación y la ubicación de los bornes'
     ],
     dimensions: 'Por validar',
     polarity: 'Por validar',
@@ -134,14 +134,12 @@ export default function Products({ asPage = false }: { asPage?: boolean }) {
   const Heading = asPage ? 'h1' : 'h2';
   const [activeFilter, setActiveFilter] = useState<string>('Todas');
   const [currentIndex, setCurrentIndex] = useState<number>(0);
-  const [isPaused, setIsPaused] = useState<boolean>(false);
   const [selectedBatteryForSpecs, setSelectedBatteryForSpecs] = useState<BatteryShowcaseItem | null>(null);
-  const [itemsPerView, setItemsPerView] = useState<number>(3);
+  const [itemsPerView, setItemsPerView] = useState<number>(2);
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 
-  const touchStartX = useRef<number | null>(null);
-  const touchEndX = useRef<number | null>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
 
   const filters = ['Todas', 'AGM', 'EFB', 'Calcio-Plata'];
 
@@ -154,10 +152,8 @@ export default function Products({ asPage = false }: { asPage?: boolean }) {
     const handleResize = () => {
       if (window.innerWidth < 640) {
         setItemsPerView(1);
-      } else if (window.innerWidth < 1024) {
-        setItemsPerView(2);
       } else {
-        setItemsPerView(3);
+        setItemsPerView(2);
       }
     };
 
@@ -169,51 +165,29 @@ export default function Products({ asPage = false }: { asPage?: boolean }) {
   // Ensure current index is within bounds when filter changes
   useEffect(() => {
     setCurrentIndex(0);
+    trackRef.current?.scrollTo({ left: 0 });
   }, [activeFilter, itemsPerView]);
 
   const maxIndex = Math.max(0, filteredItems.length - itemsPerView);
 
-  // Auto-play
-  useEffect(() => {
-    if (isPaused || maxIndex <= 0) return;
-
-    const timer = setInterval(() => {
-      setCurrentIndex(prev => (prev >= maxIndex ? 0 : prev + 1));
-    }, 4500);
-
-    return () => clearInterval(timer);
-  }, [isPaused, maxIndex]);
-
-  const handlePrev = () => {
-    setCurrentIndex(prev => (prev <= 0 ? maxIndex : prev - 1));
+  const goTo = (index: number) => {
+    const track = trackRef.current;
+    const target = (index + maxIndex + 1) % (maxIndex + 1);
+    const card = track?.querySelectorAll<HTMLElement>('[data-product-card]')[target];
+    if (track && card) track.scrollTo({ left: target * (card.offsetWidth + 24), behavior: 'smooth' });
+    setCurrentIndex(target);
   };
 
-  const handleNext = () => {
-    setCurrentIndex(prev => (prev >= maxIndex ? 0 : prev + 1));
-  };
+  const handlePrev = () => goTo(currentIndex - 1);
+  const handleNext = () => goTo(currentIndex + 1);
 
-  // Touch gesture handlers for mobile swipe
-  const handleTouchStart = (e: TouchEvent) => {
-    touchStartX.current = e.targetTouches[0].clientX;
-  };
-
-  const handleTouchMove = (e: TouchEvent) => {
-    touchEndX.current = e.targetTouches[0].clientX;
-  };
-
-  const handleTouchEnd = () => {
-    if (!touchStartX.current || !touchEndX.current) return;
-    const distance = touchStartX.current - touchEndX.current;
-    const minSwipeDistance = 45;
-
-    if (distance > minSwipeDistance) {
-      handleNext();
-    } else if (distance < -minSwipeDistance) {
-      handlePrev();
+  const handleScroll = () => {
+    const track = trackRef.current;
+    const first = track?.querySelector<HTMLElement>('[data-product-card]');
+    if (track && first) {
+      const step = first.offsetWidth + 24;
+      setCurrentIndex(Math.min(maxIndex, Math.round(track.scrollLeft / step)));
     }
-
-    touchStartX.current = null;
-    touchEndX.current = null;
   };
 
   return (
@@ -224,8 +198,6 @@ export default function Products({ asPage = false }: { asPage?: boolean }) {
           ? 'bg-slate-950 text-white border-slate-900' 
           : 'bg-slate-50/80 text-slate-900 border-slate-200'
       }`}
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
     >
       {/* Background ambient glow */}
       <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-primary-600/10 rounded-full blur-3xl pointer-events-none" />
@@ -247,7 +219,7 @@ export default function Products({ asPage = false }: { asPage?: boolean }) {
             <p className={`mt-3 text-sm sm:text-base leading-relaxed ${
               isDark ? 'text-slate-300' : 'text-slate-600'
             }`}>
-              Estas fichas explican diferencias generales. Los modelos, precios y garantías se publicarán cuando exista un catálogo oficial aprobado.
+              Compara las tecnologías de batería y descubre qué especificaciones debes revisar para tu vehículo.
             </p>
           </div>
 
@@ -289,7 +261,7 @@ export default function Products({ asPage = false }: { asPage?: boolean }) {
                   {isActive && (
                     <motion.div
                       layoutId="active-product-filter"
-                      className="absolute inset-0 bg-primary-600 rounded-xl shadow-md shadow-primary-600/25"
+                      className="absolute inset-0 bg-secondary-500 rounded-xl shadow-md shadow-secondary-500/25"
                       transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                     />
                   )}
@@ -300,44 +272,27 @@ export default function Products({ asPage = false }: { asPage?: boolean }) {
           </div>
         </div>
 
-        {/* Mobile Controls (below tabs, aligned right) */}
-        <div className="flex md:hidden items-center justify-end gap-3 mb-6">
-            <span className={`text-xs font-mono font-bold px-3 py-1.5 rounded-lg border ${
-              isDark ? 'bg-slate-900 text-slate-300 border-slate-800' : 'bg-white text-slate-700 border-slate-200 shadow-sm'
-            }`}>
-              {String(currentIndex + 1).padStart(2, '0')} / {String(maxIndex + 1).padStart(2, '0')}
-            </span>
-            <button onClick={handlePrev} className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all active:scale-95 cursor-pointer border ${isDark ? 'bg-slate-900 hover:bg-slate-800 text-white border-slate-800' : 'bg-white hover:bg-slate-100 text-slate-800 border-slate-200'}`}>
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <button onClick={handleNext} className="w-10 h-10 rounded-xl bg-primary-600 hover:bg-primary-700 text-white flex items-center justify-center transition-all active:scale-95 cursor-pointer shadow-lg shadow-primary-600/30">
-              <ChevronRight className="w-5 h-5" />
-            </button>
-        </div>
-
-        {/* Fluid Responsive Carousel Track with Touch Swipe */}
-        <div className="relative group">
-          {/* Desktop Controls (flanking) */}
-          <button onClick={handlePrev} className={`${filteredItems.length > 3 ? 'hidden md:flex' : 'hidden'} absolute left-3 lg:left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full items-center justify-center transition-all active:scale-95 cursor-pointer border shadow-lg backdrop-blur-md ${isDark ? 'bg-slate-900/90 hover:bg-slate-800 text-white border-slate-800' : 'bg-white/90 hover:bg-white text-slate-800 border-slate-200'}`}>
+        <div className="flex items-center gap-2 sm:gap-4">
+          <button type="button" onClick={handlePrev} disabled={maxIndex === 0} aria-label="Batería anterior" className={`grid h-10 w-10 shrink-0 place-items-center rounded-full border transition-colors disabled:opacity-40 ${isDark ? 'bg-slate-900 text-white border-slate-700' : 'bg-white text-slate-800 border-slate-300 hover:border-secondary-500'}`}>
             <ChevronLeft className="w-6 h-6" />
           </button>
-          <button onClick={handleNext} className={`${filteredItems.length > 3 ? 'hidden md:flex' : 'hidden'} absolute right-3 lg:right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-primary-600 hover:bg-primary-700 text-white items-center justify-center transition-all active:scale-95 cursor-pointer shadow-xl shadow-primary-600/30 backdrop-blur-md`}>
-            <ChevronRight className="w-6 h-6" />
-          </button>
-
           <div 
             id="products-carousel-track"
-            className="flex justify-start md:justify-center overflow-x-auto snap-x snap-mandatory gap-6 lg:gap-8 pb-8 pt-4 px-4 sm:px-0 no-scrollbar scroll-smooth"
+            ref={trackRef}
+            onScroll={handleScroll}
+            aria-label="Tecnologías de baterías; desliza para explorar"
+            className="flex min-w-0 max-w-[760px] flex-1 gap-6 overflow-x-auto overscroll-x-contain snap-x snap-mandatory scroll-smooth pb-6 pt-3 scrollbar-hide"
           >
             {filteredItems.map((item) => {
               const IconComp = item.icon;
               return (
                 <div
                   key={item.id}
-                  className="shrink-0 snap-center w-[290px] sm:w-[320px] lg:w-[360px]"
+                  data-product-card
+                  className="w-[88%] shrink-0 snap-start sm:w-[calc(50%-12px)]"
                 >
                   <div 
-                    className={`h-full flex flex-col rounded-3xl overflow-hidden border transition-all duration-300 hover:-translate-y-1.5 ${
+                    className={`h-full flex flex-col rounded-2xl overflow-hidden border transition-all duration-300 hover:-translate-y-1 ${
                       isDark 
                         ? 'bg-slate-900/90 border-slate-800 hover:border-slate-700 shadow-xl shadow-slate-950/50' 
                         : 'bg-white border-slate-200/90 hover:border-primary-300 shadow-md hover:shadow-xl text-slate-900'
@@ -354,16 +309,11 @@ export default function Products({ asPage = false }: { asPage?: boolean }) {
                       <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none" />
 
                       {/* Technology Pill */}
-                      <div className="absolute top-3.5 left-3.5 flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-600/90 backdrop-blur text-white text-[11px] font-bold uppercase tracking-wider shadow-md">
+                      <div className="absolute top-3.5 left-3.5 flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary-500 text-primary-950 text-[11px] font-bold uppercase tracking-wider shadow-md">
                         <IconComp className="w-3.5 h-3.5" />
                         <span>{item.technology}</span>
                       </div>
 
-                      {/* Pending commercial details are neutral, not a success state. */}
-                      <div className="absolute top-3.5 right-3.5 flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary-950/90 backdrop-blur text-white text-[11px] font-bold shadow-md border border-white/20">
-                        <Info className="w-3.5 h-3.5" />
-                        <span>Ficha comercial pendiente</span>
-                      </div>
 
                       {/* Category Label Bottom */}
                       <div className="absolute bottom-3 left-3.5 right-3.5 text-white">
@@ -388,48 +338,12 @@ export default function Products({ asPage = false }: { asPage?: boolean }) {
                           <strong>Ideal para:</strong> {item.bestFor}
                         </p>
 
-                        {/* Specs Grid */}
-                        <div className="grid grid-cols-3 gap-2 my-4">
-                          <div className={`p-2.5 rounded-xl border text-center ${
-                            isDark ? 'bg-slate-800/70 border-slate-700' : 'bg-slate-50 border-slate-200'
-                          }`}>
-                            <span className={`text-[10px] uppercase font-bold block ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                              BCI
-                            </span>
-                            <span className="text-xs sm:text-sm font-extrabold block mt-0.5">
-                              {item.bciGroup}
-                            </span>
-                          </div>
-
-                          <div className={`p-2.5 rounded-xl border text-center ${
-                            isDark ? 'bg-slate-800/70 border-slate-700' : 'bg-slate-50 border-slate-200'
-                          }`}>
-                            <span className={`text-[10px] uppercase font-bold block ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                              CCA
-                            </span>
-                            <span className="text-xs sm:text-sm font-extrabold text-warning-500 block mt-0.5">
-                              {item.cca > 0 ? `${item.cca} A` : 'Por validar'}
-                            </span>
-                          </div>
-
-                          <div className={`p-2.5 rounded-xl border text-center ${
-                            isDark ? 'bg-slate-800/70 border-slate-700' : 'bg-slate-50 border-slate-200'
-                          }`}>
-                            <span className={`text-[10px] uppercase font-bold block ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                              Ah
-                            </span>
-                            <span className="text-xs sm:text-sm font-extrabold block mt-0.5">
-                              {item.ah > 0 ? `${item.ah} Ah` : 'Por validar'}
-                            </span>
-                          </div>
-                        </div>
-
                         {/* Features List */}
-                        <ul className="space-y-1.5 mb-4 text-xs">
-                          {item.features.slice(0, 2).map((feat, idx) => (
+                        <ul className="my-5 space-y-2 text-sm">
+                          {item.features.map((feat, idx) => (
                             <li key={idx} className={`flex items-start gap-1.5 ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
-                              <CheckCircle2 className="w-3.5 h-3.5 text-success-500 shrink-0 mt-0.5" />
-                              <span className="line-clamp-1">{feat}</span>
+                              <CheckCircle2 className="w-4 h-4 text-secondary-500 shrink-0 mt-0.5" />
+                              <span>{feat}</span>
                             </li>
                           ))}
                         </ul>
@@ -437,17 +351,6 @@ export default function Products({ asPage = false }: { asPage?: boolean }) {
 
                       {/* Pricing & CTA Buttons */}
                       <div className={`pt-4 border-t ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
-                        <div className="flex items-center justify-between mb-3">
-                          <div>
-                            <span className={`text-xs block font-semibold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                              Precio y disponibilidad por confirmar
-                            </span>
-                          </div>
-                          <span className="text-[10px] font-bold text-success-600 dark:text-success-400 bg-success-500/10 px-2 py-1 rounded-md border border-success-500/20">
-                            Programa de reciclaje por confirmar
-                          </span>
-                        </div>
-
                         <div className="grid grid-cols-1 gap-2">
                           <button
                             onClick={() => setSelectedBatteryForSpecs(item)}
@@ -458,7 +361,7 @@ export default function Products({ asPage = false }: { asPage?: boolean }) {
                             }`}
                           >
                             <Info className="w-3.5 h-3.5" />
-                            <span>Ficha</span>
+                            <span>Conocer la tecnología</span>
                           </button>
 
                         </div>
@@ -470,6 +373,9 @@ export default function Products({ asPage = false }: { asPage?: boolean }) {
               );
             })}
           </div>
+          <button type="button" onClick={handleNext} disabled={maxIndex === 0} aria-label="Batería siguiente" className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-secondary-500 text-primary-950 transition-colors hover:bg-secondary-400 disabled:opacity-40">
+            <ChevronRight className="w-6 h-6" />
+          </button>
         </div>
       </div>
 
@@ -507,32 +413,7 @@ export default function Products({ asPage = false }: { asPage?: boolean }) {
 
               {/* Modal Body */}
               <div className="p-6 space-y-4">
-                <div className="grid grid-cols-2 gap-3 text-xs">
-                  <div className={`p-3 rounded-xl border ${isDark ? 'bg-slate-800/80 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
-                    <span className="text-slate-400 font-bold block">Grupo BCI</span>
-                    <span className="text-sm font-extrabold mt-0.5 block">{selectedBatteryForSpecs.bciGroup}</span>
-                  </div>
-                  <div className={`p-3 rounded-xl border ${isDark ? 'bg-slate-800/80 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
-                    <span className="text-slate-400 font-bold block">Capacidad / Voltaje</span>
-                    <span className="text-sm font-extrabold mt-0.5 block">Por validar</span>
-                  </div>
-                  <div className={`p-3 rounded-xl border ${isDark ? 'bg-slate-800/80 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
-                    <span className="text-slate-400 font-bold block">Arranque Frío (CCA)</span>
-                    <span className="text-sm font-extrabold text-warning-500 mt-0.5 block">Por validar</span>
-                  </div>
-                  <div className={`p-3 rounded-xl border ${isDark ? 'bg-slate-800/80 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
-                    <span className="text-slate-400 font-bold block">Garantía</span>
-                    <span className="text-sm font-extrabold text-success-500 mt-0.5 block">Por confirmar</span>
-                  </div>
-                  <div className={`p-3 rounded-xl border ${isDark ? 'bg-slate-800/80 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
-                    <span className="text-slate-400 font-bold block">Dimensiones (L x An x Al)</span>
-                    <span className="text-xs font-bold mt-0.5 block">{selectedBatteryForSpecs.dimensions}</span>
-                  </div>
-                  <div className={`p-3 rounded-xl border ${isDark ? 'bg-slate-800/80 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
-                    <span className="text-slate-400 font-bold block">Polaridad</span>
-                    <span className="text-xs font-bold mt-0.5 block">{selectedBatteryForSpecs.polarity}</span>
-                  </div>
-                </div>
+                <p className="text-sm leading-relaxed">Antes de elegir una batería, compara la tecnología, capacidad, corriente de arranque, dimensiones y polaridad indicadas para tu vehículo.</p>
 
                 <div>
                   <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
@@ -548,13 +429,6 @@ export default function Products({ asPage = false }: { asPage?: boolean }) {
                   </ul>
                 </div>
 
-                <div className={`p-3.5 rounded-2xl border flex items-center justify-between ${
-                  isDark ? 'bg-slate-800 border-slate-700' : 'bg-primary-50/60 border-primary-200'
-                }`}>
-                  <div>
-                    <span className="text-xs text-slate-400 block font-semibold">Precio y disponibilidad pendientes de aprobación comercial</span>
-                  </div>
-                </div>
               </div>
             </motion.div>
           </div>

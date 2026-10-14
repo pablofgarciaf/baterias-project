@@ -33,6 +33,9 @@ export default function About() {
   const { theme } = useTheme();
   const about = content.about;
   const isDark = theme === 'dark';
+  const aboutImage = !about.aboutImage || about.aboutImage === '/hero-reciclaje.webp' || about.aboutImage === '/quienes-somos-section-landing.webp'
+    ? '/hero-nosotros-2026.png'
+    : about.aboutImage;
 
   const pillars = [
     { icon: Target, title: about.missionTitle, text: about.missionText },
@@ -74,7 +77,7 @@ export default function About() {
             {/* Mobile-only image — between title and paragraph */}
             <div className="mt-5 lg:hidden rounded-2xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-800">
               <img suppressHydrationWarning
-                src={about.aboutImage || '/quienes-somos-section-landing.webp'}
+                src={aboutImage}
                 alt="Imagen de referencia sobre baterías"
                 className="w-full h-[220px] sm:h-[280px] object-cover"
                 loading="lazy"
@@ -133,7 +136,7 @@ export default function About() {
           >
             <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800">
               <img suppressHydrationWarning
-                src={about.aboutImage || '/quienes-somos-section-landing.webp'}
+                src={aboutImage}
                 alt="Imagen de referencia sobre baterías"
                 className="w-full h-[420px] sm:h-[500px] object-cover hover:scale-105 transition-transform duration-700 ease-out"
                 loading="lazy"

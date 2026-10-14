@@ -558,7 +558,7 @@ export default function VehicleFinder({ onLocateStore }: VehicleFinderProps) {
                 type="button"
                 onClick={() => performSearch()}
                 disabled={!selectedBrand || !selectedModel || isSearching}
-                className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-secondary-500 hover:bg-secondary-600 text-white font-bold text-sm shadow-lg shadow-secondary-600/25 flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-secondary-500 hover:bg-secondary-400 text-primary-950 font-bold text-sm shadow-lg shadow-secondary-600/25 flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 {isSearching ? (
                   <>
@@ -790,7 +790,7 @@ export default function VehicleFinder({ onLocateStore }: VehicleFinderProps) {
                     href={`https://wa.me/${contactWhatsApp}?text=Hola%2C%20deseo%20consultar%20disponibilidad%20de%20la%20batería%20${encodeURIComponent(result.recommendedBattery.model)}%20para%20${encodeURIComponent(result.brand + ' ' + result.model)}.`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full sm:flex-1 py-4 px-6 rounded-xl bg-secondary-500 hover:bg-secondary-600 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-secondary-600/25 transition-all active:scale-95 cursor-pointer"
+                    className="w-full sm:flex-1 py-4 px-6 rounded-xl bg-secondary-500 hover:bg-secondary-400 text-primary-950 font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-secondary-600/25 transition-all active:scale-95 cursor-pointer"
                   >
                     <span>Pedir esta Batería por WhatsApp</span>
                   </a>

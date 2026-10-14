@@ -22,7 +22,6 @@
 'use client';
 
 import { Battery, Phone, MapPin, Facebook, Instagram, Twitter, Linkedin, Youtube, Send, ShieldCheck, Lock, PhoneCall } from 'lucide-react';
-import { provinces } from '@/data/provinces';
 import { useTheme } from '@/context/ThemeContext';
 
 interface FooterProps {
@@ -51,15 +50,13 @@ export default function Footer({ onOpenAdmin }: FooterProps) {
                   Baterías Maresa
                 </span>
                 <span className="text-xs text-primary-400 font-bold uppercase tracking-wider block mt-0.5">
-                  Nombre comercial provisional
+                  Guía de baterías
                 </span>
               </div>
             </div>
             <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-              Guías para comparar tecnologías y preparar una compra informada. Confirma siempre las condiciones de cada producto.
+              Guías para comparar tecnologías y elegir una batería adecuada para tu vehículo.
             </p>
-            
-            <p className="text-xs text-slate-500 mt-5">Información comercial sujeta a confirmación.</p>
           </div>
 
           {/* Col 2: Líneas de Baterías */}
@@ -131,27 +128,19 @@ export default function Footer({ onOpenAdmin }: FooterProps) {
 
         </div>
 
-        {/* 24 Provincias Quick Links */}
+        {/* Directory */}
         <div className="pt-8 border-t border-slate-900">
           <h4 className="text-slate-300 font-semibold mb-3 text-xs uppercase tracking-wider">
-            Consulta ubicaciones por provincia
+            Encuentra un local
           </h4>
-          <div className="flex flex-wrap gap-1.5">
-            {provinces.map((p) => (
-              <a
-                key={p.id}
-                href={`/agencias?provincia=${encodeURIComponent(p.name)}`}
-                className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-primary-600 hover:text-white text-[11px] text-slate-400 transition-colors"
-              >
-                {p.name}
-              </a>
-            ))}
-          </div>
+          <a href="/agencias" className="inline-flex rounded-lg bg-white/5 px-4 py-2 text-sm text-slate-200 transition-colors hover:bg-primary-600 hover:text-white">
+            Ver direcciones de Maresa
+          </a>
         </div>
 
         {/* Bottom Legal & Acceso Administrativo */}
         <div className="mt-8 pt-8 border-t border-slate-900 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-500">
-          <p>&copy; 2026 Baterías Maresa · Sitio de demostración.</p>
+          <p>&copy; 2026 Baterías Maresa.</p>
           <div className="flex gap-4 items-center flex-wrap">
             <a href="/privacidad" className="hover:text-slate-300 transition-colors">Privacidad</a>
             {onOpenAdmin && (

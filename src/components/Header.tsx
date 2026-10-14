@@ -41,14 +41,12 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useTheme } from '@/context/ThemeContext';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import Marquee from './Marquee';
 
 const navLinks = [
   { label: 'Inicio', href: '/' },
   { label: 'Escoge tu Batería', href: '/#escoge-tu-bateria', icon: Search },
   { label: 'Quiénes Somos', href: '/nosotros', icon: Users },
   { label: 'Puntos de Venta', href: '/agencias', icon: MapPin },
-  { label: 'Ser Proveedor', href: '/contacto-b2b', icon: Handshake },
 ];
 
 const moreLinks = [
@@ -90,8 +88,7 @@ export default function Header() {
     return pathname.startsWith(href);
   };
 
-  const hasDarkHero = pathname === '/' || pathname === '/nosotros' || pathname === '/reciclaje';
-  const solid = scrolled || !hasDarkHero;
+  const solid = true;
 
   const headerBg = solid
     ? isDark
@@ -116,11 +113,8 @@ export default function Header() {
     : 'bg-secondary-500';
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
-      {/* 1. Marquesina en el tope: solo en la página principal, se oculta al scrollear */}
-      {pathname === '/' && <Marquee scrolled={scrolled} />}
-
-      {/* 2. Barra de navegación después: transparente sobre el hero, sólida con blur al scrollear */}
+    <header className={`sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'shadow-md shadow-black/10' : ''}`}>
+      {/* La navegación ocupa espacio propio: el hero empieza debajo. */}
       <div className={`transition-all duration-500 ${headerBg}`}>
         <div className="container-max">
           <div className="flex items-center justify-between h-14 lg:h-16">
@@ -128,7 +122,7 @@ export default function Header() {
           {/* Brand — compact */}
           <Link href="/" className="flex items-center gap-2 group shrink-0">
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${solid
-                ? 'bg-primary-600 shadow-sm'
+                ? 'bg-secondary-500 shadow-sm'
                 : 'bg-white/15 backdrop-blur-md border border-white/20'
               }`}>
               <Battery className="w-4 h-4 text-white" />
@@ -138,7 +132,7 @@ export default function Header() {
                 }`}>
                 Baterías Maresa
               </span>
-              <span className={`text-[9px] font-semibold uppercase tracking-[0.15em] block transition-colors duration-300 ${solid ? 'text-primary-600 dark:text-primary-400' : 'text-white/60'
+              <span className={`text-[9px] font-semibold uppercase tracking-[0.15em] block transition-colors duration-300 ${solid ? 'text-secondary-600 dark:text-secondary-400' : 'text-white/60'
                 }`}>
                 Guía de baterías
               </span>
@@ -225,7 +219,7 @@ export default function Header() {
               className={`hidden xl:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-all ${solid
                   ? isDark
                     ? 'bg-white/[0.06] border border-white/10 text-white hover:bg-white/[0.1]'
-                    : 'bg-secondary-500 text-white hover:bg-secondary-600 shadow-sm'
+                    : 'bg-secondary-500 text-primary-950 hover:bg-secondary-400 shadow-sm'
                   : 'bg-white/15 backdrop-blur-md border border-white/20 text-white hover:bg-white/25'
                 }`}
             >
@@ -313,7 +307,7 @@ export default function Header() {
 
               {showContactPhone && <a
                 href={`tel:${contactPhone!.replace(/[^0-9+]/g, '')}`}
-                className="flex items-center justify-center gap-2 mx-3 py-2.5 rounded-lg bg-secondary-500 hover:bg-secondary-600 text-white text-[13px] font-semibold shadow-sm active:scale-[0.98] transition-all"
+                className="flex items-center justify-center gap-2 mx-3 py-2.5 rounded-lg bg-secondary-500 hover:bg-secondary-400 text-primary-950 text-[13px] font-semibold shadow-sm active:scale-[0.98] transition-all"
               >
                 <PhoneCall className="w-3.5 h-3.5" />
                 Llamar al {contactPhone}

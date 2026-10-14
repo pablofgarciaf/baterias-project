@@ -163,13 +163,6 @@ export default function WhatsAppFloatingButton() {
 
             </div>
 
-            {/* Bottom Guarantee Note */}
-            <div className={`p-3 border-t text-[11px] flex items-center gap-2 ${
-              theme === 'dark' ? 'bg-slate-950/80 text-slate-400 border-slate-800' : 'bg-slate-50 text-slate-600 border-slate-100'
-            }`}>
-              <ShieldCheck className="w-4 h-4 text-success-500 shrink-0" />
-              <span>Condiciones de atención y garantía pendientes de confirmación.</span>
-            </div>
           </motion.div>
         )}
       </AnimatePresence>

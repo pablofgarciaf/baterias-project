@@ -22,7 +22,7 @@ import ReciclajeClient from './ReciclajeClient';
 export const metadata: Metadata = {
   title: 'Reciclaje de baterías',
   description:
-    'Información general sobre la entrega responsable de baterías usadas. Condiciones del programa pendientes de confirmación.',
+    'Guía de entrega responsable de baterías automotrices usadas y puntos de atención.',
 };
 
 export default function ReciclajePage() {

@@ -177,7 +177,7 @@ export default function Features() {
                       key={f.title}
                       className={`rounded-3xl p-6 border transition-all duration-300 shadow-md ${
                         isDark
-                          ? 'bg-[#0b192c]/90 border-primary-900/30 text-white shadow-black/40'
+                          ? 'bg-primary-800/90 border-primary-900/30 text-white shadow-black/40'
                           : 'bg-white border-slate-200/90 text-slate-900 shadow-slate-200/60'
                       }`}
                     >

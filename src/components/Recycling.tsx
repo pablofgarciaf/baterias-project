@@ -31,43 +31,46 @@ export default function Recycling() {
   const { theme } = useTheme();
   const rec = content.recycling;
   const isDark = theme === 'dark';
+  const recImage = !rec.backgroundImage || rec.backgroundImage === '/hero-reciclaje.webp' || rec.backgroundImage === '/hero-reciclaje-2026.png' || rec.backgroundImage.includes('pexels-photo-35520664')
+    ? '/hero-reciclaje-auto-2026.png'
+    : rec.backgroundImage;
 
   const metrics = [
-    { value: rec.metricValue, label: rec.metricLabel, color: 'text-success-500' },
-    { value: '99%', label: 'De los componentes de la batería son reciclados bajo norma ambiental', color: 'text-primary-500' },
-    { value: '50+ Tons', label: 'Plomo y plástico reciclados responsablemente cada mes en Ecuador', color: 'text-warning-500' },
-    { value: '24 / 24', label: 'Provincias con centros de recepción y canje de baterías usadas', color: 'text-success-600 dark:text-success-400' }
+    { value: '01', label: 'No abras ni vacíes la batería usada.', color: 'text-secondary-600 dark:text-secondary-400' },
+    { value: '02', label: 'Transpórtala en posición vertical y evita golpes.', color: 'text-secondary-600 dark:text-secondary-400' },
+    { value: '03', label: 'Consulta un punto autorizado antes de entregarla.', color: 'text-secondary-600 dark:text-secondary-400' },
+    { value: '04', label: 'Confirma las condiciones de recepción con cada centro.', color: 'text-secondary-600 dark:text-secondary-400' }
   ];
 
   return (
-    <section 
-      id="reciclaje" 
+    <section
+      id="reciclaje"
       className={`py-20 sm:py-28 relative overflow-hidden transition-colors duration-300 border-t ${
-        isDark 
-          ? 'bg-slate-950 text-white border-slate-800' 
-          : 'bg-success-50/40 text-slate-900 border-slate-200'
+        isDark
+          ? 'bg-slate-950 text-white border-slate-800'
+          : 'bg-primary-50 text-slate-900 border-slate-200'
       }`}
     >
       <div className="absolute inset-0 z-0 pointer-events-none">
         <img
-          src={rec.backgroundImage}
+          src={recImage}
           alt="Reciclaje ecológico de baterías en Ecuador"
           className={`w-full h-full object-cover transition-opacity duration-300 ${
             isDark ? 'opacity-15' : 'opacity-10'
           }`}
         />
-        <div 
+        <div
           className={`absolute inset-0 ${
-            isDark 
-              ? 'bg-gradient-to-r from-slate-950 via-slate-950/90 to-slate-900/80' 
-              : 'bg-gradient-to-r from-white via-white/95 to-success-50/90'
-          }`} 
+            isDark
+              ? 'bg-gradient-to-r from-slate-950 via-slate-950/90 to-slate-900/80'
+              : 'bg-gradient-to-r from-white via-white/95 to-primary-50/90'
+          }`}
         />
       </div>
 
       <div className="container-max relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
-          
+
           {/* Left Editorial */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
@@ -75,8 +78,8 @@ export default function Recycling() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-success-500/15 text-success-700 dark:text-success-400 text-xs sm:text-sm font-bold uppercase tracking-wider mb-4 border border-success-500/30">
-              <Recycle className="w-4 h-4 text-success-500 animate-spin" />
+            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-secondary-500/15 text-secondary-700 dark:text-secondary-400 text-xs sm:text-sm font-bold uppercase tracking-wider mb-4 border border-secondary-500/30">
+              <Recycle className="w-4 h-4 text-secondary-500" />
               {rec.badge}
             </span>
 
@@ -85,7 +88,7 @@ export default function Recycling() {
             }`}>
               {rec.titleLine1}
               <br />
-              <span className="bg-gradient-to-r from-success-600 to-success-500 bg-clip-text text-transparent">
+              <span className="text-secondary-600 dark:text-secondary-400">
                 {rec.titleLine2}
               </span>
             </h2>
@@ -103,7 +106,7 @@ export default function Recycling() {
                 { icon: Recycle, text: rec.point3Text },
               ].map((item, idx) => (
                 <div key={idx} className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-success-500/15 text-success-600 dark:text-success-400 flex items-center justify-center shrink-0 border border-success-500/20">
+                  <div className="w-10 h-10 rounded-xl bg-secondary-500/15 text-secondary-700 dark:text-secondary-400 flex items-center justify-center shrink-0 border border-secondary-500/20">
                     <item.icon className="w-5 h-5" />
                   </div>
                   <span className={`text-sm font-semibold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>
@@ -114,9 +117,9 @@ export default function Recycling() {
             </div>
 
             <div className="mt-8">
-              <a 
-                href="#puntos-de-venta" 
-                className="inline-flex items-center gap-2 px-7 py-4 rounded-xl bg-secondary-500 hover:bg-secondary-600 text-white font-bold text-sm shadow-xl shadow-secondary-600/25 transition-all duration-200 active:scale-95 cursor-pointer"
+              <a
+                href="/agencias"
+                className="inline-flex items-center gap-2 px-7 py-4 rounded-xl bg-secondary-500 hover:bg-secondary-400 text-primary-950 font-bold text-sm shadow-xl shadow-secondary-600/25 transition-all duration-200 active:scale-95 cursor-pointer"
               >
                 <span>{rec.ctaButtonText}</span>
                 <ArrowRight className="w-4 h-4" />
@@ -125,7 +128,7 @@ export default function Recycling() {
           </motion.div>
 
           {/* Right Metrics Bento Grid */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
@@ -133,13 +136,13 @@ export default function Recycling() {
             className="grid grid-cols-2 gap-4"
           >
             {metrics.map((metric, i) => (
-              <div 
-                key={i} 
+              <div
+                key={i}
                 className={`p-6 rounded-3xl border transition-all duration-300 hover:-translate-y-1 ${
                   i % 2 === 1 ? 'sm:mt-6' : ''
                 } ${
-                  isDark 
-                    ? 'bg-slate-900/80 border-slate-800 text-white shadow-xl shadow-slate-950/50' 
+                  isDark
+                    ? 'bg-slate-900/80 border-slate-800 text-white shadow-xl shadow-slate-950/50'
                     : 'bg-white border-slate-200/90 text-slate-900 shadow-md shadow-slate-900/5'
                 }`}
               >

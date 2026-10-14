@@ -4,7 +4,7 @@
 > ⚠️ Este archivo se actualiza en el MISMO turno en que se crea, elimina o reestructura un archivo.
 > Ningún cambio estructural se considera terminado si este mapa quedó desincronizado.
 
-**Última actualización:** 2026-10-14 (pruebas de importación y flujo de calidad automatizado)
+**Última actualización:** 2026-10-14 (sitio público: carruseles, directorio y reciclaje)
 **Stack:** Next.js 15 (App Router + Turbopack) · React 19 · Tailwind CSS v4 (PostCSS) · Firebase Firestore/Auth · motion (Framer Motion) · lucide-react · xlsx · @google/genai (Gemini API)
 
 ---
@@ -78,7 +78,7 @@
 | Archivo | Tipo | Zona | Descripción |
 |---|---|---|---|
 | `src/app/(site)/agencias/page.tsx` | Server Component | Sitio Público | Metadata SEO → AgenciasClient |
-| `src/app/(site)/agencias/AgenciasClient.tsx` | Client Component | Sitio Público | Shell cliente agencias |
+| `src/app/(site)/agencias/AgenciasClient.tsx` | Client Component | Sitio Público | Directorio de Firestore; cuando no hay puntos publicados muestra locales del directorio oficial de Maresa |
 | `src/components/StoreLocator.tsx` | Client Component | Sitio Público | Mapa agencias, búsqueda, filtro provincia, OpenStreetMap |
 | `src/components/Provinces.tsx` | Client Component | Sitio Público | 24 provincias Ecuador, filtro región, búsqueda |
 
@@ -100,7 +100,7 @@
 |---|---|---|---|
 | `src/app/(site)/reciclaje/page.tsx` | Server Component | Sitio Público | Metadata SEO → ReciclajeClient |
 | `src/app/(site)/reciclaje/ReciclajeClient.tsx` | Client Component | Sitio Público | Shell cliente reciclaje |
-| `src/components/HeroReciclaje.tsx` | Client Component | Sitio Público | Hero adaptable con fotografía provisional `/hero-reciclaje-2026.png` y CTA de atención |
+| `src/components/HeroReciclaje.tsx` | Client Component | Sitio Público | Hero con fotografía automotriz `/hero-reciclaje-auto-2026.png` y CTA de atención |
 | `src/components/Recycling.tsx` | Client Component | Sitio Público | Guía de entrega responsable en cuatro pasos, CTA; sin métricas no verificadas |
 
 ---
@@ -109,7 +109,7 @@
 
 | Archivo | Tipo | Zona | Descripción |
 |---|---|---|---|
-| `src/app/(site)/contacto-b2b/page.tsx` | Server Component | Sitio Público | Metadata SEO → ContactoB2BClient |
+| `src/app/(site)/contacto-b2b/page.tsx` | Server Component | Sitio Público | Redirige al directorio `/agencias` |
 | `src/app/(site)/contacto-b2b/ContactoB2BClient.tsx` | Client Component | Sitio Público | Shell cliente B2B |
 | `src/components/B2BLeadCapture.tsx` | Client Component | Sitio Público | Formulario B2B, propuesta comercial, Firebase submit |
 

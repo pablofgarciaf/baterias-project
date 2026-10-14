@@ -22,7 +22,7 @@ import AgenciasClient from './AgenciasClient';
 export const metadata: Metadata = {
   title: 'Puntos de venta',
   description:
-    'Explora el directorio de puntos de venta de referencia. Direcciones y canales de atención pendientes de validación.',
+    'Consulta direcciones de locales Maresa y encuentra un punto de atención cercano.',
 };
 
 export default function AgenciasPage() {

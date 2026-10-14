@@ -16,15 +16,8 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-import type { Metadata } from 'next';
-import ContactoB2BClient from './ContactoB2BClient';
-
-export const metadata: Metadata = {
-  title: 'Contacto para negocios',
-  description:
-    'Conoce la propuesta comercial para talleres y distribuidores y deja tus datos cuando el formulario esté habilitado.',
-};
+import { redirect } from 'next/navigation';
 
 export default function ContactoB2BPage() {
-  return <ContactoB2BClient />;
+  redirect('/agencias');
 }
