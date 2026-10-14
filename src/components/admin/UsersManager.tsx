@@ -1,3 +1,4 @@
+// estado: ""
 'use client';
 
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
@@ -101,6 +102,21 @@ export default function UsersManager({ onCountChange }: { onCountChange?: (count
     } finally { setSaving(false); }
   };
 
+  const toggleActive = async (user: StaffUser) => {
+    if (user.uid === auth.currentUser?.uid) return;
+    if (user.active && !window.confirm(`Se revocará el acceso de ${user.name}. ¿Desactivar esta cuenta?`)) return;
+    setError('');
+    try {
+      await adminRequest(`/api/admin/users/${encodeURIComponent(user.uid)}`, {
+        method: 'PATCH', body: JSON.stringify({ name: user.name, role: user.role, active: !user.active }),
+      });
+      setNotice(user.active ? 'Acceso desactivado en Authentication y Firestore.' : 'Acceso activado en Authentication y Firestore.');
+      await reload();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'No se pudo cambiar el acceso.');
+    }
+  };
+
   return (
     <section className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -108,13 +124,13 @@ export default function UsersManager({ onCountChange }: { onCountChange?: (count
           <h2 className={`text-2xl font-extrabold tracking-tight ${dark ? 'text-white' : 'text-slate-900'}`}>Usuarios y Accesos</h2>
           <p className="text-sm mt-1 text-slate-400">Cuentas reales de Firebase Authentication vinculadas a documentos por UID en Firestore.</p>
         </div>
-        <button type="button" onClick={() => showForm(null)} className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold">
+        <button type="button" onClick={() => showForm(null)} className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-500 text-white text-sm font-bold">
           <UserPlus className="w-4 h-4" /> Nuevo usuario
         </button>
       </div>
 
       {error && !open && <p role="alert" className="rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-400">{error}</p>}
-      {notice && <p role="status" className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-400">{notice}</p>}
+      {notice && <p role="status" className="rounded-xl border border-success-500/30 bg-success-500/10 p-3 text-sm text-success-400">{notice}</p>}
 
       <div className={`rounded-3xl border overflow-x-auto ${dark ? 'bg-slate-900/40 border-white/10' : 'bg-white border-slate-200'}`}>
         <table className="w-full text-left text-sm">
@@ -128,9 +144,9 @@ export default function UsersManager({ onCountChange }: { onCountChange?: (count
               <tr key={user.uid} className={`border-t ${dark ? 'border-white/5' : 'border-slate-100'}`}>
                 <td className="p-5 font-semibold">{user.name}</td>
                 <td className="p-5"><span className="block">{user.email}</span><code className="block mt-1 text-xs text-slate-500 break-all">{user.uid}</code>{user.cedulaLast4 && <span className="block mt-1 text-xs text-slate-500">Cédula: ••••••{user.cedulaLast4}</span>}</td>
-                <td className="p-5"><span className="inline-flex items-center gap-1 rounded-full border border-blue-500/30 bg-blue-500/10 px-3 py-1 text-xs text-blue-400"><Shield className="w-3 h-3" />{user.role === 'admin' ? 'Admin' : 'Editor'}</span></td>
+                <td className="p-5"><span className="inline-flex items-center gap-1 rounded-full border border-primary-500/30 bg-primary-500/10 px-3 py-1 text-xs text-primary-400"><Shield className="w-3 h-3" />{user.role === 'admin' ? 'Admin' : 'Editor'}</span></td>
                 <td className="p-5 text-xs">{user.active ? (!user.emailVerified ? 'Correo pendiente' : user.forcePasswordChange ? 'Primer ingreso pendiente' : 'Activo') : 'Desactivado'}</td>
-                <td className="p-5"><div className="flex items-center gap-2"><button type="button" onClick={() => showForm(user)} aria-label={`Editar ${user.name}`} className="rounded-xl border border-slate-600 p-2 hover:border-blue-500"><Edit3 className="w-4 h-4" /></button>{user.forcePasswordChange && <button type="button" onClick={() => { void sendActivationLink(user.email).then(() => setNotice('Invitación enviada.')).catch(() => setError('No se pudo enviar la invitación. Revisa Authentication.')); }} className="rounded-xl border border-blue-500/40 px-2 py-1 text-xs text-blue-400">Reenviar invitación</button>}</div></td>
+                <td className="p-5"><div className="flex items-center gap-2"><button type="button" onClick={() => showForm(user)} aria-label={`Editar ${user.name}`} className="rounded-xl border border-slate-600 p-2 hover:border-primary-500"><Edit3 className="w-4 h-4" /></button>{user.uid !== auth.currentUser?.uid && <button type="button" onClick={() => void toggleActive(user)} className="rounded-xl border border-slate-600 px-2 py-1 text-xs">{user.active ? 'Desactivar' : 'Activar'}</button>}{user.forcePasswordChange && <button type="button" onClick={() => { void sendActivationLink(user.email).then(() => setNotice('Invitación enviada.')).catch(() => setError('No se pudo enviar la invitación. Revisa Authentication.')); }} className="rounded-xl border border-primary-500/40 px-2 py-1 text-xs text-primary-400">Reenviar invitación</button>}</div></td>
               </tr>
             ))}
           </tbody>
@@ -147,7 +163,7 @@ export default function UsersManager({ onCountChange }: { onCountChange?: (count
             {!editing && <label className="block text-sm font-medium">Cédula<input required inputMode="numeric" pattern="[0-9]{10}" minLength={10} maxLength={10} autoComplete="off" value={cedula} onChange={(event) => setCedula(event.target.value.replace(/\D/g, ''))} className="mt-1 block w-full rounded-xl border border-slate-600 bg-transparent px-3 py-2" /><span className="block mt-1 text-xs text-slate-400">10 dígitos. El panel solo conservará los últimos cuatro.</span></label>}
             <label className="block text-sm font-medium">Rol<select value={role} onChange={(event) => setRole(event.target.value as Role)} className={`mt-1 block w-full rounded-xl border border-slate-600 px-3 py-2 ${dark ? 'bg-slate-900' : 'bg-white'}`}><option value="editor">Editor de contenidos</option><option value="admin">Administrador</option></select></label>
             {!editing && <p className="flex gap-2 text-xs text-slate-400"><KeyRound className="w-4 h-4 shrink-0" />Se enviará un enlace que verifica el correo y permite crear una contraseña en el primer ingreso.</p>}
-            <div className="flex justify-end gap-3 pt-3"><button type="button" onClick={() => setOpen(false)} className="rounded-xl px-4 py-2 text-sm">Cancelar</button><button disabled={saving} className="rounded-xl bg-blue-600 px-5 py-2 text-sm font-bold text-white disabled:opacity-60">{saving ? 'Guardando...' : editing ? 'Guardar cambios' : 'Crear usuario'}</button></div>
+            <div className="flex justify-end gap-3 pt-3"><button type="button" onClick={() => setOpen(false)} className="rounded-xl px-4 py-2 text-sm">Cancelar</button><button disabled={saving} className="rounded-xl bg-primary-600 px-5 py-2 text-sm font-bold text-white disabled:opacity-60">{saving ? 'Guardando...' : editing ? 'Guardar cambios' : 'Crear usuario'}</button></div>
           </form>
         </div>
       </div>}

@@ -1,3 +1,4 @@
+// estado: ""
 'use client';
 
 import { usePathname } from 'next/navigation';
@@ -79,7 +80,7 @@ export default function AnalyticsConsent() {
           <p className="mt-1 text-sm leading-relaxed">Con tu permiso usamos Google Analytics para conocer el uso de esta web. Puedes rechazarlo o cambiar tu elección después. <a className="underline" href="/privacidad">Más información</a>.</p>
           <div className="mt-3 flex flex-wrap gap-2">
             <button type="button" onClick={() => savePreference('rejected')} className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-100">Rechazar cookies opcionales</button>
-            <button type="button" onClick={() => savePreference('accepted')} className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-white hover:bg-blue-800">Aceptar medición</button>
+            <button type="button" onClick={() => savePreference('accepted')} className="rounded-lg bg-primary-700 px-4 py-2 text-sm font-medium text-white hover:bg-primary-800">Aceptar medición</button>
           </div>
         </div>
       ) : (

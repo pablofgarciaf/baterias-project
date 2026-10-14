@@ -1,3 +1,4 @@
+// estado: ""
 /**
  * ═══════════════════════════════════════════════════════════════
  * 📄 ARCHITECTURE MAP — firebaseStore.ts
@@ -28,11 +29,12 @@ import {
   deleteDoc,
   doc,
   setDoc,
-  serverTimestamp
+  serverTimestamp,
+  query,
+  where
 } from 'firebase/firestore';
 import { db, isFirebaseConfigured } from '@/lib/firebase';
 import { B2BLead, DistributorLocation } from '@/types/sinergia';
-import { defaultDistributors } from '@/data/sinergiaData';
 
 // 1. Enviar Solicitud B2B (Quiero ser distribuidor)
 export async function submitB2BLead(leadData: Omit<B2BLead, 'id' | 'createdAt' | 'status'>): Promise<{ success: boolean; id: string }> {
@@ -85,43 +87,31 @@ export async function updateLeadStatus(id: string, newStatus: B2BLead['status'])
 }
 
 // 4. Obtener Red de Distribuidores
-export async function getDistributors(): Promise<DistributorLocation[]> {
+export async function getDistributors(includeUnpublished = false): Promise<DistributorLocation[]> {
   if (isFirebaseConfigured && db) {
     try {
-      const snapshot = await getDocs(collection(db, 'distributors'));
-      if (!snapshot.empty) {
-        return snapshot.docs.map(d => ({
-          id: d.id,
-          ...(d.data() as Omit<DistributorLocation, 'id'>)
-        }));
-      }
-    } catch (err) { console.warn('No se pudieron cargar los puntos de venta:', err); }
+      const source = includeUnpublished
+        ? collection(db, 'distributors')
+        : query(collection(db, 'distributors'), where('published', '==', true));
+      const snapshot = await getDocs(source);
+      return snapshot.docs.map(d => ({
+        ...(d.data() as Omit<DistributorLocation, 'id'>),
+        id: d.id,
+      }));
+    } catch (err) {
+      if (includeUnpublished) throw err;
+      console.warn('No se pudieron cargar los puntos de venta:', err);
+    }
   }
-  return defaultDistributors;
-}
-
-export async function isDistributorsCollectionEmpty(): Promise<boolean> {
-  if (!isFirebaseConfigured || !db) return false;
-  const snapshot = await getDocs(collection(db, 'distributors'));
-  return snapshot.empty;
-}
-
-export async function seedDefaultDistributors(): Promise<void> {
-  if (!isFirebaseConfigured || !db) return;
-  await Promise.all(
-    defaultDistributors.map(d => setDoc(doc(db, 'distributors', d.id), { ...d }))
-  );
+  return [];
 }
 
 // 5. Agregar o Modificar Distribuidor
 export async function saveDistributor(distributor: DistributorLocation): Promise<boolean> {
   if (isFirebaseConfigured && db) {
     try {
-      if (distributor.id && !distributor.id.startsWith('dist-')) {
-        await updateDoc(doc(db, 'distributors', distributor.id), { ...distributor });
-      } else {
-        await addDoc(collection(db, 'distributors'), { ...distributor, createdAt: serverTimestamp() });
-      }
+      if (!distributor.id) throw new Error('El punto de atención necesita un identificador.');
+      await setDoc(doc(db, 'distributors', distributor.id), { ...distributor });
       return true;
     } catch (err) { throw err; }
   }

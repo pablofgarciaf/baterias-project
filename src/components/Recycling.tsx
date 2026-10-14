@@ -1,3 +1,4 @@
+// estado: ""
 /**
  * ═══════════════════════════════════════════════════════════════
  * 📄 ARCHITECTURE MAP — Recycling.tsx
@@ -32,10 +33,10 @@ export default function Recycling() {
   const isDark = theme === 'dark';
 
   const metrics = [
-    { value: rec.metricValue, label: rec.metricLabel, color: 'text-emerald-500' },
-    { value: '99%', label: 'De los componentes de la batería son reciclados bajo norma ambiental', color: 'text-blue-500' },
-    { value: '50+ Tons', label: 'Plomo y plástico reciclados responsablemente cada mes en Ecuador', color: 'text-amber-500' },
-    { value: '24 / 24', label: 'Provincias con centros de recepción y canje de baterías usadas', color: 'text-emerald-600 dark:text-emerald-400' }
+    { value: rec.metricValue, label: rec.metricLabel, color: 'text-success-500' },
+    { value: '99%', label: 'De los componentes de la batería son reciclados bajo norma ambiental', color: 'text-primary-500' },
+    { value: '50+ Tons', label: 'Plomo y plástico reciclados responsablemente cada mes en Ecuador', color: 'text-warning-500' },
+    { value: '24 / 24', label: 'Provincias con centros de recepción y canje de baterías usadas', color: 'text-success-600 dark:text-success-400' }
   ];
 
   return (
@@ -44,7 +45,7 @@ export default function Recycling() {
       className={`py-20 sm:py-28 relative overflow-hidden transition-colors duration-300 border-t ${
         isDark 
           ? 'bg-slate-950 text-white border-slate-800' 
-          : 'bg-emerald-50/40 text-slate-900 border-slate-200'
+          : 'bg-success-50/40 text-slate-900 border-slate-200'
       }`}
     >
       <div className="absolute inset-0 z-0 pointer-events-none">
@@ -59,7 +60,7 @@ export default function Recycling() {
           className={`absolute inset-0 ${
             isDark 
               ? 'bg-gradient-to-r from-slate-950 via-slate-950/90 to-slate-900/80' 
-              : 'bg-gradient-to-r from-white via-white/95 to-emerald-50/90'
+              : 'bg-gradient-to-r from-white via-white/95 to-success-50/90'
           }`} 
         />
       </div>
@@ -74,8 +75,8 @@ export default function Recycling() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 text-xs sm:text-sm font-bold uppercase tracking-wider mb-4 border border-emerald-500/30">
-              <Recycle className="w-4 h-4 text-emerald-500 animate-spin" />
+            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-success-500/15 text-success-700 dark:text-success-400 text-xs sm:text-sm font-bold uppercase tracking-wider mb-4 border border-success-500/30">
+              <Recycle className="w-4 h-4 text-success-500 animate-spin" />
               {rec.badge}
             </span>
 
@@ -84,7 +85,7 @@ export default function Recycling() {
             }`}>
               {rec.titleLine1}
               <br />
-              <span className="bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-success-600 to-success-500 bg-clip-text text-transparent">
                 {rec.titleLine2}
               </span>
             </h2>
@@ -102,7 +103,7 @@ export default function Recycling() {
                 { icon: Recycle, text: rec.point3Text },
               ].map((item, idx) => (
                 <div key={idx} className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/20">
+                  <div className="w-10 h-10 rounded-xl bg-success-500/15 text-success-600 dark:text-success-400 flex items-center justify-center shrink-0 border border-success-500/20">
                     <item.icon className="w-5 h-5" />
                   </div>
                   <span className={`text-sm font-semibold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>
@@ -115,7 +116,7 @@ export default function Recycling() {
             <div className="mt-8">
               <a 
                 href="#puntos-de-venta" 
-                className="inline-flex items-center gap-2 px-7 py-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-xl shadow-emerald-600/30 transition-all duration-200 active:scale-95 cursor-pointer"
+                className="inline-flex items-center gap-2 px-7 py-4 rounded-xl bg-secondary-500 hover:bg-secondary-600 text-white font-bold text-sm shadow-xl shadow-secondary-600/25 transition-all duration-200 active:scale-95 cursor-pointer"
               >
                 <span>{rec.ctaButtonText}</span>
                 <ArrowRight className="w-4 h-4" />

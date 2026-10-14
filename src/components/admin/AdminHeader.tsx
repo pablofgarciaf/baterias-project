@@ -1,3 +1,4 @@
+// estado: ""
 /**
  * ═══════════════════════════════════════════════════════════════
  * 📄 ADMIN HEADER - Unified CRM-style header for admin modules

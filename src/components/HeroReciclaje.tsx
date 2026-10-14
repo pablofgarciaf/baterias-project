@@ -1,3 +1,4 @@
+// estado: ""
 /**
  * ═══════════════════════════════════════════════════════════════
  * 📄 HERO RECICLAJE - Hero section for recycling page
@@ -61,7 +62,7 @@ export default function HeroReciclaje() {
       {/* Cinema gradient — dark left, lighter right (reciclaje theme) */}
       <div className="absolute inset-0 z-[1]">
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-900/80 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-emerald-950/80 via-transparent to-emerald-900/10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-primary-950/80 via-transparent to-primary-900/10" />
       </div>
 
       {/* Content — vertically centered */}
@@ -73,7 +74,7 @@ export default function HeroReciclaje() {
             initial={{ opacity: 0, y: 8, filter: "blur(8px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             transition={{ duration: 0.4 }}
-            className="inline-block text-[11px] sm:text-xs font-semibold uppercase tracking-[0.2em] text-emerald-200 mb-3"
+            className="inline-block text-[11px] sm:text-xs font-semibold uppercase tracking-[0.2em] text-white/80 mb-3"
           >
             <Recycle className="w-3 h-3 mr-1 animate-spin" />
             {rec.badge}
@@ -88,7 +89,7 @@ export default function HeroReciclaje() {
           >
             {rec.titleLine1}{' '}
             <br />
-            <span className="text-emerald-300">
+            <span className="text-primary-200">
               {rec.titleLine2}
             </span>
           </motion.h1>
@@ -98,7 +99,7 @@ export default function HeroReciclaje() {
             initial={{ opacity: 0, y: 16, filter: "blur(12px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             transition={{ duration: 0.5, delay: 0.15 }}
-            className="mt-3 text-sm sm:text-base text-emerald-100 max-w-lg leading-relaxed"
+            className="mt-3 text-sm sm:text-base text-white/80 max-w-lg leading-relaxed"
           >
             {rec.subtitle}
           </motion.p>
@@ -115,7 +116,7 @@ export default function HeroReciclaje() {
               <div className="flex flex-col sm:flex-row flex-wrap items-center gap-3 w-full mt-4">
               <Link
                 href="#puntos-de-venta"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold shadow-lg hover:shadow-xl transition-all duration-200 active:scale-[0.97]"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-secondary-500 hover:bg-secondary-600 text-white text-sm font-bold shadow-lg shadow-secondary-950/30 hover:shadow-xl transition-all duration-200 active:scale-[0.97]"
               >
                 <Leaf className="w-4 h-4" />
                 {rec.ctaButtonText}
@@ -132,7 +133,7 @@ export default function HeroReciclaje() {
 
               <Link
                 href="/agencias"
-                className="w-full sm:hidden inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold shadow-lg hover:shadow-xl transition-all duration-200 active:scale-[0.97]"
+                className="w-full sm:hidden inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-secondary-500 hover:bg-secondary-600 text-white text-sm font-bold shadow-lg shadow-secondary-950/30 hover:shadow-xl transition-all duration-200 active:scale-[0.97]"
               >
                 <PhoneCall className="w-4 h-4" />
                 Ver puntos de venta
@@ -153,12 +154,12 @@ export default function HeroReciclaje() {
           >
             {stats.map((stat, i) => (
               <div key={i} className="flex items-center gap-2.5">
-                <stat.icon className="w-4 h-4 text-emerald-300" />
+                <stat.icon className="w-4 h-4 text-success-300" />
                 <div>
                   <div className="text-lg sm:text-xl font-bold text-white leading-none tracking-tight">
                     {stat.value}
                   </div>
-                  <div className="text-[10px] text-emerald-100 font-medium uppercase tracking-wider">
+                  <div className="text-[10px] text-success-100 font-medium uppercase tracking-wider">
                     {stat.label}
                   </div>
                 </div>
@@ -185,12 +186,12 @@ export default function HeroReciclaje() {
                   key={i}
                   className="flex-1 flex items-center justify-center gap-3 px-4 py-3 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/15"
                 >
-                  <stat.icon className="w-5 h-5 text-emerald-300 shrink-0" />
+                  <stat.icon className="w-5 h-5 text-success-300 shrink-0" />
                   <div className="text-center flex flex-col items-center">
                     <div className="text-xl font-bold text-white leading-none tracking-tight">
                       {stat.value}
                     </div>
-                    <div className="mt-1 text-[10px] text-emerald-100 font-medium uppercase tracking-wider">
+                    <div className="mt-1 text-[10px] text-success-100 font-medium uppercase tracking-wider">
                       {stat.label}
                     </div>
                   </div>
@@ -201,12 +202,12 @@ export default function HeroReciclaje() {
             {/* Row 2: 1 stat centered full width */}
             <div className="mt-3 flex justify-center">
               <div className="w-full max-w-xs flex items-center justify-center gap-3 px-4 py-3 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/15">
-                {React.createElement(stats[2].icon, { className: "w-5 h-5 text-emerald-300 shrink-0" })}
+                {React.createElement(stats[2].icon, { className: "w-5 h-5 text-success-300 shrink-0" })}
                 <div className="text-center flex flex-col items-center">
                   <div className="text-xl font-bold text-white leading-none tracking-tight">
                     {stats[2].value}
                   </div>
-                  <div className="mt-1 text-[10px] text-emerald-100 font-medium uppercase tracking-wider">
+                  <div className="mt-1 text-[10px] text-success-100 font-medium uppercase tracking-wider">
                     {stats[2].label}
                   </div>
                 </div>
@@ -216,27 +217,27 @@ export default function HeroReciclaje() {
         )}
 
         {/* Quick info bar at bottom */}
-        <div className="absolute bottom-0 left-0 right-0 z-10 bg-emerald-950/80 backdrop-blur-md border-t border-emerald-800/30 py-2.5 px-4 text-xs text-emerald-100">
+        <div className="absolute bottom-0 left-0 right-0 z-10 bg-primary-950/85 backdrop-blur-md border-t border-white/15 py-2.5 px-4 text-xs text-white/85">
           <div className="container-max flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-600/30 text-emerald-300 font-semibold border border-emerald-500/30 text-[11px] tracking-wide uppercase">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-success-600/30 text-success-300 font-semibold border border-success-500/30 text-[11px] tracking-wide uppercase">
                 <Recycle className="w-3 h-3" />
                 Plan Canje Verde
               </span>
-              <span className="text-emerald-200">
+              <span className="text-success-200">
                 <strong>Entrega tu batería usada:</strong> consulta los puntos de recepción y las condiciones cuando estén confirmados.
               </span>
             </div>
-            <div className="flex items-center gap-4 text-emerald-300 flex-wrap">
+            <div className="flex items-center gap-4 text-success-300 flex-wrap">
               <span className="flex items-center gap-1 hover:text-white transition-colors">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                <ShieldCheck className="w-3.5 h-3.5 text-success-400" />
                 Condiciones por confirmar
               </span>
               <span className="flex items-center gap-1 hover:text-white transition-colors">
-                <Leaf className="w-3.5 h-3.5 text-emerald-400" />
+                <Leaf className="w-3.5 h-3.5 text-success-400" />
                 Eco-friendly
               </span>
-              <a href="/agencias" className="flex items-center gap-1 text-emerald-300 hover:text-emerald-200 font-medium transition-colors">
+              <a href="/agencias" className="flex items-center gap-1 text-success-300 hover:text-success-200 font-medium transition-colors">
                 <PhoneCall className="w-3 h-3" />
                 Puntos de venta
               </a>

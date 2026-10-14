@@ -1,3 +1,4 @@
+<!-- estado: "" -->
 # Admin Panel Refactoring - Component Architecture Specification
 
 ## Overview

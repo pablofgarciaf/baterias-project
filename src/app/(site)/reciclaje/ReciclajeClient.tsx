@@ -1,3 +1,4 @@
+// estado: ""
 'use client';
 
 import HeroReciclaje from '@/components/HeroReciclaje';

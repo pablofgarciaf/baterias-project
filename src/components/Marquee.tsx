@@ -1,3 +1,4 @@
+// estado: ""
 'use client';
 
 import React from 'react';
@@ -53,23 +54,24 @@ export default function Marquee({ scrolled = false }: MarqueeProps) {
           {items.map((item, index) => (
             <div
               key={`${item.id}-${index}`}
+              aria-hidden={index >= marqueeData.items.length ? true : undefined}
               className="inline-flex items-center gap-3 shrink-0 group cursor-default"
             >
               {item.tag && (
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-widest uppercase bg-blue-600/20 text-blue-400 border border-blue-500/30 group-hover:bg-blue-600/30 transition-colors">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-widest uppercase bg-primary-600/20 text-primary-400 border border-primary-500/30 group-hover:bg-primary-600/30 transition-colors">
                   {item.tag}
                 </span>
               )}
               <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold tracking-tight text-white/95 group-hover:text-blue-300 transition-colors">
+                <span className="text-xs font-semibold tracking-tight text-white/95 group-hover:text-primary-300 transition-colors">
                   {item.title}
                 </span>
-                <span className="text-blue-400/50 text-xs font-mono">•</span>
+                <span className="text-primary-400/50 text-xs font-mono">•</span>
                 <span className="text-xs font-normal text-slate-300/90 tracking-wide">
                   {item.subtitle}
                 </span>
               </div>
-              <Sparkles className="w-3 h-3 text-amber-400/80 shrink-0 ml-4 opacity-70 group-hover:opacity-100 transition-opacity" />
+              <Sparkles className="w-3 h-3 text-warning-400/80 shrink-0 ml-4 opacity-70 group-hover:opacity-100 transition-opacity" />
             </div>
           ))}
         </div>

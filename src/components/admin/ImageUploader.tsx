@@ -1,3 +1,4 @@
+// estado: ""
 /**
  * ═══════════════════════════════════════════════════════════════
  * 📄 IMAGE UPLOADER - Reusable drag & drop + URL image uploader
@@ -71,14 +72,14 @@ export const ImageUploader = React.forwardRef<HTMLDivElement, ImageUploaderProps
     const dropZoneStyle: React.CSSProperties = {
       ...cardStyle,
       border: `2px dashed ${isDragActive
-        ? 'rgb(59 130 246 / 0.8)'
+        ? 'rgb(211 17 69 / 0.8)'
         : isDark
         ? 'rgba(148, 163, 184, 0.3)'
         : 'rgba(148, 163, 184, 0.4)'}`,
       background: isDragActive
         ? isDark
-          ? 'rgba(30, 58, 138, 0.15)'
-          : 'rgba(59, 130, 246, 0.08)'
+          ? 'rgba(211, 17, 69, 0.15)'
+          : 'rgba(211, 17, 69, 0.08)'
         : cardStyle.background,
       cursor: disabled ? 'not-allowed' : 'pointer',
     };
@@ -266,7 +267,7 @@ export const ImageUploader = React.forwardRef<HTMLDivElement, ImageUploaderProps
           {/* Loading State */}
           {isLoading && (
             <div className="flex flex-col items-center gap-2 text-center" role="status" aria-live="polite">
-              <Loader2 className="w-8 h-8 text-blue-500 animate-spin" aria-hidden="true" />
+              <Loader2 className="w-8 h-8 text-primary-500 animate-spin" aria-hidden="true" />
               <span className="text-sm font-medium" style={{ color: isDark ? '#94a3b8' : '#64748b' }}>
                 Procesando imagen...
               </span>
@@ -279,13 +280,13 @@ export const ImageUploader = React.forwardRef<HTMLDivElement, ImageUploaderProps
               <div
                 className={`w-12 h-12 rounded-xl flex items-center justify-center ${
                   isDragActive
-                    ? 'bg-blue-500/20'
+                    ? 'bg-primary-500/20'
                     : isDark
                     ? 'bg-white/5'
                     : 'bg-slate-100'
                 }`}
               >
-                <Upload className={`w-6 h-6 ${isDragActive ? 'text-blue-400' : isDark ? 'text-slate-500' : 'text-slate-400'}`} aria-hidden="true" />
+                <Upload className={`w-6 h-6 ${isDragActive ? 'text-primary-400' : isDark ? 'text-slate-500' : 'text-slate-400'}`} aria-hidden="true" />
               </div>
               <div className="space-y-1">
                 <p className="text-sm font-semibold" style={{ color: isDark ? '#e2e8f0' : '#1e293b' }}>
@@ -303,7 +304,7 @@ export const ImageUploader = React.forwardRef<HTMLDivElement, ImageUploaderProps
                     setShowUrlInput(true);
                     setTimeout(() => urlInputRef.current?.focus(), 0);
                   }}
-                  className="mt-1 text-xs font-medium text-blue-500 hover:text-blue-400 underline underline-offset-2"
+                  className="mt-1 text-xs font-medium text-primary-500 hover:text-primary-400 underline underline-offset-2"
                 >
                   O pegar una URL
                 </button>
@@ -366,9 +367,9 @@ export const ImageUploader = React.forwardRef<HTMLDivElement, ImageUploaderProps
 
         {/* Success indicator when image is set via URL */}
         {urlInput && !previewSrc && !isLoading && !showUrlInput && (
-          <div className="mt-3 flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30" role="status">
-            <CheckCircle className="w-4 h-4 text-emerald-400" aria-hidden="true" />
-            <span className="text-sm text-emerald-300">URL de imagen configurada</span>
+          <div className="mt-3 flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-success-500/10 border border-success-500/30" role="status">
+            <CheckCircle className="w-4 h-4 text-success-400" aria-hidden="true" />
+            <span className="text-sm text-success-300">URL de imagen configurada</span>
           </div>
         )}
       </div>

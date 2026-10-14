@@ -1,3 +1,4 @@
+// estado: ""
 /**
  * ═══════════════════════════════════════════════════════════════
  * 📄 ARCHITECTURE MAP — (site)/page.tsx (Home)
@@ -56,7 +57,7 @@ const teaserSections = [
     icon: Package,
     accentIcon: Zap,
     gradient: 'from-secondary-500 to-secondary-700',
-    lightBg: 'from-secondary-50/40 via-white to-orange-50/20',
+    lightBg: 'from-secondary-50/40 via-white to-secondary-50/20',
     darkBg: 'from-slate-900 via-slate-900/95 to-secondary-950/30',
     highlights: ['Tecnología AGM & EFB', 'CCA y capacidad', 'Cómo comparar'],
   },
@@ -71,7 +72,7 @@ const teaserSections = [
     icon: MapPin,
     accentIcon: Navigation,
     gradient: 'from-accent-500 to-accent-700',
-    lightBg: 'from-accent-50/30 via-white to-emerald-50/20',
+    lightBg: 'from-accent-50/30 via-white to-success-50/20',
     darkBg: 'from-slate-900 via-slate-900/95 to-accent-950/30',
     highlights: ['Mapa interactivo', 'Busca por ciudad', 'Información de contacto'],
   },
@@ -86,9 +87,9 @@ const teaserSections = [
     cta: 'Conocer Programa Verde',
     icon: Recycle,
     accentIcon: Leaf,
-    gradient: 'from-emerald-600 to-teal-700',
-    lightBg: 'from-emerald-50/30 via-white to-teal-50/20',
-    darkBg: 'from-slate-900 via-slate-900/95 to-emerald-950/30',
+    gradient: 'from-success-600 to-success-700',
+    lightBg: 'from-success-50/30 via-white to-success-50/20',
+    darkBg: 'from-slate-900 via-slate-900/95 to-success-950/30',
     highlights: ['Entrega responsable', 'Precauciones básicas', 'Puntos de recepción'],
   },
   {
@@ -101,9 +102,9 @@ const teaserSections = [
     cta: 'Explorar Artículos',
     icon: GraduationCap,
     accentIcon: BookOpen,
-    gradient: 'from-sky-600 to-cyan-700',
-    lightBg: 'from-sky-50/30 via-white to-cyan-50/20',
-    darkBg: 'from-slate-900 via-slate-900/95 to-sky-950/30',
+    gradient: 'from-accent-600 to-accent-700',
+    lightBg: 'from-accent-50/30 via-white to-accent-50/20',
+    darkBg: 'from-slate-900 via-slate-900/95 to-accent-950/30',
     highlights: ['Guías paso a paso', 'Tecnologías', 'Consejos de mantenimiento'],
   },
 ];
@@ -264,7 +265,7 @@ export default function HomePage() {
             className={`relative overflow-hidden rounded-3xl p-8 sm:p-12 border ${
               isDark
                 ? 'bg-slate-900/60 border-slate-800'
-                : 'bg-white border-slate-200 shadow-xl shadow-blue-900/5'
+                : 'bg-white border-slate-200 shadow-xl shadow-primary-900/5'
             }`}
           >
             {/* Background elements */}

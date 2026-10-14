@@ -1,3 +1,4 @@
+// estado: ""
 /**
  * ═══════════════════════════════════════════════════════════════
  * 📄 ARCHITECTURE MAP — StoreLocator.tsx
@@ -40,7 +41,6 @@ import {
 import { motion } from 'motion/react';
 import { provinces } from '@/data/provinces';
 import { DistributorLocation } from '@/types/sinergia';
-import { defaultDistributors } from '@/data/sinergiaData';
 import { useSiteContent } from '@/context/SiteContentContext';
 import { getDistributors } from '@/lib/firebaseStore';
 import { useTheme } from '@/context/ThemeContext';
@@ -50,10 +50,10 @@ interface StoreLocatorProps {
 }
 
 export default function StoreLocator({ initialProvince }: StoreLocatorProps) {
-  const [distributorsList, setDistributorsList] = useState<DistributorLocation[]>(defaultDistributors);
+  const [distributorsList, setDistributorsList] = useState<DistributorLocation[]>([]);
   const [selectedProvince, setSelectedProvince] = useState<string>(initialProvince || 'Todas');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [selectedDistributor, setSelectedDistributor] = useState<DistributorLocation | null>(defaultDistributors[0] || null);
+  const [selectedDistributor, setSelectedDistributor] = useState<DistributorLocation | null>(null);
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 
@@ -62,12 +62,8 @@ export default function StoreLocator({ initialProvince }: StoreLocatorProps) {
 
   useEffect(() => {
     getDistributors().then(data => {
-      if (data && data.length > 0) {
-        setDistributorsList(data);
-        if (!selectedDistributor) {
-          setSelectedDistributor(data[0]);
-        }
-      }
+      setDistributorsList(data);
+      setSelectedDistributor(data[0] || null);
     });
   }, []);
 
@@ -109,33 +105,35 @@ export default function StoreLocator({ initialProvince }: StoreLocatorProps) {
             <Search className="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
             <input
               type="text"
+              aria-label="Buscar punto de atención"
               placeholder={slContent.searchPlaceholder}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className={`w-full pl-12 pr-4 py-3 rounded-xl border text-sm outline-none transition-all ${
                 isDark 
-                  ? 'bg-slate-900 border-slate-700 text-white placeholder-slate-500 focus:border-blue-500' 
-                  : 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400 focus:border-blue-500'
+                  ? 'bg-slate-900 border-slate-700 text-white placeholder-slate-500 focus:border-primary-500' 
+                  : 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400 focus:border-primary-500'
               }`}
             />
           </div>
 
           <div className="sm:col-span-6 flex items-center gap-3">
-            <label className={`text-xs font-bold uppercase tracking-wider whitespace-nowrap ${
+            <label htmlFor="store-province" className={`text-xs font-bold uppercase tracking-wider whitespace-nowrap ${
               isDark ? 'text-slate-400' : 'text-slate-600'
             }`}>
               Filtrar Provincia:
             </label>
             <select
+              id="store-province"
               value={selectedProvince}
               onChange={(e) => setSelectedProvince(e.target.value)}
               className={`w-full py-3 px-4 rounded-xl border text-sm font-medium outline-none transition-all cursor-pointer ${
                 isDark 
-                  ? 'bg-slate-900 border-slate-700 text-white focus:border-blue-500' 
-                  : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-blue-500'
+                  ? 'bg-slate-900 border-slate-700 text-white focus:border-primary-500' 
+                  : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-primary-500'
               }`}
             >
-              <option value="Todas">Todas las 24 Provincias</option>
+              <option value="Todas">Todas las provincias</option>
               {provinces.map(p => (
                 <option key={p.id} value={p.name}>
                   {p.name} ({p.region})
@@ -153,8 +151,7 @@ export default function StoreLocator({ initialProvince }: StoreLocatorProps) {
             <div className={`text-xs font-bold uppercase tracking-wider mb-2 flex items-center justify-between ${
               isDark ? 'text-slate-400' : 'text-slate-500'
             }`}>
-              <span>Agencias Maresa Encontradas ({filteredDistributors.length})</span>
-              <span className="text-[11px] text-blue-600 dark:text-blue-400 font-bold">Garantía Nacional</span>
+              <span>Puntos publicados ({filteredDistributors.length})</span>
             </div>
 
             {filteredDistributors.length === 0 ? (
@@ -162,13 +159,13 @@ export default function StoreLocator({ initialProvince }: StoreLocatorProps) {
                 isDark ? 'bg-slate-950 border-slate-800' : 'bg-white border-slate-200'
               }`}>
                 <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-                  No se encontraron agencias en <strong>{selectedProvince}</strong> con los criterios de búsqueda.
+                  {distributorsList.length === 0 ? 'Aún no hay puntos de atención verificados y publicados.' : <>No se encontraron puntos en <strong>{selectedProvince}</strong> con los criterios de búsqueda.</>}
                 </p>
                 <button
                   onClick={() => { setSelectedProvince('Todas'); setSearchQuery(''); }}
-                  className="mt-4 px-4 py-2 rounded-xl bg-blue-600 text-white font-bold text-xs"
+                  className="mt-4 px-4 py-2 rounded-xl bg-primary-600 text-white font-bold text-xs"
                 >
-                  Ver todas las agencias en Ecuador
+                  Limpiar filtros
                 </button>
               </div>
             ) : (
@@ -181,8 +178,8 @@ export default function StoreLocator({ initialProvince }: StoreLocatorProps) {
                     className={`p-5 rounded-2xl border transition-all cursor-pointer ${
                       isSelected
                         ? isDark 
-                          ? 'bg-slate-800/95 border-blue-500 shadow-xl shadow-blue-500/10' 
-                          : 'bg-blue-50/70 border-blue-500 shadow-md ring-1 ring-blue-500'
+                          ? 'bg-slate-800/95 border-primary-500 shadow-xl shadow-primary-500/10' 
+                          : 'bg-primary-50/70 border-primary-500 shadow-md ring-1 ring-primary-500'
                         : isDark 
                           ? 'bg-slate-950/80 border-slate-800 hover:border-slate-700 hover:bg-slate-800/50' 
                           : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50'
@@ -193,8 +190,8 @@ export default function StoreLocator({ initialProvince }: StoreLocatorProps) {
                         <div className="flex items-center gap-2">
                           <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
                             isDark 
-                              ? 'bg-blue-600/30 text-blue-300 border-blue-500/40' 
-                              : 'bg-blue-100 text-blue-800 border-blue-200'
+                              ? 'bg-primary-600/30 text-primary-300 border-primary-500/40' 
+                              : 'bg-primary-100 text-primary-800 border-primary-200'
                           }`}>
                             {dist.province}
                           </span>
@@ -206,14 +203,14 @@ export default function StoreLocator({ initialProvince }: StoreLocatorProps) {
                           {dist.name}
                         </h3>
                       </div>
-                      <div className="flex items-center gap-1 text-amber-500 text-xs font-bold bg-amber-500/10 px-2 py-1 rounded-lg">
+                      {dist.rating > 0 && <div className="flex items-center gap-1 text-warning-500 text-xs font-bold bg-warning-500/10 px-2 py-1 rounded-lg">
                         <Star className="w-3.5 h-3.5 fill-current" />
                         <span>{dist.rating}</span>
-                      </div>
+                      </div>}
                     </div>
 
                     <p className={`text-xs flex items-start gap-1.5 mb-3 ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
-                      <MapPin className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
+                      <MapPin className="w-4 h-4 text-primary-500 shrink-0 mt-0.5" />
                       <span>{dist.address}</span>
                     </p>
 
@@ -227,7 +224,7 @@ export default function StoreLocator({ initialProvince }: StoreLocatorProps) {
                         <a 
                           href={`tel:${dist.phone.replace(/[^0-9+]/g, '')}`} 
                           onClick={(e) => e.stopPropagation()}
-                          className="hover:text-blue-600 font-semibold"
+                          className="hover:text-primary-600 font-semibold"
                         >
                           {dist.phone}
                         </a>
@@ -259,8 +256,8 @@ export default function StoreLocator({ initialProvince }: StoreLocatorProps) {
                         onClick={(e) => e.stopPropagation()}
                         className={`py-2 px-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-colors ${
                           isDark 
-                            ? 'bg-slate-900 hover:bg-slate-800 text-blue-400 border-slate-700' 
-                            : 'bg-slate-100 hover:bg-slate-200 text-blue-700 border-slate-300'
+                            ? 'bg-slate-900 hover:bg-slate-800 text-primary-400 border-slate-700' 
+                            : 'bg-slate-100 hover:bg-slate-200 text-primary-700 border-slate-300'
                         }`}
                         title="Llamar a esta agencia"
                       >
@@ -273,7 +270,7 @@ export default function StoreLocator({ initialProvince }: StoreLocatorProps) {
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => e.stopPropagation()}
-                        className="flex-1 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors shadow-md shadow-emerald-600/20"
+                        className="flex-1 py-2 px-3 rounded-xl bg-success-600 hover:bg-success-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors shadow-md shadow-success-600/20"
                       >
                         <MessageCircle className="w-3.5 h-3.5" />
                         WhatsApp
@@ -312,7 +309,7 @@ export default function StoreLocator({ initialProvince }: StoreLocatorProps) {
                 }`}>
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="px-2.5 py-0.5 rounded-full bg-blue-600 text-white text-[11px] font-bold">
+                      <span className="px-2.5 py-0.5 rounded-full bg-primary-600 text-white text-[11px] font-bold">
                         Agencia Seleccionada
                       </span>
                       <span className={`text-xs font-semibold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
@@ -328,7 +325,7 @@ export default function StoreLocator({ initialProvince }: StoreLocatorProps) {
                     href={`https://www.google.com/maps/dir/?api=1&destination=${selectedDistributor.latitude},${selectedDistributor.longitude}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30 transition-all active:scale-95"
+                    className="px-4 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-primary-600/30 transition-all active:scale-95"
                   >
                     <Navigation className="w-4 h-4" />
                     Cómo llegar (GPS)
@@ -362,8 +359,8 @@ export default function StoreLocator({ initialProvince }: StoreLocatorProps) {
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <ShieldCheck className="w-4 h-4 text-emerald-500" />
-                      <span className="font-bold text-emerald-600 dark:text-emerald-400">Instalación y Diagnóstico Oficial</span>
+                      <ShieldCheck className="w-4 h-4 text-success-500" />
+                      <span className="font-bold text-success-600 dark:text-success-400">Confirma servicios y disponibilidad antes de ir</span>
                     </div>
                   </div>
                 </div>

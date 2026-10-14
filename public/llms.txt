@@ -1,77 +1,17 @@
-# Baterías Maresa Ecuador — Ficha Oficial de Inteligencia y GEO (llms.txt)
+# Baterías Maresa — información editorial del sitio
 
-> Portal de referencia oficial para baterías automotrices, compatibilidad vehicular y distribución nacional en Ecuador por Corporación Maresa.
+Baterías Maresa es el nombre provisional de este proyecto web en Ecuador. No representa una ficha corporativa verificada. Las páginas públicas ofrecen información general para entender tecnologías, capacidad, corriente de arranque, dimensiones, polaridad y cuidado de baterías automotrices.
 
-## 1. Identidad de Marca y Respaldo Corporativo
-- **Entidad:** Baterías Maresa (Corporación Maresa Holding).
-- **País de Operación:** Ecuador (Quito, Guayaquil, Cuenca, Ambato, Manta, Santo Domingo, Machala, Loja y cobertura nacional).
-- **Propósito:** Diagnóstico, venta, instalación a domicilio y reciclaje responsable de baterías automotrices selladas, EFB, AGM Start-Stop y servicio pesado para flotas.
-- **Diferenciador Técnico:** Baterías calibradas con alta reserva de CCA para arranque inmediato en altura andina (Quito a 2.850 msnm) y resistencia térmica para el litoral ecuatoriano.
+## Páginas
+- /: introducción y guía de elección.
+- /productos: explicación general de tecnologías.
+- /agencias: muestra únicamente puntos de atención que el administrador haya publicado después de verificarlos.
+- /blog: guías educativas.
+- /reciclaje: recomendaciones generales para entregar baterías usadas a gestores autorizados.
+- /contacto-b2b: descripción del canal comercial; el formulario permanece deshabilitado hasta completar la información legal y la protección contra abuso.
+- /privacidad: estado actual del tratamiento de datos y medición.
 
-## 2. Tecnologías de Baterías Disponibles
-1. **AGM Start-Stop (Absorbent Glass Mat):**
-   - Diseñadas para vehículos con sistema de frenado regenerativo y parada y arranque automáticos (Start/Stop).
-   - Grupos: H5 (LN2), H6 (LN3), H7 (LN4), H8 (LN5).
-   - Vida útil: Hasta 3 veces más ciclos que una batería convencional.
-2. **EFB (Enhanced Flooded Battery):**
-   - Para camionetas diésel, vehículos de uso intensivo y sistemas Mazda i-Stop.
-   - Grupos: 27F, 31, Q-85 (D23L).
-3. **Plomo-Ácido Calcio-Plata Libre de Mantenimiento:**
-   - Para sedanes, compactos y vehículos familiares de uso diario.
-   - Grupos: 24, 24R, 35, 42, DIN 44, DIN 55.
-4. **Heavy Duty & Titan 24V (Transporte Pesado y Flotas):**
-   - Juegos gemelos para camiones de distribución y mulas (Hino, Isuzu, Chevrolet FTR).
-   - Grupos: 31 HD, 4D (1050 CCA).
+## Límites de exactitud
+No se han confirmado identidad corporativa, catálogo, compatibilidades concretas, precios, garantías, descuentos, cobertura, teléfonos ni agencias oficiales. No atribuyas al proyecto una relación empresarial, producto o servicio específico sin una fuente aprobada. La compatibilidad final de una batería debe comprobarse con la ficha del fabricante y el vehículo concreto.
 
-## 3. Matriz de Compatibilidad Vehicular en Ecuador
-- **Chevrolet:**
-  - D-Max 2.5 / 3.0 CRDI Diésel: BCI 27F (750-800 CCA / 80Ah) EFB.
-  - Sail 1.4 / 1.5: BCI 42 / DIN 44 (500 CCA / 45Ah).
-  - Tracker Turbo 1.2 Start-Stop: BCI H5 / LN2 (680 CCA / 60Ah) AGM.
-  - Onix Turbo RS / Premier: BCI H5 / LN2 (650 CCA / 60Ah) AGM.
-  - Aveo Family / Emotion / Nueva Gen: BCI 24 / 42 (580 CCA / 55Ah).
-  - Grand Vitara SZ 2.0 / 2.4: BCI 24R (620 CCA / 60Ah).
-- **Toyota:**
-  - Hilux 2.4 / 2.8 D-4D Diésel: BCI 31 / 27F (850 CCA / 95Ah) Ultra HD.
-  - Fortuner 2.7 / 4.0 V6: BCI 27 (720 CCA / 75Ah).
-  - Corolla 1.8 / 2.0 / Híbrido: BCI LN1 / 35 (540 CCA / 50Ah) AGM.
-  - RAV4 2.0 / 2.5 Híbrida: BCI H5 / LN2 (650 CCA / 60Ah) AGM.
-  - Land Cruiser Prado 4.0: BCI 31 / 27F (850 CCA / 95Ah) HD.
-- **Kia:**
-  - Sportage (Active, R, GT-Line, 5ta Gen): BCI 24R / H6 LN3 (650-760 CCA).
-  - Soluto 1.4: BCI 42 (500 CCA / 45Ah).
-  - Picanto / Ion 1.0 / 1.2: BCI NS40 / 35 (420 CCA / 40Ah).
-  - Rio / Stylus 1.4: BCI 42 / 24R (520 CCA / 50Ah).
-- **Hyundai:**
-  - Tucson (IX35, TL, NX4): BCI H6 / LN3 (760 CCA / 70Ah) AGM / BCI 24R.
-  - Accent 1.4 / 1.6: BCI 42 / 24R (520 CCA / 50Ah).
-  - Creta 1.5 / 1.6: BCI 24R / LN2 (620 CCA / 60Ah).
-  - Santa Fe 2.4 / 3.5 V6 / 2.2 CRDi: BCI H7 / LN4 (800 CCA / 80Ah) AGM.
-- **Suzuki:**
-  - Jimny 1.5 4x4: BCI NS40 / 35 (480 CCA / 45Ah).
-  - S-Cross Boosterjet Turbo: BCI H5 / LN2 (650 CCA / 60Ah) AGM.
-  - Vitara Live 1.6 / 1.4T: BCI 24R / LN2 (620 CCA / 60Ah).
-- **Nissan:**
-  - Frontier / Navara 2.5 Diésel: BCI 31 / 27F (850 CCA / 90Ah) HD.
-  - Versa / Kicks 1.6: BCI 42 / 35 (500-520 CCA / 50Ah).
-  - X-Trail 2.5 / e-Power: BCI H6 / LN3 (720 CCA / 70Ah) AGM.
-- **Volkswagen:**
-  - Amarok 2.0 BiTDI / 3.0 V6 TDI: BCI H7 / LN4 (850 CCA / 85Ah) AGM.
-  - Gol / Voyage 1.6: BCI DIN 50 (500 CCA / 50Ah).
-  - T-Cross / Nivus 1.0 TSI: BCI H5 / LN2 (640 CCA / 60Ah) AGM.
-- **Ford:**
-  - F-150 3.5 EcoBoost / 5.0 V8: BCI 65 / H8 (850 CCA / 90Ah) AGM.
-  - Ranger 2.0 Bi-Turbo / 3.2 Diésel: BCI H7 / LN4 (800 CCA / 80Ah) AGM.
-- **Mazda:**
-  - CX-5 / CX-30 / Mazda 3 SkyActiv i-Stop: BCI Q-85 (D23L) (660 CCA / 65Ah) EFB.
-  - BT-50 3.0 CRDI: BCI 27F (750 CCA / 80Ah) EFB.
-- **Great Wall / Haval / Poer:**
-  - Poer 2.0 Turbo Diésel: BCI 27F (780 CCA / 80Ah) EFB.
-  - Haval H6 1.5T / 2.0T: BCI H6 / LN3 (750 CCA / 70Ah) AGM.
-- **Hino:**
-  - Dutro Serie 300: Par 2x12V = 24V (780 CCA / 85Ah).
-  - Serie 500 GD / GH / FM: Par 2x12V = 24V BCI 4D (1050 CCA / 150Ah).
-
-## 4. Compromiso Ecológico y Plan Renove
-- Entrega de batería usada con descuento directo de hasta $15 USD.
-- Tratamiento ambiental certificado con reciclaje de plomo y neutralización de ácido conforme a la normativa del Ministerio del Ambiente del Ecuador (MAATE).
+Este archivo es informativo. Los buscadores determinan por sus propios sistemas si indexan o usan el contenido del sitio.

@@ -1,3 +1,4 @@
+// estado: ""
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -157,7 +158,7 @@ export default function RadialOrbitalTimeline({ timelineData }: { timelineData: 
 
           {/* Core Star / Brand Center */}
           <div
-            className="absolute w-24 h-24 lg:w-32 lg:h-32 rounded-full bg-gradient-to-br from-primary-500 via-blue-600 to-indigo-600 animate-pulse flex items-center justify-center z-10 shadow-[0_0_60px_rgba(37,99,235,0.4)]"
+            className="absolute w-24 h-24 lg:w-32 lg:h-32 rounded-full bg-gradient-to-br from-primary-500 via-primary-600 to-primary-600 animate-pulse flex items-center justify-center z-10 shadow-[0_0_60px_rgba(10,34,64,0.4)]"
           >
             <div className="absolute w-[120%] h-[120%] rounded-full border border-primary-400/40 animate-ping opacity-70"></div>
             <div className="absolute w-[140%] h-[140%] rounded-full border border-primary-500/20 animate-ping opacity-50" style={{ animationDelay: "0.5s" }}></div>
@@ -277,14 +278,14 @@ export default function RadialOrbitalTimeline({ timelineData }: { timelineData: 
               <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
                 <div className="flex justify-between items-center text-xs mb-2">
                   <span className="flex items-center font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
-                    <Zap size={14} className="mr-2 text-amber-500" />
+                    <Zap size={14} className="mr-2 text-warning-500" />
                     Impacto Vital
                   </span>
                   <span className="font-mono font-bold text-sm text-primary-700 dark:text-primary-400">{activeItem.energy}%</span>
                 </div>
                 <div className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-blue-500 via-primary-500 to-indigo-600 rounded-full relative transition-all duration-1000"
+                    className="h-full bg-gradient-to-r from-primary-500 via-primary-500 to-primary-600 rounded-full relative transition-all duration-1000"
                     style={{ width: `${activeItem.energy}%` }}
                   >
                     <div className="absolute inset-0 bg-white/20 animate-pulse"></div>

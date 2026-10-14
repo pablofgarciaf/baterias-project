@@ -1,3 +1,4 @@
+// estado: ""
 /**
  * ═══════════════════════════════════════════════════════════════
  * 📄 ARCHITECTURE MAP — Header.tsx
@@ -52,11 +53,13 @@ const navLinks = [
 
 const moreLinks = [
   { label: 'Catálogo Completo', href: '/productos', icon: Package, desc: 'Toda nuestra línea de baterías' },
-  { label: 'Reciclaje', href: '/reciclaje', icon: Recycle, desc: 'Programa Canje Verde' },
+  { label: 'Reciclaje', href: '/reciclaje', icon: Recycle, desc: 'Entrega responsable de baterías usadas' },
   { label: 'Escuela Técnica', href: '/blog', icon: GraduationCap, desc: 'Guías y consejos' },
 ];
 
 export default function Header() {
+  const contactPhone = process.env.NEXT_PUBLIC_CONTACT_PHONE;
+  const showContactPhone = Boolean(contactPhone && /^[+\d\s()-]{7,25}$/.test(contactPhone));
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
@@ -109,8 +112,8 @@ export default function Header() {
     : 'text-white';
 
   const accentUnderline = solid
-    ? isDark ? 'bg-primary-400' : 'bg-primary-600'
-    : 'bg-white';
+    ? isDark ? 'bg-secondary-400' : 'bg-secondary-500'
+    : 'bg-secondary-500';
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
@@ -137,7 +140,7 @@ export default function Header() {
               </span>
               <span className={`text-[9px] font-semibold uppercase tracking-[0.15em] block transition-colors duration-300 ${solid ? 'text-primary-600 dark:text-primary-400' : 'text-white/60'
                 }`}>
-                Corporación Maresa
+                Guía de baterías
               </span>
             </div>
           </Link>
@@ -217,25 +220,25 @@ export default function Header() {
 
           {/* Right Actions */}
           <div className="flex items-center gap-1.5 sm:gap-2">
-            <a
-              href="tel:1800228374"
+            {showContactPhone && <a
+              href={`tel:${contactPhone!.replace(/[^0-9+]/g, '')}`}
               className={`hidden xl:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-all ${solid
                   ? isDark
                     ? 'bg-white/[0.06] border border-white/10 text-white hover:bg-white/[0.1]'
-                    : 'bg-primary-600 text-white hover:bg-primary-700 shadow-sm'
+                    : 'bg-secondary-500 text-white hover:bg-secondary-600 shadow-sm'
                   : 'bg-white/15 backdrop-blur-md border border-white/20 text-white hover:bg-white/25'
                 }`}
             >
               <PhoneCall className="w-3 h-3" />
-              1-800-BATERIA
-            </a>
+              {contactPhone}
+            </a>}
 
             <button
               onClick={toggleTheme}
               aria-label={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
               className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all cursor-pointer ${solid
                   ? isDark
-                    ? 'text-slate-400 hover:text-amber-400 hover:bg-white/[0.06]'
+                    ? 'text-slate-400 hover:text-warning-400 hover:bg-white/[0.06]'
                     : 'text-slate-400 hover:text-slate-600 hover:bg-black/[0.04]'
                   : 'text-white/70 hover:text-white hover:bg-white/[0.1]'
                 }`}
@@ -308,13 +311,13 @@ export default function Header() {
 
               <div className={`h-px mx-3 my-2 ${isDark ? 'bg-white/[0.06]' : 'bg-black/[0.04]'}`} />
 
-              <a
-                href="tel:1800228374"
-                className="flex items-center justify-center gap-2 mx-3 py-2.5 rounded-lg bg-primary-600 hover:bg-primary-700 text-white text-[13px] font-semibold shadow-sm active:scale-[0.98] transition-all"
+              {showContactPhone && <a
+                href={`tel:${contactPhone!.replace(/[^0-9+]/g, '')}`}
+                className="flex items-center justify-center gap-2 mx-3 py-2.5 rounded-lg bg-secondary-500 hover:bg-secondary-600 text-white text-[13px] font-semibold shadow-sm active:scale-[0.98] transition-all"
               >
                 <PhoneCall className="w-3.5 h-3.5" />
-                Llamar al 1-800-BATERIA
-              </a>
+                Llamar al {contactPhone}
+              </a>}
             </div>
           </motion.div>
         )}

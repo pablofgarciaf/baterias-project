@@ -1,3 +1,4 @@
+// estado: ""
 import type { MetadataRoute } from 'next';
 
 const routes = ['', '/productos', '/buscador', '/agencias', '/nosotros', '/blog', '/contacto-b2b', '/reciclaje'];

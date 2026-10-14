@@ -1,3 +1,4 @@
+// estado: ""
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { auth, isFirebaseConfigured, storage } from './firebase';
 

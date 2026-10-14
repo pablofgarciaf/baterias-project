@@ -1,3 +1,4 @@
+// estado: ""
 import type { NextRequest } from 'next/server';
 import { randomBytes } from 'node:crypto';
 import { adminError, requireAdmin } from '@/lib/adminAccess';

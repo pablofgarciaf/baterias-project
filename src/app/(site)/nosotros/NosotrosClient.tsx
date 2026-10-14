@@ -1,3 +1,4 @@
+// estado: ""
 "use client";
 
 import { useTheme } from "@/context/ThemeContext";
@@ -129,13 +130,13 @@ export default function NosotrosClient() {
             transition={{ duration: 0.5 }}
             className="max-w-3xl"
           >
-            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider mb-4 border bg-amber-500/20 border-amber-400/30 text-amber-300">
+            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider mb-4 border bg-warning-500/20 border-warning-400/30 text-warning-300">
               <Award className="w-3 h-3" />
               {about.badge}
             </span>
-            <h1 className="text-3xl font-extrabold tracking-tight leading-tight text-white mb-4">
+            <p role="heading" aria-level={1} className="text-3xl font-extrabold tracking-tight leading-tight text-white mb-4">
               {about.title}
-            </h1>
+            </p>
             <p className="text-sm leading-relaxed text-white/70">
               {about.paragraph1}
             </p>
@@ -167,7 +168,7 @@ export default function NosotrosClient() {
             transition={{ duration: 0.5 }}
             className="max-w-3xl flex-1"
           >
-            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-6 border bg-amber-500/20 border-amber-400/30 text-amber-300">
+            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-6 border bg-warning-500/20 border-warning-400/30 text-warning-300">
               <Award className="w-3.5 h-3.5" />
               {about.badge}
             </span>
@@ -191,7 +192,7 @@ export default function NosotrosClient() {
                 key={i}
                 className="p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 text-center lg:w-32"
               >
-                <stat.icon className="w-5 h-5 mx-auto mb-2 text-blue-400" />
+                <stat.icon className="w-5 h-5 mx-auto mb-2 text-primary-400" />
                 <div className="text-2xl font-extrabold tracking-tight text-white">
                   {stat.value}
                 </div>

@@ -1,3 +1,4 @@
+// estado: ""
 /**
  * ═══════════════════════════════════════════════════════════════
  * 📄 CATALOG MANAGER - Vehicle catalog with Excel paste/upload
@@ -39,7 +40,7 @@ import { GlassCard } from './ui/GlassCard';
 import { GLASS_TOKENS } from '@/types/admin';
 import { VehicleBatteryMatch } from '@/types/sinergia';
 import ImageUploader from './ImageUploader';
-import * as XLSX from 'xlsx';
+import { downloadSpreadsheet, readSpreadsheetRows } from '@/lib/spreadsheet';
 import { collection, deleteDoc, doc, getDocs, setDoc, writeBatch } from 'firebase/firestore';
 import { db, isFirebaseConfigured } from '@/lib/firebase';
 import { uploadSiteImage } from '@/lib/siteImageUpload';
@@ -84,6 +85,8 @@ const DEFAULT_ITEM: Omit<CatalogItem, 'id'> = {
   recommendedBattery: {
     model: '',
     bciGroup: '',
+    dimensions: '',
+    polarity: '',
     cca: 0,
     ah: 0,
     voltage: 12,
@@ -93,6 +96,8 @@ const DEFAULT_ITEM: Omit<CatalogItem, 'id'> = {
     features: [],
   },
   imageUrl: '',
+  sourceReference: '',
+  reviewedBy: '',
 };
 
 export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
@@ -165,6 +170,10 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
       if (h.includes('año') || h.includes('year')) return 'year';
       if (h.includes('motor') || h === 'engine') return 'engine';
       if (h.includes('bci') || h === 'bcigroup') return 'bciGroup';
+      if (h.includes('dimensi') || h.includes('medida')) return 'dimensions';
+      if (h.includes('polaridad')) return 'polarity';
+      if (h.includes('fuente') || h.includes('referencia')) return 'sourceReference';
+      if (h.includes('revisado') || h.includes('revisor')) return 'reviewedBy';
       if (h.includes('cca')) return 'cca';
       if (h.includes('ah')) return 'ah';
       if (h.includes('tecno') || h === 'technology') return 'technology';
@@ -187,6 +196,10 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
         else if (key === 'engine') item.engine = cell;
         else if (key === 'batteryModel') item.recommendedBattery.model = cell;
         else if (key === 'bciGroup') item.recommendedBattery.bciGroup = cell;
+        else if (key === 'dimensions') item.recommendedBattery.dimensions = cell;
+        else if (key === 'polarity') item.recommendedBattery.polarity = cell;
+        else if (key === 'sourceReference') item.sourceReference = cell;
+        else if (key === 'reviewedBy') item.reviewedBy = cell;
         else if (key === 'cca') item.recommendedBattery.cca = Number(cell) || 0;
         else if (key === 'ah') item.recommendedBattery.ah = Number(cell) || 0;
         else if (key === 'technology') item.recommendedBattery.technology = cell as CatalogItem['recommendedBattery']['technology'];
@@ -199,32 +212,23 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
     return items.filter(item => item.brand || item.model);
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-      try {
-        const data = new Uint8Array(event.target?.result as ArrayBuffer);
-        const workbook = XLSX.read(data, { type: 'array' });
-        const sheetName = workbook.SheetNames[0];
-        const sheet = workbook.Sheets[sheetName];
-        const json = XLSX.utils.sheet_to_json(sheet, { header: 1 }) as string[][];
-        if (json.length < 2) return;
-        const text = json.map(r => r.join('\t')).join('\n');
-        const parsed = parseExcelText(text);
-        if (parsed.length > 0) {
-          const newItems = parsed.map((item) => ({ ...item, id: crypto.randomUUID() }));
-          await persistImported(newItems);
-          setCatalog(prev => [...newItems, ...prev]);
-        }
-      } catch (err) {
-        console.error('Error parsing file:', err);
-        setError('Error al procesar archivo');
-      }
-    };
-    reader.readAsArrayBuffer(file);
     e.target.value = '';
+    try {
+      setError(null);
+      const rows = await readSpreadsheetRows(file);
+      const headers = Object.keys(rows[0]);
+      const text = [headers.join('\t'), ...rows.map(row => headers.map(header => row[header].replace(/[\t\r\n]/g, ' ')).join('\t'))].join('\n');
+      const parsed = parseExcelText(text);
+      if (parsed.length === 0) throw new Error('No hay filas válidas para importar.');
+      const newItems = parsed.map(item => ({ ...item, id: crypto.randomUUID() }));
+      await persistImported(newItems);
+      setCatalog(prev => [...newItems, ...prev]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al procesar archivo.');
+    }
   };
 
   const handleSaveNew = async (e: FormEvent) => {
@@ -254,14 +258,17 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
 
   const handleEditSave = async (id: string) => {
     if (!editedItem) return;
-    if (editedItem.published && (!editedItem.brand.trim() || !editedItem.model.trim() || !editedItem.year || !editedItem.recommendedBattery.model.trim() || !editedItem.recommendedBattery.bciGroup.trim() || editedItem.recommendedBattery.cca <= 0 || editedItem.recommendedBattery.ah <= 0)) {
-      setError('Para publicar, completa marca, modelo, año, batería, BCI, CCA y Ah con datos confirmados.');
+    if (editedItem.published && (!editedItem.brand.trim() || !editedItem.model.trim() || !editedItem.year || !editedItem.engine.trim() || !editedItem.recommendedBattery.model.trim() || !editedItem.recommendedBattery.bciGroup.trim() || !editedItem.recommendedBattery.dimensions?.trim() || !editedItem.recommendedBattery.polarity?.trim() || editedItem.recommendedBattery.cca <= 0 || editedItem.recommendedBattery.ah <= 0 || !editedItem.sourceReference?.trim() || !editedItem.reviewedBy?.trim())) {
+      setError('Para publicar, completa motor, medidas, polaridad, especificaciones, fuente técnica y responsable de revisión.');
       return;
     }
     setSaving(id);
     try {
-      await setDoc(doc(db, 'catalog', id), stripFile(editedItem));
-      setCatalog(prev => prev.map(item => item.id === id ? { ...editedItem } : item));
+      const finalItem = editedItem.published && !catalog.find(item => item.id === id)?.published
+        ? { ...editedItem, reviewedAt: new Date().toISOString() }
+        : editedItem;
+      await setDoc(doc(db, 'catalog', id), stripFile(finalItem));
+      setCatalog(prev => prev.map(item => item.id === id ? { ...finalItem } : item));
       setEditingId(null);
       setEditedItem(null);
     } catch (err) {
@@ -281,25 +288,30 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
     }
   };
 
-  const exportToExcel = () => {
+  const exportToExcel = async () => {
     if (catalog.length === 0) return;
-    const worksheet = XLSX.utils.json_to_sheet(catalog.map(item => ({
+    try {
+      await downloadSpreadsheet(catalog.map(item => ({
       Marca: item.brand,
       Modelo: item.model,
       Año: item.year,
       Motor: item.engine,
       'Batería Modelo': item.recommendedBattery.model,
       BCI: item.recommendedBattery.bciGroup,
+      Dimensiones: item.recommendedBattery.dimensions || '',
+      Polaridad: item.recommendedBattery.polarity || '',
       CCA: item.recommendedBattery.cca,
       Ah: item.recommendedBattery.ah,
       Tecnología: item.recommendedBattery.technology,
       'Precio Ecuador': item.recommendedBattery.priceEcuador,
       'Garantía (meses)': item.recommendedBattery.warrantyMonths,
       Imagen: item.imageUrl || '',
-    })));
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Catálogo Vehicular');
-    XLSX.writeFile(workbook, `Catalogo_Vehicular_Maresa_${new Date().toISOString().split('T')[0]}.xlsx`);
+      'Fuente técnica': item.sourceReference || '',
+      'Revisado por': item.reviewedBy || '',
+    })), 'Catálogo Vehicular', `Catalogo_Vehicular_Maresa_${new Date().toISOString().split('T')[0]}.xlsx`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'No se pudo exportar el catálogo.');
+    }
   };
 
   const filteredCatalog = React.useMemo(() => 
@@ -358,7 +370,7 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
   const styles = getThemeStyles();
   const border = darkMode ? GLASS_TOKENS.borderDark : GLASS_TOKENS.border;
 
-  const renderFormFields = (item: CatalogItem, onChange: (key: string, value: any) => void, isNew = false) => {
+  const renderFormFields = (item: CatalogItem, onChange: (key: string, value: string | number | boolean) => void, isNew = false) => {
     const labelStyle = styles.label;
 
     return (
@@ -423,6 +435,14 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
           <div style={styles.card} className="p-3">
+            <label style={labelStyle}>Medidas *</label>
+            <input value={item.recommendedBattery.dimensions || ''} onChange={e => onChange('recommendedBattery.dimensions', e.target.value)} style={styles.input} placeholder="Largo × ancho × alto" />
+          </div>
+          <div style={styles.card} className="p-3">
+            <label style={labelStyle}>Polaridad *</label>
+            <input value={item.recommendedBattery.polarity || ''} onChange={e => onChange('recommendedBattery.polarity', e.target.value)} style={styles.input} placeholder="Positivo derecho o izquierdo" />
+          </div>
+          <div style={styles.card} className="p-3">
             <label style={labelStyle}>CCA</label>
             <input
               type="number"
@@ -462,6 +482,16 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div style={styles.card} className="p-3">
+            <label style={labelStyle}>Fuente técnica *</label>
+            <input value={item.sourceReference || ''} onChange={e => onChange('sourceReference', e.target.value)} style={styles.input} placeholder="Ficha de fabricante o documento aprobado" />
+          </div>
+          <div style={styles.card} className="p-3">
+            <label style={labelStyle}>Responsable de revisión *</label>
+            <input value={item.reviewedBy || ''} onChange={e => onChange('reviewedBy', e.target.value)} style={styles.input} placeholder="Nombre del revisor técnico" />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div style={styles.card} className="p-3">
             <label style={labelStyle}>Garantía (meses)</label>
             <input
               type="number"
@@ -484,7 +514,7 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
           </div>
         </div>
         {!isNew && (
-          <label className="flex items-start gap-3 rounded-xl border border-amber-500/30 p-3 text-xs">
+          <label className="flex items-start gap-3 rounded-xl border border-warning-500/30 p-3 text-xs">
             <input type="checkbox" checked={item.published === true} onChange={e => onChange('published', e.target.checked)} />
             <span>Publicar esta compatibilidad en el buscador. Actívalo únicamente después de verificar la ficha técnica y sus condiciones.</span>
           </label>
@@ -514,7 +544,7 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
               <input
                 ref={fileInputRef}
                 type="file"
-                accept=".xlsx,.xls,.csv"
+                accept=".xlsx,.csv"
                 onChange={handleFileUpload}
                 className="hidden"
               />
@@ -522,14 +552,14 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
             <button
               onClick={exportToExcel}
               disabled={catalog.length === 0}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm transition-colors cursor-pointer disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-success-600 hover:bg-success-500 text-white font-semibold text-sm transition-colors cursor-pointer disabled:opacity-50"
             >
               <Download className="w-4 h-4" />
               Exportar Excel
             </button>
             <button
               onClick={() => setAdding(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-primary-600 hover:bg-primary-500 text-white font-semibold text-sm transition-colors cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               Agregar Manual
@@ -569,7 +599,7 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
             <button
               type="submit"
               disabled={saving === 'new'}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm transition-colors cursor-pointer disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary-600 hover:bg-primary-500 text-white font-semibold text-sm transition-colors cursor-pointer disabled:opacity-50"
             >
               {saving === 'new' && <Loader2 className="w-4 h-4 animate-spin" />}
               {!saving && <Save className="w-4 h-4" />}
@@ -592,7 +622,7 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
               darkMode
                 ? 'bg-slate-900 border border-slate-800 text-white placeholder-slate-500'
                 : 'bg-white border border-slate-200 text-slate-900 placeholder-slate-400'
-            } focus:border-blue-500`}
+            } focus:border-primary-500`}
           />
         </div>
       </div>
@@ -601,7 +631,7 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
       <div style={styles.card} className="overflow-hidden">
         {isLoading ? (
           <div className="p-12 text-center">
-            <Loader2 className="w-8 h-8 animate-spin mx-auto text-blue-500" />
+            <Loader2 className="w-8 h-8 animate-spin mx-auto text-primary-500" />
             <p className="mt-3" style={{ color: styles.textSecondary }}>Cargando catálogo...</p>
           </div>
         ) : filteredCatalog.length === 0 ? (
@@ -650,7 +680,7 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
                       <button
                         type="submit"
                         disabled={saving === item.id}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition-colors cursor-pointer disabled:opacity-50"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-success-600 hover:bg-success-500 text-white font-semibold text-xs transition-colors cursor-pointer disabled:opacity-50"
                       >
                         {saving === item.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Check className="w-3 h-3" />}
                         Guardar
@@ -668,15 +698,15 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
                         />
                       )}
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-semibold text-blue-500 uppercase">{item.brand} • {item.year}</span>
+                        <span className="text-xs font-semibold text-primary-500 uppercase">{item.brand} • {item.year}</span>
                         <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-slate-800 text-slate-400">{item.engine}</span>
                       </div>
                       <h3 className="text-base font-bold mb-2" style={{ color: styles.textPrimary }}>{item.model}</h3>
-                      <span className={`mb-3 inline-block rounded-full px-2 py-1 text-xs font-semibold ${item.published ? 'bg-emerald-500/15 text-emerald-400' : 'bg-amber-500/15 text-amber-400'}`}>{item.published ? 'Publicado' : 'Borrador'}</span>
+                      <span className={`mb-3 inline-block rounded-full px-2 py-1 text-xs font-semibold ${item.published ? 'bg-success-500/15 text-success-400' : 'bg-warning-500/15 text-warning-400'}`}>{item.published ? 'Publicado' : 'Borrador'}</span>
                       <div className="p-3 rounded-lg mb-3" style={{ background: darkMode ? 'rgba(15, 23, 42, 0.6)' : 'rgba(255, 255, 255, 0.6)', border: `1px solid ${border}` }}>
                         <div className="flex items-center justify-between text-xs font-semibold mb-1" style={{ color: styles.textPrimary }}>
                           <span>{item.recommendedBattery.model}</span>
-                          <span className="text-blue-500">{item.recommendedBattery.priceEcuador > 0 ? `$${item.recommendedBattery.priceEcuador.toFixed(2)}` : 'Precio pendiente'}</span>
+                          <span className="text-primary-500">{item.recommendedBattery.priceEcuador > 0 ? `$${item.recommendedBattery.priceEcuador.toFixed(2)}` : 'Precio pendiente'}</span>
                         </div>
                         <p className="text-[0.6875rem]" style={{ color: styles.textSecondary }}>
                           BCI: {item.recommendedBattery.bciGroup} • {item.recommendedBattery.cca} CCA • {item.recommendedBattery.ah} Ah • {item.recommendedBattery.technology}
@@ -684,13 +714,13 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
                       </div>
                       <div className="flex items-center justify-between text-xs" style={{ color: styles.textSecondary, borderTop: `1px solid ${border}`, paddingTop: '0.5rem' }}>
                         <span>Garantía: <strong>{item.recommendedBattery.warrantyMonths > 0 ? `${item.recommendedBattery.warrantyMonths}m` : 'pendiente'}</strong></span>
-                        <span className="text-emerald-500 font-medium">{item.published ? 'Visible en buscador' : 'Solo panel'}</span>
+                        <span className="text-success-500 font-medium">{item.published ? 'Visible en buscador' : 'Solo panel'}</span>
                       </div>
                     </div>
                     <div className="absolute top-2 right-2 flex gap-1">
                       <button
                         onClick={() => handleEditStart(item)}
-                        className="p-1.5 rounded-lg text-blue-400 hover:bg-blue-500/10 transition-colors"
+                        className="p-1.5 rounded-lg text-primary-400 hover:bg-primary-500/10 transition-colors"
                         aria-label="Editar"
                       >
                         <Edit3 className="w-4 h-4" />

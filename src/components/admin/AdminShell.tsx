@@ -1,3 +1,4 @@
+// estado: ""
 /**
  * ═══════════════════════════════════════════════════════════════
  * 📄 ADMIN SHELL — Unified Workspace, Sidebar & Responsive Drawer
@@ -77,7 +78,7 @@ export default function AdminShell({ role }: { role: 'admin' | 'editor' }) {
   const loadData = async () => {
     try {
       const [dists, leadsData, usersList] = await Promise.all([
-        getDistributors(),
+        getDistributors(true),
         getB2BLeads(),
         getAdminUsers(),
       ]);
@@ -141,7 +142,7 @@ export default function AdminShell({ role }: { role: 'admin' | 'editor' }) {
   return (
     <div
       className={`h-screen flex flex-col font-sans transition-colors overflow-hidden ${
-        darkMode ? 'bg-[#090C15] text-slate-100' : 'bg-[#F8FAFC] text-slate-900'
+        darkMode ? 'bg-brand-night text-slate-100' : 'bg-brand-canvas text-brand-navy'
       }`}
     >
       {/* ─────────────────────────────────────────────────────────────
@@ -150,13 +151,13 @@ export default function AdminShell({ role }: { role: 'admin' | 'editor' }) {
       <header
         className={`h-14 border-b flex items-center justify-between px-4 sm:px-6 z-30 transition-all ${
           isSidebarOpen ? 'md:ml-56 lg:ml-60' : 'md:ml-16 lg:ml-20'
-        } ${darkMode ? 'bg-[#06080F] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-900/20 via-[#06080F] to-[#06080F]/90 border-indigo-500/20' : 'bg-white/90 border-slate-200'} backdrop-blur-xl`}
+        } ${darkMode ? 'bg-primary-950/95 border-primary-500/20' : 'bg-white/90 border-slate-200'} backdrop-blur-xl`}
       >
         {/* Left: Mobile hamburger + Active module title */}
         <div className="flex items-center gap-3 min-w-0">
           <button
             onClick={() => setIsMobileDrawerOpen(true)}
-            className="md:hidden p-2 -ml-1 rounded-xl hover:bg-indigo-950/40/40 text-slate-400 hover:text-white transition-colors"
+            className="md:hidden p-2 -ml-1 rounded-xl hover:bg-primary-950/40 text-slate-400 hover:text-white transition-colors"
             aria-label="Abrir menú"
           >
             <Menu className="w-5 h-5" />
@@ -168,7 +169,7 @@ export default function AdminShell({ role }: { role: 'admin' | 'editor' }) {
             </span>
             <span
               className={`hidden sm:inline-block text-[11px] px-2 py-0.5 rounded-full border ${
-                darkMode ? 'bg-indigo-950/40 text-slate-400 border-indigo-500/30' : 'bg-slate-100 text-slate-600 border-slate-200'
+                darkMode ? 'bg-primary-950/40 text-slate-400 border-primary-500/30' : 'bg-slate-100 text-slate-600 border-slate-200'
               }`}
             >
               Maresa Admin
@@ -181,7 +182,7 @@ export default function AdminShell({ role }: { role: 'admin' | 'editor' }) {
           {isSaved && (
             <span
               className={`hidden lg:inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full ${
-                darkMode ? 'text-emerald-400 bg-emerald-950/60 border border-emerald-800/40' : 'text-emerald-600 bg-emerald-50 border border-emerald-200'
+                darkMode ? 'text-success-400 bg-success-950/60 border border-success-800/40' : 'text-success-600 bg-success-50 border border-success-200'
               }`}
             >
               <Check className="w-3 h-3" />
@@ -192,7 +193,7 @@ export default function AdminShell({ role }: { role: 'admin' | 'editor' }) {
           <button
             onClick={() => setDarkMode(!darkMode)}
             className={`w-8 h-8 rounded-xl flex items-center justify-center transition-colors cursor-pointer ${
-              darkMode ? 'text-slate-400 hover:text-amber-400 hover:bg-white/[0.06]' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100'
+              darkMode ? 'text-slate-400 hover:text-warning-400 hover:bg-white/[0.06]' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100'
             }`}
             aria-label={darkMode ? 'Modo claro' : 'Modo oscuro'}
           >
@@ -244,7 +245,7 @@ export default function AdminShell({ role }: { role: 'admin' | 'editor' }) {
           3. SIDEBAR (Fixed on desktop, Slide-over Drawer on mobile)
       ───────────────────────────────────────────────────────────── */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 flex flex-col transition-all duration-300 border-r border-white/5 bg-[#090C15] text-slate-100 ${
+        className={`fixed top-0 bottom-0 left-0 z-50 flex flex-col transition-all duration-300 border-r border-white/5 bg-brand-night text-slate-100 ${
           // Mobile state: off-canvas drawer
           isMobileDrawerOpen ? 'translate-x-0 w-64 shadow-2xl' : '-translate-x-full'
         } ${
@@ -254,10 +255,10 @@ export default function AdminShell({ role }: { role: 'admin' | 'editor' }) {
       >
         {/* Branding Top */}
         <div
-          className="h-14 px-4 flex items-center justify-between border-b border-indigo-500/20"
+          className="h-14 px-4 flex items-center justify-between border-b border-primary-500/20"
         >
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center shrink-0 shadow-md shadow-blue-600/20">
+            <div className="w-8 h-8 rounded-xl bg-primary-600 flex items-center justify-center shrink-0 shadow-md shadow-primary-600/20">
               <span className="font-extrabold text-xs text-white tracking-tighter">MBT</span>
             </div>
             {(isSidebarOpen || isMobileDrawerOpen) && (
@@ -265,7 +266,7 @@ export default function AdminShell({ role }: { role: 'admin' | 'editor' }) {
                 <span className="font-bold text-sm tracking-tight block truncate text-white">
                   Maresa CMS
                 </span>
-                <span className="text-[10px] text-blue-500 font-semibold block mt-0.5">
+                <span className="text-[10px] text-primary-300 font-semibold block mt-0.5">
                   Panel Corporativo
                 </span>
               </div>
@@ -275,7 +276,7 @@ export default function AdminShell({ role }: { role: 'admin' | 'editor' }) {
           {/* Close button inside mobile drawer */}
           <button
             onClick={() => setIsMobileDrawerOpen(false)}
-            className="md:hidden p-1.5 rounded-lg opacity-60 hover:opacity-100 hover:bg-indigo-950/40/40"
+            className="md:hidden p-1.5 rounded-lg opacity-60 hover:opacity-100 hover:bg-primary-950/40"
           >
             <X className="w-4 h-4" />
           </button>
@@ -309,7 +310,7 @@ export default function AdminShell({ role }: { role: 'admin' | 'editor' }) {
                 whileTap={{ scale: 0.97 }}
                 className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
                   isActive
-                    ? 'bg-blue-600/20 text-blue-400 shadow-[0_0_20px_rgba(37,99,235,0.2)] border border-blue-500/30'
+                    ? 'bg-primary-600/25 text-primary-200 shadow-[0_0_20px_rgba(10,34,64,0.25)] border border-primary-400/30'
                     : 'text-slate-400 hover:bg-white/5 hover:border-white/10 border border-transparent hover:text-white'
                 }`}
                 title={!isSidebarOpen && !isMobileDrawerOpen ? item.label : undefined}
@@ -327,8 +328,8 @@ export default function AdminShell({ role }: { role: 'admin' | 'editor' }) {
                       isActive
                         ? 'bg-white/20 text-white'
                         : item.highlight
-                        ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                        : 'bg-indigo-950/40 text-slate-400'
+                        ? 'bg-warning-500/20 text-warning-400 border border-warning-500/30'
+                        : 'bg-primary-950/40 text-slate-400'
                     }`}
                   >
                     {item.badge}
@@ -341,11 +342,11 @@ export default function AdminShell({ role }: { role: 'admin' | 'editor' }) {
 
         {/* Sidebar Footer User info */}
         <div
-          className="p-3 border-t border-indigo-500/20 text-[11px] text-slate-500"
+          className="p-3 border-t border-primary-500/20 text-[11px] text-slate-500"
         >
           {(isSidebarOpen || isMobileDrawerOpen) && (
             <div className="flex items-center gap-2 px-1">
-              <Shield className="w-3.5 h-3.5 text-blue-500" />
+              <Shield className="w-3.5 h-3.5 text-primary-500" />
               <span className="truncate font-medium">{auth.currentUser?.email || 'Usuario verificado'}</span>
             </div>
           )}

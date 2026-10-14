@@ -1,3 +1,4 @@
+// estado: ""
 /**
  * ═══════════════════════════════════════════════════════════════
  * 📄 ADMIN PAGE — Authentication & Shell Gateway
@@ -202,12 +203,12 @@ export default function AdminPage() {
     return (
       <div
         className={`min-h-screen flex flex-col font-sans transition-colors relative overflow-hidden ${
-          darkMode ? 'bg-[#0B0F19] text-slate-100' : 'bg-slate-50 text-slate-900'
+          darkMode ? 'bg-brand-night text-slate-100' : 'bg-brand-canvas text-brand-navy'
         }`}
       >
         {/* Subtle background ambient lights (Vermilion / Luxury style) */}
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary-600/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-primary-600/10 rounded-full blur-3xl pointer-events-none" />
 
         {/* Top bar with theme toggle */}
         <header
@@ -218,7 +219,7 @@ export default function AdminPage() {
           }`}
         >
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center shadow-md shadow-blue-600/20">
+            <div className="w-7 h-7 rounded-lg bg-primary-600 flex items-center justify-center shadow-md shadow-primary-600/20">
               <span className="font-extrabold text-[10px] text-white tracking-tighter">MBT</span>
             </div>
             <span
@@ -226,7 +227,7 @@ export default function AdminPage() {
                 darkMode ? 'text-slate-300' : 'text-slate-700'
               }`}
             >
-              Maresa <span className="text-blue-500">Security Gateway</span>
+              Maresa <span className="text-primary-500">Security Gateway</span>
             </span>
           </div>
 
@@ -234,7 +235,7 @@ export default function AdminPage() {
             onClick={() => setDarkMode(!darkMode)}
             className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors cursor-pointer ${
               darkMode
-                ? 'text-slate-400 hover:text-amber-400 hover:bg-white/[0.06]'
+                ? 'text-slate-400 hover:text-warning-400 hover:bg-white/[0.06]'
                 : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100'
             }`}
             aria-label={darkMode ? 'Modo claro' : 'Modo oscuro'}
@@ -271,7 +272,7 @@ export default function AdminPage() {
           >
             {/* Header Icon & Title */}
             <div className="text-center mb-7">
-              <div className="w-12 h-12 rounded-2xl bg-blue-600/10 text-blue-500 border border-blue-500/20 flex items-center justify-center mx-auto mb-4 shadow-inner">
+              <div className="w-12 h-12 rounded-2xl bg-primary-600/10 text-primary-500 border border-primary-500/20 flex items-center justify-center mx-auto mb-4 shadow-inner">
                 <ShieldCheck className="w-6 h-6" />
               </div>
               <h1
@@ -311,8 +312,8 @@ export default function AdminPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     className={`w-full pl-10 pr-4 py-3 rounded-xl border text-sm outline-none transition-all ${
                       darkMode
-                        ? 'bg-slate-950/60 border-slate-800 text-white placeholder-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20'
-                        : 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15'
+                        ? 'bg-slate-950/60 border-slate-800 text-white placeholder-slate-600 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20'
+                        : 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400 focus:border-primary-600 focus:ring-2 focus:ring-primary-600/15'
                     }`}
                   />
                 </div>
@@ -334,7 +335,7 @@ export default function AdminPage() {
                       setForgotEmail(email);
                       setShowForgotModal(true);
                     }}
-                    className="text-[11px] font-medium text-blue-500 hover:text-blue-400 transition-colors"
+                    className="text-[11px] font-medium text-primary-500 hover:text-primary-400 transition-colors"
                   >
                     ¿Olvidaste tu clave?
                   </button>
@@ -349,8 +350,8 @@ export default function AdminPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     className={`w-full pl-10 pr-11 py-3 rounded-xl border text-sm outline-none transition-all ${
                       darkMode
-                        ? 'bg-slate-950/60 border-slate-800 text-white placeholder-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20'
-                        : 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/15'
+                        ? 'bg-slate-950/60 border-slate-800 text-white placeholder-slate-600 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20'
+                        : 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400 focus:border-primary-600 focus:ring-2 focus:ring-primary-600/15'
                     }`}
                   />
                   <button
@@ -366,7 +367,7 @@ export default function AdminPage() {
 
               {/* Error Message */}
               {activationNotice && (
-                <p role="status" className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-3 text-xs text-emerald-400">{activationNotice}</p>
+                <p role="status" className="rounded-xl border border-success-500/20 bg-success-500/10 p-3 text-xs text-success-400">{activationNotice}</p>
               )}
               {authError && (
                 <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs">
@@ -379,7 +380,7 @@ export default function AdminPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm shadow-lg shadow-blue-600/25 transition-all cursor-pointer active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50"
+                className="w-full py-3 rounded-xl bg-primary-600 hover:bg-primary-500 text-white font-semibold text-sm shadow-lg shadow-primary-600/25 transition-all cursor-pointer active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 {isLoading ? (
                   <>
@@ -406,7 +407,7 @@ export default function AdminPage() {
                 darkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-slate-200 text-slate-900'
               }`}
             >
-              <div className="w-12 h-12 rounded-2xl bg-amber-500/15 text-amber-500 border border-amber-500/30 flex items-center justify-center mx-auto mb-4">
+              <div className="w-12 h-12 rounded-2xl bg-warning-500/15 text-warning-500 border border-warning-500/30 flex items-center justify-center mx-auto mb-4">
                 <Lock className="w-6 h-6" />
               </div>
 
@@ -475,7 +476,7 @@ export default function AdminPage() {
 
                 {newPassword.length > 0 && confirmPassword.length > 0 && (
                   <div className={`text-[11px] font-semibold text-center mt-2 ${
-                    newPassword === confirmPassword ? 'text-emerald-500' : 'text-amber-500'
+                    newPassword === confirmPassword ? 'text-success-500' : 'text-warning-500'
                   }`}>
                     {newPassword === confirmPassword 
                       ? '✓ Las contraseñas coinciden' 
@@ -490,7 +491,7 @@ export default function AdminPage() {
                 <button
                   type="submit"
                   disabled={isChangingPassword}
-                  className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold shadow-md active:scale-95 transition-all flex items-center justify-center gap-2"
+                  className="w-full py-2.5 rounded-xl bg-primary-600 hover:bg-primary-500 text-white text-sm font-semibold shadow-md active:scale-95 transition-all flex items-center justify-center gap-2"
                 >
                   {isChangingPassword ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -522,7 +523,7 @@ export default function AdminPage() {
                 <X className="w-4 h-4" />
               </button>
 
-              <div className="w-12 h-12 rounded-2xl bg-blue-600/15 text-blue-500 border border-blue-500/30 flex items-center justify-center mx-auto mb-4">
+              <div className="w-12 h-12 rounded-2xl bg-primary-600/15 text-primary-500 border border-primary-500/30 flex items-center justify-center mx-auto mb-4">
                 <Mail className="w-6 h-6" />
               </div>
 
@@ -539,8 +540,8 @@ export default function AdminPage() {
 
               {forgotSent ? (
                 <div className="text-center py-4 space-y-3">
-                  <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto" />
-                  <p className="text-sm font-semibold text-emerald-400">
+                  <CheckCircle2 className="w-10 h-10 text-success-400 mx-auto" />
+                  <p className="text-sm font-semibold text-success-400">
                     ¡Correo de recuperación enviado!
                   </p>
                   <p className="text-xs opacity-70">
@@ -549,7 +550,7 @@ export default function AdminPage() {
                   <button
                     type="button"
                     onClick={() => setShowForgotModal(false)}
-                    className="mt-4 px-6 py-2 rounded-xl bg-blue-600 text-white text-xs font-semibold"
+                    className="mt-4 px-6 py-2 rounded-xl bg-primary-600 text-white text-xs font-semibold"
                   >
                     Volver al Login
                   </button>
@@ -579,7 +580,7 @@ export default function AdminPage() {
                   <button
                     type="submit"
                     disabled={forgotLoading}
-                    className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold shadow-md active:scale-95 transition-all flex items-center justify-center gap-2"
+                    className="w-full py-2.5 rounded-xl bg-primary-600 hover:bg-primary-500 text-white text-sm font-semibold shadow-md active:scale-95 transition-all flex items-center justify-center gap-2"
                   >
                     {forgotLoading ? (
                       <Loader2 className="w-4 h-4 animate-spin" />

@@ -1,3 +1,4 @@
+<!-- estado: "" -->
 # 🗺️ ARCHITECTURE MAP — Baterías Maresa
 
 > ⚠️ Este archivo se actualiza en el MISMO turno en que se crea, elimina o reestructura un archivo.
@@ -147,6 +148,7 @@
 |---|---|---|
 | `src/lib/firebase.ts` | Compartido | Init Firebase App, Auth, Firestore, Analytics. Usa `process.env.NEXT_PUBLIC_FIREBASE_*` |
 | `src/lib/firebaseStore.ts` | Compartido | CRUD Firestore: leads B2B (submit/get/update), distribuidores (get/save/remove). Fallback localStorage |
+| `src/lib/spreadsheet.ts` | Compartido | Lectura limitada de XLSX/CSV y exportación XLSX para módulos administrativos; sanea fórmulas de celdas exportadas |
 
 ---
 

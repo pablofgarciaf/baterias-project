@@ -1,3 +1,4 @@
+// estado: ""
 'use client';
 
 import { useState, useMemo, useEffect, useRef } from 'react';
@@ -12,7 +13,6 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { provinces } from '@/data/provinces';
 import { DistributorLocation } from '@/types/sinergia';
-import { defaultDistributors } from '@/data/sinergiaData';
 import { getDistributors } from '@/lib/firebaseStore';
 
 // Cargar Google Maps oficial de forma dinámica
@@ -20,8 +20,8 @@ const PremiumMap = dynamic(() => import('@/components/PremiumMap'), {
   ssr: false,
   loading: () => (
     <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900 text-slate-300 gap-3">
-      <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
-      <span className="text-xs font-bold">Cargando Google Maps oficial...</span>
+      <Loader2 className="w-8 h-8 text-primary-500 animate-spin" />
+      <span className="text-xs font-bold">Cargando mapa...</span>
     </div>
   ),
 });
@@ -30,10 +30,10 @@ export default function AgenciasClient() {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 
-  const [distributorsList, setDistributorsList] = useState<(DistributorLocation & { distance?: number })[]>(defaultDistributors);
+  const [distributorsList, setDistributorsList] = useState<(DistributorLocation & { distance?: number })[]>([]);
   const [selectedProvince, setSelectedProvince] = useState<string>('Todas');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [selectedDistributor, setSelectedDistributor] = useState<(DistributorLocation & { distance?: number }) | null>(defaultDistributors[0] || null);
+  const [selectedDistributor, setSelectedDistributor] = useState<(DistributorLocation & { distance?: number }) | null>(null);
   const [findingNearest, setFindingNearest] = useState(false);
   const [gpsActive, setGpsActive] = useState(false);
   const [mobileView, setMobileView] = useState<'map' | 'list'>('map');
@@ -47,18 +47,14 @@ export default function AgenciasClient() {
       if (matched) setSelectedProvince(matched.name);
     }
     getDistributors().then(data => {
-      if (data && data.length > 0) {
-        setDistributorsList(data);
-        if (!selectedDistributor) {
-          setSelectedDistributor(data[0]);
-        }
-      }
+      setDistributorsList(data);
+      setSelectedDistributor(data[0] || null);
     });
   }, []);
 
   const filteredDistributors = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
-    let list = distributorsList.filter(d => {
+    const list = distributorsList.filter(d => {
       const matchProvince = selectedProvince === 'Todas' || d.province.toLowerCase() === selectedProvince.toLowerCase();
       const matchQuery =
         !query ||
@@ -82,6 +78,8 @@ export default function AgenciasClient() {
       if (!exists) {
         setSelectedDistributor(filteredDistributors[0]);
       }
+    } else {
+      setSelectedDistributor(null);
     }
   }, [filteredDistributors, selectedDistributor]);
 
@@ -168,8 +166,8 @@ export default function AgenciasClient() {
   return (
     <div className={`min-h-screen pt-20 lg:pt-24 pb-20 transition-colors duration-300 ${
       isDark 
-        ? 'bg-[#060e1a] text-white selection:bg-blue-600 selection:text-white' 
-        : 'bg-[#f4f7fb] text-slate-900 selection:bg-blue-600 selection:text-white'
+        ? 'bg-[#060e1a] text-white selection:bg-primary-600 selection:text-white' 
+        : 'bg-[#f4f7fb] text-slate-900 selection:bg-primary-600 selection:text-white'
     }`}>
       <div className="container-max relative z-10 px-4 sm:px-6">
 
@@ -177,26 +175,26 @@ export default function AgenciasClient() {
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-6">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2.5 flex-wrap">
-              <span className="px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider bg-blue-600/15 text-blue-600 dark:text-blue-400 border border-blue-500/30 flex items-center gap-1.5 shadow-xs">
-                <Building2 className="w-3.5 h-3.5 text-amber-500" />
-                Red Oficial Corporación Maresa
+              <span className="px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider bg-primary-600/15 text-primary-600 dark:text-primary-400 border border-primary-500/30 flex items-center gap-1.5 shadow-xs">
+                <Building2 className="w-3.5 h-3.5 text-warning-500" />
+                Consulta puntos de atención
               </span>
-              <span className="text-xs font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                <CheckCircle2 className="w-3.5 h-3.5" />
-                32 Puntos en 24 Provincias
+              <span className={`text-xs font-black flex items-center gap-1 ${distributorsList.length > 0 ? 'text-success-600 dark:text-success-400' : 'text-accent-600 dark:text-accent-300'}`}>
+                {distributorsList.length > 0 ? <CheckCircle2 className="w-3.5 h-3.5" /> : <MapPin className="w-3.5 h-3.5" />}
+                {distributorsList.length} puntos publicados
               </span>
             </div>
 
             <h1 className={`text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight ${
               isDark ? 'text-white' : 'text-slate-950'
             }`}>
-              Agencias y Talleres Oficiales Maresa
+              Puntos de atención
             </h1>
 
             <p className={`mt-2 text-xs sm:text-sm max-w-2xl leading-relaxed ${
               isDark ? 'text-slate-400' : 'text-slate-600'
             }`}>
-              Ubica tu punto más cercano con diagnóstico computarizado gratuito, reemplazo express de batería y garantía nacional directa.
+              Consulta las ubicaciones publicadas y confirma horarios y servicios antes de desplazarte.
             </p>
           </div>
 
@@ -204,21 +202,21 @@ export default function AgenciasClient() {
           <button
             type="button"
             onClick={handleFindNearest}
-            disabled={findingNearest}
-            className={`w-full sm:w-auto py-3.5 px-6 rounded-2xl text-xs sm:text-sm font-black flex items-center justify-center gap-2.5 transition-all duration-200 active:scale-95 shrink-0 shadow-lg cursor-pointer ${
+            disabled={findingNearest || distributorsList.length === 0}
+            className={`w-full sm:w-auto py-3.5 px-6 rounded-2xl text-xs sm:text-sm font-black flex items-center justify-center gap-2.5 transition-all duration-200 shrink-0 disabled:cursor-not-allowed disabled:shadow-none disabled:opacity-60 ${
               findingNearest
-                ? 'bg-blue-700 text-white opacity-85'
-                : 'bg-blue-600 hover:bg-blue-700 text-white shadow-blue-600/25 border border-blue-400/20'
+                ? 'bg-secondary-600 text-white opacity-85'
+                : 'bg-secondary-500 hover:bg-secondary-600 text-white shadow-lg shadow-secondary-600/25 border border-secondary-400/20'
             }`}
           >
             {findingNearest ? (
               <>
-                <Loader2 className="w-4 h-4 animate-spin text-amber-300" />
+                <Loader2 className="w-4 h-4 animate-spin text-warning-300" />
                 <span>Calculando ubicación y abriendo mapa...</span>
               </>
             ) : (
               <>
-                <Crosshair className="w-4 h-4 text-amber-400 animate-pulse" />
+                <Crosshair className="w-4 h-4 text-warning-400 animate-pulse" />
                 <span>Agencia más cercana (GPS) • Ver en Mapa</span>
               </>
             )}
@@ -228,13 +226,13 @@ export default function AgenciasClient() {
         {/* FILTROS Y BUSCADOR COMPACTOS CON ESTILO MARESA */}
         <div className={`mb-5 p-3.5 sm:p-4 rounded-2xl border shadow-sm backdrop-blur-xl transition-all duration-300 ${
           isDark 
-            ? 'bg-[#0b192c]/80 border-blue-900/30 shadow-black/30' 
+            ? 'bg-[#0b192c]/80 border-primary-900/30 shadow-black/30' 
             : 'bg-white border-slate-200 shadow-slate-200/60'
         }`}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {/* Province Select */}
             <div>
-              <label className="block text-[10px] font-extrabold uppercase tracking-wider mb-1 text-slate-500 dark:text-blue-300/80">
+              <label className="block text-[10px] font-extrabold uppercase tracking-wider mb-1 text-slate-500 dark:text-primary-300/80">
                 Filtrar por Provincia
               </label>
               <select
@@ -242,11 +240,11 @@ export default function AgenciasClient() {
                 onChange={(e) => { setSelectedProvince(e.target.value); setGpsActive(false); }}
                 className={`w-full py-2 px-3 rounded-xl border text-xs sm:text-sm font-semibold outline-none transition-all cursor-pointer ${
                   isDark
-                    ? 'bg-[#071326] border-blue-900/40 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500/40'
-                    : 'bg-slate-50 border-slate-200 text-slate-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30'
+                    ? 'bg-[#071326] border-primary-900/40 text-white focus:border-primary-500 focus:ring-1 focus:ring-primary-500/40'
+                    : 'bg-slate-50 border-slate-200 text-slate-900 focus:border-primary-500 focus:ring-1 focus:ring-primary-500/30'
                 }`}
               >
-                <option value="Todas">Todas las 24 provincias ({distributorsList.length} agencias)</option>
+                <option value="Todas">Todas las provincias ({distributorsList.length} puntos)</option>
                 {provinces.map(p => (
                   <option key={p.id} value={p.name}>{p.name}</option>
                 ))}
@@ -255,20 +253,21 @@ export default function AgenciasClient() {
 
             {/* Search Input */}
             <div>
-              <label className="block text-[10px] font-extrabold uppercase tracking-wider mb-1 text-slate-500 dark:text-blue-300/80">
-                Búsqueda por Nombre o Ciudad
+              <label className="block text-[10px] font-extrabold uppercase tracking-wider mb-1 text-slate-500 dark:text-primary-300/80">
+                <span id="agency-search-label">Búsqueda por nombre o ciudad</span>
               </label>
               <div className="relative">
                 <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
-                  placeholder="Carcelén, Amazonas, Cumbayá, Cuenca, Samborondón..."
+                  aria-labelledby="agency-search-label"
+                  placeholder="Nombre o ciudad"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className={`w-full pl-9 pr-3 py-2 rounded-xl border text-xs sm:text-sm outline-none transition-all ${
                     isDark
-                      ? 'bg-[#071326] border-blue-900/40 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/40'
-                      : 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30'
+                      ? 'bg-[#071326] border-primary-900/40 text-white placeholder-slate-400 focus:border-primary-500 focus:ring-1 focus:ring-primary-500/40'
+                      : 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400 focus:border-primary-500 focus:ring-1 focus:ring-primary-500/30'
                   }`}
                 />
               </div>
@@ -277,29 +276,29 @@ export default function AgenciasClient() {
         </div>
 
         {/* SELECTOR DE VISTA EN CELULAR (TABS ELEGANTES CON COLORES MARESA) */}
-        <div className="flex lg:hidden items-center p-1 rounded-2xl bg-slate-200 dark:bg-[#071326] border border-slate-300 dark:border-blue-900/40 mb-4 sticky top-16 z-30 shadow-md">
+        <div className="flex lg:hidden items-center p-1 rounded-2xl bg-slate-200 dark:bg-[#071326] border border-slate-300 dark:border-primary-900/40 mb-4 sticky top-16 z-30 shadow-md">
           <button
             type="button"
             onClick={() => setMobileView('map')}
             className={`flex-1 py-2.5 rounded-xl text-xs font-extrabold flex items-center justify-center gap-2 transition-all cursor-pointer ${
               mobileView === 'map'
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
-                : 'text-slate-700 dark:text-slate-400 hover:text-blue-600'
+                ? 'bg-primary-600 text-white shadow-md shadow-primary-600/30'
+                : 'text-slate-700 dark:text-slate-400 hover:text-primary-600'
             }`}
           >
-            <MapPin className="w-4 h-4 text-amber-400" />
-            <span>🗺️ Mapa Google Oficial</span>
+            <MapPin className="w-4 h-4 text-warning-400" />
+            <span>Mapa</span>
           </button>
           <button
             type="button"
             onClick={() => setMobileView('list')}
             className={`flex-1 py-2.5 rounded-xl text-xs font-extrabold flex items-center justify-center gap-2 transition-all cursor-pointer ${
               mobileView === 'list'
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
-                : 'text-slate-700 dark:text-slate-400 hover:text-blue-600'
+                ? 'bg-primary-600 text-white shadow-md shadow-primary-600/30'
+                : 'text-slate-700 dark:text-slate-400 hover:text-primary-600'
             }`}
           >
-            <Building2 className="w-4 h-4 text-amber-400" />
+            <Building2 className="w-4 h-4 text-warning-400" />
             <span>📋 Directorio ({filteredDistributors.length})</span>
           </button>
         </div>
@@ -313,16 +312,16 @@ export default function AgenciasClient() {
           }`}>
             <div className={`rounded-2xl border p-3.5 shadow-sm transition-all duration-300 ${
               isDark 
-                ? 'bg-[#0b192c]/90 border-blue-900/30 shadow-black/40' 
+                ? 'bg-[#0b192c]/90 border-primary-900/30 shadow-black/40' 
                 : 'bg-white border-slate-200 shadow-slate-200/50'
             }`}>
-              <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-slate-200 dark:border-blue-900/30">
+              <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-slate-200 dark:border-primary-900/30">
                 <span className="text-xs font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-blue-600"></span>
-                  Agencias Maresa ({filteredDistributors.length})
+                  <span className="w-2 h-2 rounded-full bg-primary-600"></span>
+                  Puntos disponibles ({filteredDistributors.length})
                 </span>
                 {gpsActive && (
-                  <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                  <span className="text-[11px] font-bold text-success-600 dark:text-success-400 flex items-center gap-1">
                     <Crosshair className="w-3 h-3" />
                     Por cercanía GPS
                   </span>
@@ -334,14 +333,14 @@ export default function AgenciasClient() {
                 {filteredDistributors.length === 0 ? (
                   <div className="p-8 text-center">
                     <MapPin className="w-9 h-9 text-slate-400 mx-auto mb-2 opacity-60" />
-                    <p className="font-bold text-sm mb-1">No hay agencias con este filtro</p>
-                    <p className="text-xs text-slate-500 mb-4">Corporación Maresa tiene cobertura en todo el Ecuador.</p>
+                    <p className="font-bold text-sm mb-1">{distributorsList.length === 0 ? 'Aún no hay puntos de atención publicados' : 'No hay puntos con este filtro'}</p>
+                    <p className="text-xs text-slate-500 mb-4">{distributorsList.length === 0 ? 'Estamos verificando direcciones, contactos y horarios antes de mostrarlos.' : 'Prueba otra provincia o búsqueda.'}</p>
                     <button
                       type="button"
                       onClick={() => { setSelectedProvince('Todas'); setSearchQuery(''); setGpsActive(false); }}
-                      className="px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 text-white hover:bg-blue-700 active:scale-95 transition-all cursor-pointer shadow-md"
+                      className="px-4 py-2 rounded-xl text-xs font-bold bg-primary-600 text-white hover:bg-primary-700 active:scale-95 transition-all cursor-pointer shadow-md"
                     >
-                      Ver todas las 32 agencias Maresa
+                      Limpiar filtros
                     </button>
                   </div>
                 ) : (
@@ -354,17 +353,17 @@ export default function AgenciasClient() {
                         className={`p-3 rounded-xl border transition-all duration-200 cursor-pointer ${
                           isSelected
                             ? isDark
-                              ? 'bg-blue-950/70 border-blue-500 shadow-md shadow-blue-950/60 ring-1 ring-blue-500/50'
-                              : 'bg-blue-50/90 border-blue-600 shadow-sm ring-1 ring-blue-600/30'
+                              ? 'bg-primary-950/70 border-primary-500 shadow-md shadow-primary-950/60 ring-1 ring-primary-500/50'
+                              : 'bg-primary-50/90 border-primary-600 shadow-sm ring-1 ring-primary-600/30'
                             : isDark
-                              ? 'bg-[#0f233d]/50 border-blue-950/60 hover:border-blue-700/50 hover:bg-[#132c4c]/60'
-                              : 'bg-slate-50/80 border-slate-200 hover:border-blue-300 hover:bg-white'
+                              ? 'bg-[#0f233d]/50 border-primary-950/60 hover:border-primary-700/50 hover:bg-[#132c4c]/60'
+                              : 'bg-slate-50/80 border-slate-200 hover:border-primary-300 hover:bg-white'
                         }`}
                       >
                         {/* Cabecera de la Tarjeta */}
                         <div className="flex items-start justify-between gap-2 mb-1">
                           <div className="min-w-0 flex-1">
-                            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 block truncate">
+                            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-primary-600 dark:text-primary-400 block truncate">
                               {dist.province} • {dist.city}
                             </span>
                             <h3 className={`text-xs sm:text-sm font-black leading-tight mt-0.5 truncate ${
@@ -374,7 +373,7 @@ export default function AgenciasClient() {
                             </h3>
                           </div>
                           {dist.distance !== undefined && (
-                            <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 shrink-0 border border-emerald-500/20">
+                            <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-success-500/15 text-success-600 dark:text-success-400 shrink-0 border border-success-500/20">
                               {dist.distance < 1 ? '< 1 km' : `${dist.distance.toFixed(1)} km`}
                             </span>
                           )}
@@ -384,15 +383,15 @@ export default function AgenciasClient() {
                         <p className={`text-[11px] flex items-center gap-1.5 mb-2.5 ${
                           isDark ? 'text-slate-400' : 'text-slate-600'
                         }`}>
-                          <Clock className="w-3 h-3 text-amber-500 shrink-0" />
+                          <Clock className="w-3 h-3 text-warning-500 shrink-0" />
                           <span className="truncate">{dist.schedule}</span>
                         </p>
 
                         {/* Botones de Acción Compactos */}
-                        <div className="flex items-center gap-2 pt-1.5 border-t border-slate-200/80 dark:border-blue-900/30">
+                        <div className="flex items-center gap-2 pt-1.5 border-t border-slate-200/80 dark:border-primary-900/30">
                           {dist.whatsapp && (
                             <a
-                              href={`https://wa.me/${dist.whatsapp}?text=Hola%20Corporación%20Maresa%2C%20deseo%20consultar%20baterías%20en%20la%20agencia%20${encodeURIComponent(dist.name)}.`}
+                              href={`https://wa.me/${dist.whatsapp}?text=Hola%2C%20deseo%20consultar%20bater%C3%ADas%20en%20${encodeURIComponent(dist.name)}.`}
                               target="_blank"
                               rel="noopener noreferrer"
                               onClick={(e) => e.stopPropagation()}
@@ -409,9 +408,9 @@ export default function AgenciasClient() {
                               e.stopPropagation();
                               handleOpenMapForAgency(dist);
                             }}
-                            className="flex-1 py-1.5 px-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-[11px] flex items-center justify-center gap-1 shadow-xs active:scale-95 transition-all cursor-pointer"
+                            className="flex-1 py-1.5 px-2.5 rounded-lg bg-primary-600 hover:bg-primary-700 text-white font-bold text-[11px] flex items-center justify-center gap-1 shadow-xs active:scale-95 transition-all cursor-pointer"
                           >
-                            <MapPin className="w-3 h-3 text-amber-300" />
+                            <MapPin className="w-3 h-3 text-warning-300" />
                             <span>Ver en Mapa</span>
                           </button>
                         </div>
@@ -432,22 +431,22 @@ export default function AgenciasClient() {
           >
             <div className={`rounded-2xl border overflow-hidden shadow-xl sticky top-20 transition-all duration-300 ${
               isDark 
-                ? 'bg-[#0b192c] border-blue-900/30' 
+                ? 'bg-[#0b192c] border-primary-900/30' 
                 : 'bg-white border-slate-200'
             }`}>
               
               {/* Tarjeta de Agencia Seleccionada sobre el Mapa */}
               {selectedDistributor && (
                 <div className={`px-4 py-3 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 ${
-                  isDark ? 'bg-[#071326] border-blue-900/30 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'
+                  isDark ? 'bg-[#071326] border-primary-900/30 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'
                 }`}>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 mb-0.5">
-                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-blue-500 dark:text-blue-400">
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-primary-500 dark:text-primary-400">
                         {selectedDistributor.province} • {selectedDistributor.city}
                       </span>
                       {selectedDistributor.distance !== undefined && (
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-success-500/15 text-success-600 dark:text-success-400 border border-success-500/20">
                           {selectedDistributor.distance < 1 ? '< 1 km' : `A ${selectedDistributor.distance.toFixed(1)} km`}
                         </span>
                       )}
@@ -456,7 +455,7 @@ export default function AgenciasClient() {
                       {selectedDistributor.name}
                     </h3>
                     <p className={`text-xs mt-0.5 flex items-start gap-1 ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
-                      <MapPin className="w-3.5 h-3.5 text-blue-500 shrink-0 mt-0.5" />
+                      <MapPin className="w-3.5 h-3.5 text-primary-500 shrink-0 mt-0.5" />
                       <span className="line-clamp-1">{selectedDistributor.address}</span>
                     </p>
                   </div>
@@ -464,7 +463,7 @@ export default function AgenciasClient() {
                   <div className="flex items-center gap-2 shrink-0">
                     {selectedDistributor.whatsapp && (
                       <a
-                        href={`https://wa.me/${selectedDistributor.whatsapp}?text=Hola%20Corporación%20Maresa%2C%20deseo%20consultar%20disponibilidad%20en%20la%20agencia%20${encodeURIComponent(selectedDistributor.name)}.`}
+                        href={`https://wa.me/${selectedDistributor.whatsapp}?text=Hola%2C%20deseo%20consultar%20disponibilidad%20en%20${encodeURIComponent(selectedDistributor.name)}.`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="py-2 px-3 rounded-xl bg-[#25D366] hover:bg-[#1ebd5a] text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all"
@@ -479,9 +478,9 @@ export default function AgenciasClient() {
                       href={`https://www.google.com/maps/dir/?api=1&destination=${selectedDistributor.latitude},${selectedDistributor.longitude}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="py-2 px-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-blue-600/30 active:scale-95 transition-all"
+                      className="py-2 px-3.5 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-primary-600/30 active:scale-95 transition-all"
                     >
-                      <Navigation className="w-3.5 h-3.5 text-amber-300" />
+                      <Navigation className="w-3.5 h-3.5 text-warning-300" />
                       <span>Cómo llegar (GPS)</span>
                     </a>
                   </div>

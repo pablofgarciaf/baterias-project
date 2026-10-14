@@ -1,3 +1,4 @@
+// estado: ""
 /**
  * ═══════════════════════════════════════════════════════════════
  * 📄 ARCHITECTURE MAP — B2BLeadCapture.tsx
@@ -41,7 +42,8 @@ import { B2BLead } from '@/types/sinergia';
 import { useSiteContent } from '@/context/SiteContentContext';
 import { useTheme } from '@/context/ThemeContext';
 
-export default function B2BLeadCapture() {
+export default function B2BLeadCapture({ asPage = false }: { asPage?: boolean }) {
+  const Heading = asPage ? 'h1' : 'h2';
   const [formData, setFormData] = useState({
     companyName: '',
     contactName: '',
@@ -95,29 +97,29 @@ export default function B2BLeadCapture() {
       id="quiero-ser-proveedor"
       className={`py-12 sm:py-16 relative overflow-hidden transition-colors duration-300 border-t ${
         isDark 
-          ? 'bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950/40 text-white border-slate-800' 
-          : 'bg-gradient-to-br from-slate-50 via-white to-blue-50/50 text-slate-900 border-slate-200'
+          ? 'bg-gradient-to-br from-slate-950 via-slate-900 to-primary-950/40 text-white border-slate-800' 
+          : 'bg-gradient-to-br from-slate-50 via-white to-primary-50/50 text-slate-900 border-slate-200'
       }`}
     >
       {/* Decorative Glows */}
-      <div className="absolute top-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-0 right-1/4 w-96 h-96 bg-primary-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-primary-500/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="container-max relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
           {/* Left Column: Commercial Proposition */}
           <motion.div initial={{opacity: 0, filter: "blur(10px)", x: -20}} whileInView={{opacity: 1, filter: "blur(0px)", x: 0}} viewport={{once: true}} transition={{duration: 0.6}} className="lg:col-span-5">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/15 border border-blue-400/30 text-blue-600 dark:text-blue-300 text-xs sm:text-sm font-bold uppercase tracking-wider mb-6">
-              <TrendingUp className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary-500/15 border border-primary-400/30 text-primary-600 dark:text-primary-300 text-xs sm:text-sm font-bold uppercase tracking-wider mb-6">
+              <TrendingUp className="w-4 h-4 text-primary-600 dark:text-primary-400" />
               {b2b.badge}
             </div>
 
-            <h2 className={`text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight ${
+            <Heading className={`text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight ${
               isDark ? 'text-white' : 'text-slate-950'
             }`}>
               {b2b.title}
-            </h2>
+            </Heading>
 
             <p className={`mt-4 text-base sm:text-lg leading-relaxed ${
               isDark ? 'text-slate-300' : 'text-slate-600'
@@ -144,10 +146,10 @@ export default function B2BLeadCapture() {
                     className={`group flex items-start gap-4 p-4 sm:p-5 rounded-2xl border transition-all duration-300 hover:scale-[1.02] cursor-default ${
                       isDark 
                         ? 'bg-white/5 backdrop-blur-xl border-white/10 hover:border-white/20 hover:bg-white/10' 
-                        : 'bg-white border-slate-200 hover:border-blue-200 hover:shadow-xl hover:shadow-blue-900/5'
+                        : 'bg-white border-slate-200 hover:border-primary-200 hover:shadow-xl hover:shadow-primary-900/5'
                     }`}
                   >
-                  <div className="p-2.5 rounded-xl bg-blue-600/10 text-blue-600 dark:bg-white/10 dark:text-white shrink-0 group-hover:scale-110 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300 shadow-sm">
+                  <div className="p-2.5 rounded-xl bg-primary-600/10 text-primary-600 dark:bg-white/10 dark:text-white shrink-0 group-hover:scale-110 group-hover:bg-primary-600 group-hover:text-white transition-all duration-300 shadow-sm">
                     <ItemIcon className="w-5 h-5" />
                   </div>
                   <div>
@@ -180,24 +182,28 @@ export default function B2BLeadCapture() {
               
               {isSuccess ? (
                 <div className="p-8 text-center space-y-4">
-                  <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
+                  <div className="w-16 h-16 bg-success-100 text-success-600 rounded-full flex items-center justify-center mx-auto">
                     <CheckCircle2 className="w-8 h-8" />
                   </div>
                   <h3 className={`text-2xl font-extrabold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                     ¡Solicitud Recibida con Éxito!
                   </h3>
                   <p className={`text-sm max-w-md mx-auto leading-relaxed ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
-                    Tu postulación ha sido registrada en nuestro CRM Cloud de Maresa. Un asesor comercial corporativo se comunicará contigo en menos de 24 horas laborables.
+                    Recibimos tu solicitud. Guarda el número de confirmación si aparece y espera la respuesta por el canal indicado.
                   </p>
                   <button
                     onClick={() => setIsSuccess(false)}
-                    className="mt-4 py-3 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold transition-all"
+                    className="mt-4 py-3 px-6 rounded-xl bg-secondary-500 hover:bg-secondary-600 text-white text-sm font-bold transition-all"
                   >
                     Enviar otra postulación
                   </button>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-3">
+                  <p role="status" className="rounded-xl border border-warning-500/30 bg-warning-500/10 p-3 text-sm">
+                    El formulario está en preparación. Se habilitará cuando la empresa apruebe la información de privacidad y el canal de atención. Por ahora no solicitamos tus datos.
+                  </p>
+                  <fieldset disabled>
                   <div>
                     <h3 className={`text-xl font-extrabold ${isDark ? 'text-white' : 'text-slate-950'}`}>
                       Formulario de Postulación de Distribuidor
@@ -225,12 +231,13 @@ export default function B2BLeadCapture() {
                         type="text"
                         required
                         placeholder="Ej: Repuestos & Talleres Andinos"
+                        aria-label="Negocio o razón social"
                         value={formData.companyName}
                         onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
                         className={`w-full px-3.5 py-2.5 rounded-xl border text-sm outline-none transition-all ${
                           isDark 
-                            ? 'bg-slate-800 border-slate-700 text-white focus:border-blue-500' 
-                            : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-blue-500'
+                            ? 'bg-slate-800 border-slate-700 text-white focus:border-primary-500' 
+                            : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-primary-500'
                         }`}
                       />
                     </div>
@@ -245,12 +252,13 @@ export default function B2BLeadCapture() {
                         type="text"
                         required
                         placeholder="Ej: Ing. Juan Pérez"
+                        aria-label="Nombre de contacto"
                         value={formData.contactName}
                         onChange={(e) => setFormData({ ...formData, contactName: e.target.value })}
                         className={`w-full px-3.5 py-2.5 rounded-xl border text-sm outline-none transition-all ${
                           isDark 
-                            ? 'bg-slate-800 border-slate-700 text-white focus:border-blue-500' 
-                            : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-blue-500'
+                            ? 'bg-slate-800 border-slate-700 text-white focus:border-primary-500' 
+                            : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-primary-500'
                         }`}
                       />
                     </div>
@@ -267,12 +275,13 @@ export default function B2BLeadCapture() {
                         type="email"
                         required
                         placeholder="comercial@tunegocio.ec"
+                        aria-label="Correo electrónico"
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         className={`w-full px-3.5 py-2.5 rounded-xl border text-sm outline-none transition-all ${
                           isDark 
-                            ? 'bg-slate-800 border-slate-700 text-white focus:border-blue-500' 
-                            : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-blue-500'
+                            ? 'bg-slate-800 border-slate-700 text-white focus:border-primary-500' 
+                            : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-primary-500'
                         }`}
                       />
                     </div>
@@ -287,12 +296,13 @@ export default function B2BLeadCapture() {
                         type="tel"
                         required
                         placeholder="0991234567"
+                        aria-label="Teléfono o WhatsApp"
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         className={`w-full px-3.5 py-2.5 rounded-xl border text-sm outline-none transition-all ${
                           isDark 
-                            ? 'bg-slate-800 border-slate-700 text-white focus:border-blue-500' 
-                            : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-blue-500'
+                            ? 'bg-slate-800 border-slate-700 text-white focus:border-primary-500' 
+                            : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-primary-500'
                         }`}
                       />
                     </div>
@@ -306,6 +316,7 @@ export default function B2BLeadCapture() {
                         Provincia *
                       </label>
                       <select
+                        aria-label="Provincia"
                         value={formData.province}
                         onChange={(e) => setFormData({ ...formData, province: e.target.value })}
                         className={`w-full px-3.5 py-2.5 rounded-xl border text-sm outline-none transition-all ${
@@ -332,12 +343,13 @@ export default function B2BLeadCapture() {
                         type="text"
                         required
                         placeholder="Ej: Quito, Guayaquil, Cuenca"
+                        aria-label="Ciudad o cantón"
                         value={formData.city}
                         onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                         className={`w-full px-3.5 py-2.5 rounded-xl border text-sm outline-none transition-all ${
                           isDark 
-                            ? 'bg-slate-800 border-slate-700 text-white focus:border-blue-500' 
-                            : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-blue-500'
+                            ? 'bg-slate-800 border-slate-700 text-white focus:border-primary-500' 
+                            : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-primary-500'
                         }`}
                       />
                     </div>
@@ -351,6 +363,7 @@ export default function B2BLeadCapture() {
                         Tipo de Negocio *
                       </label>
                       <select
+                        aria-label="Tipo de negocio"
                         value={formData.businessType}
                         onChange={(e) => setFormData({ ...formData, businessType: e.target.value as B2BLead['businessType'] })}
                         className={`w-full px-3.5 py-2.5 rounded-xl border text-sm outline-none transition-all ${
@@ -374,6 +387,7 @@ export default function B2BLeadCapture() {
                         Volumen Mensual Estimado
                       </label>
                       <select
+                        aria-label="Volumen mensual estimado"
                         value={formData.estimatedVolume}
                         onChange={(e) => setFormData({ ...formData, estimatedVolume: e.target.value })}
                         className={`w-full px-3.5 py-2.5 rounded-xl border text-sm outline-none transition-all ${
@@ -397,14 +411,15 @@ export default function B2BLeadCapture() {
                       Comentarios adicionales (Opcional)
                     </label>
                     <textarea
+                      aria-label="Comentarios adicionales"
                       rows={1}
                       placeholder="Indícanos marcas con las que trabajas actualmente o requerimientos especiales..."
                       value={formData.notes}
                       onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                       className={`w-full px-3.5 py-2 rounded-xl border text-sm outline-none transition-all ${
                         isDark 
-                          ? 'bg-slate-800 border-slate-700 text-white focus:border-blue-500' 
-                          : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-blue-500'
+                          ? 'bg-slate-800 border-slate-700 text-white focus:border-primary-500' 
+                          : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-primary-500'
                       }`}
                     />
                   </div>
@@ -412,16 +427,17 @@ export default function B2BLeadCapture() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full py-3 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-xl shadow-blue-600/30 flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
+                    className="w-full py-3 px-6 rounded-xl bg-secondary-500 hover:bg-secondary-600 text-white font-bold text-sm shadow-xl shadow-secondary-600/25 flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
                   >
                     <Send className="w-4 h-4" />
-                    <span>{isSubmitting ? 'Registrando en CRM Maresa...' : b2b.submitButtonText || 'Enviar Solicitud'}</span>
+                    <span>{isSubmitting ? 'Enviando...' : 'Formulario pendiente de habilitación'}</span>
                   </button>
 
                   <div className="flex items-center justify-center gap-2 text-[11px] text-slate-500 text-center pt-1">
-                    <ShieldCheck className="w-3.5 h-3.5 text-blue-500" />
-                    <span>Tus datos son tratados bajo estricta confidencialidad corporativa.</span>
+                    <ShieldCheck className="w-3.5 h-3.5 text-primary-500" />
+                    <span>No se capturan datos desde este formulario mientras está deshabilitado.</span>
                   </div>
+                  </fieldset>
                 </form>
               )}
 

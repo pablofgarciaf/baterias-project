@@ -1,7 +1,11 @@
-# Baterías Maresa — estado editorial
+# Baterías Maresa — estado editorial ampliado
 
-Este proyecto usa “Baterías Maresa” como nombre provisional. La información oficial de la empresa aún no fue entregada. El contenido y los datos comerciales de la web son material de demostración y deben ser revisados antes del lanzamiento.
+El nombre “Baterías Maresa” es provisional mientras la empresa entrega y aprueba su información. Este sitio conserva secciones de productos, puntos de atención, guías, reciclaje y contacto comercial para completar esa información sin presentar datos de muestra como hechos oficiales.
 
-Rutas: /, /productos, /buscador, /agencias, /nosotros, /blog, /reciclaje y /contacto-b2b.
+El buscador por vehículo solo debe mostrar fichas que un administrador haya publicado después de validar modelo, año, motor, tecnología, CCA, Ah, dimensiones y polaridad. Si no hay fichas publicadas, no se ofrece una recomendación. La coincidencia con otro año no constituye compatibilidad.
 
-El buscador de vehículos es orientativo; las especificaciones y compatibilidades requieren validación contra el fabricante y el vehículo concreto. El directorio de puntos de venta, precios, garantías, descuentos, canales de atención y trayectoria no están confirmados.
+El directorio solo debe mostrar ubicaciones publicadas tras verificar dirección, contacto, horario y autorización. Las entradas de demostración no deben publicarse. Los precios, garantías, descuentos, cobertura y servicios deben validarse antes de afirmarse.
+
+Las guías de tecnologías y cuidado son orientación general; no sustituyen el manual del vehículo, la ficha del fabricante ni una comprobación profesional. Las baterías usadas deben entregarse a gestores autorizados. El formulario comercial está deshabilitado hasta aprobar el aviso de privacidad y los controles de abuso.
+
+Rutas públicas: /, /productos, /agencias, /nosotros, /blog, /reciclaje, /contacto-b2b, /privacidad. /admin es un área restringida.

@@ -1,3 +1,4 @@
+// estado: ""
 import { sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword, signOut, type User } from 'firebase/auth';
 import { auth, isFirebaseConfigured } from './firebase';
 

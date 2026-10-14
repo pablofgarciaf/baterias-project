@@ -1,3 +1,4 @@
+// estado: ""
 import 'server-only';
 import type { NextRequest } from 'next/server';
 import { getAdminServices } from './firebaseAdmin';
@@ -13,48 +14,10 @@ export async function requireStaff(request: NextRequest) {
   const identity = await auth.getUser(decoded.uid);
   if (identity.disabled) throw new Error('NO_AUTH');
 
-  const ref = db.collection('usuarios').doc(decoded.uid);
-  let profile = await ref.get();
-  if (!profile.exists) {
-    const legacy = await db.collection('usuarios').doc(decoded.email.toLowerCase()).get();
-    const old = legacy.data();
-    const legacyRole = old?.role === 'admin' || old?.role === 'editor'
-      ? old.role
-      : Array.isArray(old?.roles) && old.roles.includes('admin') ? 'admin' : null;
-    if (old && old.email?.toLowerCase() === decoded.email.toLowerCase() && legacyRole && old.active !== false) {
-      await ref.create({
-        uid: decoded.uid,
-        email: decoded.email,
-        name: old.name || identity.displayName || decoded.email,
-        role: legacyRole,
-        active: true,
-        forcePasswordChange: old.forcePasswordChange === true,
-        ...(typeof old.cedula === 'string' ? { cedulaLast4: old.cedula.slice(-4) } : {}),
-        createdAt: old.createdAt || new Date(),
-        updatedAt: new Date(),
-        migratedFrom: 'legacy-email-profile',
-      }).catch((error: unknown) => {
-        if ((error as { code?: number }).code !== 6) throw error;
-      });
-      profile = await ref.get();
-    }
-  }
-  const bootstrapUid = process.env.FIREBASE_BOOTSTRAP_ADMIN_UID;
-  if (!profile.exists && bootstrapUid && decoded.uid === bootstrapUid) {
-    await ref.create({
-      uid: decoded.uid,
-      email: decoded.email,
-      name: identity.displayName || decoded.email,
-      role: 'admin',
-      active: true,
-      forcePasswordChange: false,
-      createdAt: new Date(),
-    }).catch(() => undefined);
-    profile = await ref.get();
-  }
+  const profile = await db.collection('usuarios').doc(decoded.uid).get();
 
   const role = profile.data()?.role;
-  if (!profile.exists || !['admin', 'editor'].includes(role) || profile.data()?.active === false) {
+  if (!profile.exists || !['admin', 'editor'].includes(role) || profile.data()?.active !== true) {
     throw new Error('NO_AUTH');
   }
   return { uid: decoded.uid, role: role as 'admin' | 'editor', auth, db, forcePasswordChange: profile.data()?.forcePasswordChange === true };

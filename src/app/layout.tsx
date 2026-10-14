@@ -1,17 +1,18 @@
+// estado: ""
 import type { Metadata } from 'next';
-import { Plus_Jakarta_Sans, Sora } from 'next/font/google';
+import { Montserrat, Open_Sans } from 'next/font/google';
 import './globals.css';
 import '@/styles/easing.css';
 import '@/styles/leaflet.css';
 import { Providers } from './providers';
 
-const plusJakartaSans = Plus_Jakarta_Sans({
-  subsets: ['latin'], weight: ['400', '500', '600', '700', '800'],
-  variable: '--font-plus-jakarta-sans', display: 'swap',
+const openSans = Open_Sans({
+  subsets: ['latin'], weight: ['400', '500', '600', '700'],
+  variable: '--font-open-sans', display: 'swap',
 });
-const sora = Sora({
+const montserrat = Montserrat({
   subsets: ['latin'], weight: ['600', '700', '800'],
-  variable: '--font-sora', display: 'swap',
+  variable: '--font-montserrat', display: 'swap',
 });
 
 const siteUrl = process.env.SITE_URL?.replace(/\/$/, '');
@@ -39,7 +40,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es-EC" suppressHydrationWarning>
-      <body className={`${plusJakartaSans.variable} ${sora.variable} bg-white text-slate-800 antialiased selection:bg-blue-600 selection:text-white`}>
+      <body className={`${openSans.variable} ${montserrat.variable} bg-brand-canvas text-brand-slate antialiased selection:bg-secondary-500 selection:text-white`}>
         <Providers>{children}</Providers>
       </body>
     </html>

@@ -1,3 +1,4 @@
+// estado: ""
 /**
  * ═══════════════════════════════════════════════════════════════
  * 📄 LEADS MANAGER - CRM B2B leads from Firebase only
@@ -21,7 +22,6 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'motion/react';
 import {
   Download,
-  Upload,
   Users,
   Check,
   X,
@@ -38,7 +38,7 @@ import { GlassCard } from './ui/GlassCard';
 import { GLASS_TOKENS } from '@/types/admin';
 import { B2BLead } from '@/types/sinergia';
 import { getB2BLeads, updateLeadStatus } from '@/lib/firebaseStore';
-import * as XLSX from 'xlsx';
+import { downloadSpreadsheet } from '@/lib/spreadsheet';
 
 type LeadStatus = 'Todos' | 'Pendiente' | 'Contactado' | 'Aprobado' | 'Descartado' | 'Aplica' | 'No Aplica';
 
@@ -78,39 +78,10 @@ export default function LeadsManager({ darkMode }: { darkMode: boolean }) {
     }
   };
 
-  const importFromExcel = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (evt) => {
-      const data = new Uint8Array(evt.target?.result as ArrayBuffer);
-      const wb = XLSX.read(data, { type: 'array' });
-      const ws = wb.Sheets[wb.SheetNames[0]];
-      const rows = XLSX.utils.sheet_to_json<Record<string, string>>(ws);
-      const imported = rows.map(row => ({
-        id: `lead-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-        companyName: row['Empresa'] || '',
-        contactName: row['Contacto'] || '',
-        email: row['Email'] || '',
-        phone: row['Teléfono'] || row['Telefono'] || '',
-        province: row['Provincia'] || '',
-        city: row['Ciudad'] || '',
-        businessType: (row['Tipo Negocio'] || 'Otro') as B2BLead['businessType'],
-        estimatedVolume: row['Volumen Estimado'] || '',
-        status: 'Pendiente' as B2BLead['status'],
-        createdAt: new Date().toISOString(),
-        notes: row['Notas'] || '',
-      })) satisfies B2BLead[];
-      setLeads(prev => [...imported, ...prev]);
-      alert(`Se importaron ${imported.length} prospectos.`);
-    };
-    reader.readAsArrayBuffer(file);
-    e.target.value = '';
-  };
-
-  const exportToExcel = () => {
+  const exportToExcel = async () => {
     if (leads.length === 0) return;
-    const worksheet = XLSX.utils.json_to_sheet(leads.map(l => ({
+    try {
+      await downloadSpreadsheet(leads.map(l => ({
       'ID': l.id,
       'Empresa': l.companyName,
       'Contacto': l.contactName,
@@ -123,10 +94,10 @@ export default function LeadsManager({ darkMode }: { darkMode: boolean }) {
       'Estado CRM': l.status,
       'Fecha Creación': new Date(l.createdAt).toLocaleDateString('es-EC'),
       'Notas': l.notes || ''
-    })));
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Prospectos B2B Maresa');
-    XLSX.writeFile(workbook, `Prospectos_B2B_Maresa_${new Date().toISOString().split('T')[0]}.xlsx`);
+      })), 'Prospectos B2B Maresa', `Prospectos_B2B_Maresa_${new Date().toISOString().split('T')[0]}.xlsx`);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'No se pudieron exportar los prospectos.');
+    }
   };
 
   const filteredLeads = useMemo(() => {
@@ -144,12 +115,12 @@ export default function LeadsManager({ darkMode }: { darkMode: boolean }) {
 
   const getStatusConfig = (status: B2BLead['status']) => {
     const configs: Record<string, { label: string; bg: string; border: string; text: string }> = {
-      'Aprobado': { label: '✓ Aplica', bg: 'bg-emerald-950', border: 'border-emerald-800', text: 'text-emerald-300' },
-      'Aplica': { label: '✓ Aplica', bg: 'bg-emerald-950', border: 'border-emerald-800', text: 'text-emerald-300' },
+      'Aprobado': { label: '✓ Aplica', bg: 'bg-success-950', border: 'border-success-800', text: 'text-success-300' },
+      'Aplica': { label: '✓ Aplica', bg: 'bg-success-950', border: 'border-success-800', text: 'text-success-300' },
       'Descartado': { label: '✕ No Aplica', bg: 'bg-red-950', border: 'border-red-800', text: 'text-red-300' },
       'No Aplica': { label: '✕ No Aplica', bg: 'bg-red-950', border: 'border-red-800', text: 'text-red-300' },
-      'Contactado': { label: 'Contactado', bg: 'bg-blue-950', border: 'border-blue-800', text: 'text-blue-300' },
-      'Pendiente': { label: 'Pendiente', bg: 'bg-amber-950', border: 'border-amber-800', text: 'text-amber-300' },
+      'Contactado': { label: 'Contactado', bg: 'bg-primary-950', border: 'border-primary-800', text: 'text-primary-300' },
+      'Pendiente': { label: 'Pendiente', bg: 'bg-warning-950', border: 'border-warning-800', text: 'text-warning-300' },
     };
     return configs[status] || { label: status, bg: 'bg-slate-950', border: 'border-slate-800', text: 'text-slate-300' };
   };
@@ -231,16 +202,11 @@ export default function LeadsManager({ darkMode }: { darkMode: boolean }) {
             <button
               onClick={exportToExcel}
               disabled={leads.length === 0}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-success-600 hover:bg-success-500 text-white font-semibold text-xs transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Download className="w-3.5 h-3.5" />
               Exportar Excel
             </button>
-            <label className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-semibold text-xs transition-colors cursor-pointer">
-              <Upload className="w-3.5 h-3.5" />
-              Cargar Excel
-              <input type="file" accept=".xlsx,.xls,.csv" onChange={importFromExcel} className="hidden" />
-            </label>
           </div>
         </div>
       </div>
@@ -255,7 +221,7 @@ export default function LeadsManager({ darkMode }: { darkMode: boolean }) {
                 onClick={() => setFilter(filterOpt)}
                 className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors cursor-pointer ${
                   filter === filterOpt
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-primary-600 text-white'
                     : darkMode ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
                 }`}
               >
@@ -274,7 +240,7 @@ export default function LeadsManager({ darkMode }: { darkMode: boolean }) {
                 darkMode
                   ? 'bg-slate-900 border border-slate-800 text-white placeholder-slate-500'
                   : 'bg-white border border-slate-200 text-slate-900 placeholder-slate-400'
-              } focus:border-blue-500`}
+              } focus:border-primary-500`}
             />
           </div>
         </div>
@@ -284,7 +250,7 @@ export default function LeadsManager({ darkMode }: { darkMode: boolean }) {
       <div style={styles.card} className="overflow-hidden">
         {isLoading ? (
           <div className="p-12 text-center">
-            <Loader2 className="w-8 h-8 animate-spin mx-auto text-blue-500" />
+            <Loader2 className="w-8 h-8 animate-spin mx-auto text-primary-500" />
             <p className="mt-3" style={{ color: styles.textSecondary }}>Cargando prospectos...</p>
           </div>
         ) : filteredLeads.length === 0 && leads.length === 0 ? (
@@ -330,7 +296,7 @@ export default function LeadsManager({ darkMode }: { darkMode: boolean }) {
                     </td>
                     <td className="p-3.5">
                       <span className="font-medium block">{lead.businessType}</span>
-                      <span className="text-xs text-emerald-400 flex items-center gap-1">
+                      <span className="text-xs text-success-400 flex items-center gap-1">
                         <TrendingUp className="w-3 h-3" />
                         {lead.estimatedVolume}
                       </span>
@@ -350,7 +316,7 @@ export default function LeadsManager({ darkMode }: { darkMode: boolean }) {
                         <button
                           onClick={() => handleStatusUpdate(lead.id!, 'Aplica')}
                           disabled={updatingId === lead.id}
-                          className="px-2.5 py-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600 text-emerald-300 hover:text-white font-bold text-xs transition-colors cursor-pointer disabled:opacity-50"
+                          className="px-2.5 py-1 rounded-lg bg-success-600/30 hover:bg-success-600 text-success-300 hover:text-white font-bold text-xs transition-colors cursor-pointer disabled:opacity-50"
                           title="Aprobar prospecto"
                         >
                           Aplica
@@ -366,7 +332,7 @@ export default function LeadsManager({ darkMode }: { darkMode: boolean }) {
                         <button
                           onClick={() => handleStatusUpdate(lead.id!, 'Contactado')}
                           disabled={updatingId === lead.id}
-                          className="px-2.5 py-1 rounded-lg bg-blue-600/30 hover:bg-blue-600 text-blue-300 hover:text-white font-bold text-xs transition-colors cursor-pointer disabled:opacity-50"
+                          className="px-2.5 py-1 rounded-lg bg-primary-600/30 hover:bg-primary-600 text-primary-300 hover:text-white font-bold text-xs transition-colors cursor-pointer disabled:opacity-50"
                           title="Marcar como contactado"
                         >
                           Contactado

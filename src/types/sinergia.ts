@@ -1,3 +1,4 @@
+// estado: ""
 /**
  * ═══════════════════════════════════════════════════════════════
  * 📄 ARCHITECTURE MAP — sinergia.ts
@@ -25,6 +26,8 @@ export interface VehicleBatteryMatch {
   recommendedBattery: {
     model: string;
     bciGroup: string;
+    dimensions?: string;
+    polarity?: string;
     cca: number; // Cold Cranking Amps
     ah: number;
     voltage: number;
@@ -33,6 +36,9 @@ export interface VehicleBatteryMatch {
     priceEcuador: number;
     features: string[];
   };
+  sourceReference?: string;
+  reviewedBy?: string;
+  reviewedAt?: string;
 }
 
 export interface DistributorLocation {
@@ -49,6 +55,10 @@ export interface DistributorLocation {
   services: string[];
   isAuthorized: boolean;
   rating: number;
+  published?: boolean;
+  approvalSource?: string;
+  reviewedBy?: string;
+  reviewedAt?: string;
   mapsIframe?: string;
 }
 

@@ -1,3 +1,4 @@
+// estado: ""
 import type { BlogPost } from '@/components/Blog';
 
 // Educational drafts. Review technical wording and add named reviewers before publication.

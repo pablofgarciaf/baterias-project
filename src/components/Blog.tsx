@@ -1,3 +1,4 @@
+// estado: ""
 /**
  * ═══════════════════════════════════════════════════════════════
  * 📄 ARCHITECTURE MAP — Blog.tsx
@@ -55,7 +56,8 @@ export interface BlogPost {
   tags: string[];
 }
 
-export default function Blog() {
+export default function Blog({ asPage = false }: { asPage?: boolean }) {
+  const Heading = asPage ? 'h1' : 'h2';
   const { content } = useSiteContent();
   const blog = content.blog;
   const { theme } = useTheme();
@@ -160,23 +162,23 @@ export default function Blog() {
       onMouseLeave={() => setIsPaused(false)}
     >
       {/* Background ambient lighting */}
-      <div className="absolute top-1/2 left-0 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 right-0 w-80 h-80 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/2 left-0 w-80 h-80 bg-primary-600/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-80 h-80 bg-success-600/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="container-max relative z-10">
         
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/15 border border-blue-400/30 text-blue-600 dark:text-blue-300 text-xs sm:text-sm font-bold uppercase tracking-wider mb-4">
-              <BookOpen className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary-500/15 border border-primary-400/30 text-primary-600 dark:text-primary-300 text-xs sm:text-sm font-bold uppercase tracking-wider mb-4">
+              <BookOpen className="w-4 h-4 text-primary-600 dark:text-primary-400" />
               {blog.badge}
             </div>
-            <h2 className={`text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight ${
+            <Heading className={`text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight ${
               isDark ? 'text-white' : 'text-slate-950'
             }`}>
               {blog.title}
-            </h2>
+            </Heading>
             <p className={`mt-3 text-sm sm:text-base leading-relaxed ${
               isDark ? 'text-slate-300' : 'text-slate-600'
             }`}>
@@ -190,12 +192,13 @@ export default function Blog() {
         {/* Category Filter — Dropdown on mobile, pills on desktop */}
         <div className="mb-8">
           <select
+            aria-label="Filtrar guías por categoría"
             value={activeCategory}
             onChange={(e) => setActiveCategory(e.target.value)}
             className={`sm:hidden w-full py-3 px-4 rounded-xl border text-sm font-bold outline-none transition-all cursor-pointer ${
               isDark
-                ? 'bg-slate-800 border-slate-700 text-white focus:border-blue-500'
-                : 'bg-white border-slate-200 text-slate-900 focus:border-blue-500 shadow-sm'
+                ? 'bg-slate-800 border-slate-700 text-white focus:border-primary-500'
+                : 'bg-white border-slate-200 text-slate-900 focus:border-primary-500 shadow-sm'
             }`}
           >
             {categories.map((cat) => (
@@ -221,7 +224,7 @@ export default function Blog() {
                   {isActive && (
                     <motion.div
                       layoutId="active-blog-cat"
-                      className="absolute inset-0 bg-blue-600 rounded-xl shadow-md shadow-blue-600/25"
+                      className="absolute inset-0 bg-primary-600 rounded-xl shadow-md shadow-primary-600/25"
                       transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                     />
                   )}
@@ -242,7 +245,7 @@ export default function Blog() {
             <button onClick={handlePrev} className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all active:scale-95 cursor-pointer border ${isDark ? 'bg-slate-800 hover:bg-slate-700 text-white border-slate-700' : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-200 shadow-sm'}`}>
               <ChevronLeft className="w-5 h-5" />
             </button>
-            <button onClick={handleNext} className="w-10 h-10 rounded-xl bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-all active:scale-95 cursor-pointer shadow-lg shadow-blue-600/30">
+            <button onClick={handleNext} className="w-10 h-10 rounded-xl bg-primary-600 hover:bg-primary-700 text-white flex items-center justify-center transition-all active:scale-95 cursor-pointer shadow-lg shadow-primary-600/30">
               <ChevronRight className="w-5 h-5" />
             </button>
         </div>
@@ -253,7 +256,7 @@ export default function Blog() {
           <button onClick={handlePrev} className={`hidden md:flex absolute left-3 lg:left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full items-center justify-center transition-all active:scale-95 cursor-pointer border shadow-lg backdrop-blur-md ${isDark ? 'bg-slate-800/90 hover:bg-slate-700 text-white border-slate-700' : 'bg-white/90 hover:bg-white text-slate-800 border-slate-200'}`}>
             <ChevronLeft className="w-6 h-6" />
           </button>
-          <button onClick={handleNext} className="hidden md:flex absolute right-3 lg:right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-blue-600 hover:bg-blue-700 text-white items-center justify-center transition-all active:scale-95 cursor-pointer shadow-xl shadow-blue-600/30 backdrop-blur-md">
+          <button onClick={handleNext} className="hidden md:flex absolute right-3 lg:right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-primary-600 hover:bg-primary-700 text-white items-center justify-center transition-all active:scale-95 cursor-pointer shadow-xl shadow-primary-600/30 backdrop-blur-md">
             <ChevronRight className="w-6 h-6" />
           </button>
 
@@ -279,7 +282,7 @@ export default function Blog() {
                   className={`max-w-[360px] mx-auto h-full flex flex-col rounded-3xl overflow-hidden border transition-all duration-300 hover:-translate-y-1.5 ${
                     isDark 
                       ? 'bg-slate-950/70 border-slate-800 hover:border-slate-700 shadow-xl' 
-                      : 'bg-white border-slate-200 hover:border-blue-300 shadow-sm hover:shadow-xl text-slate-900'
+                      : 'bg-white border-slate-200 hover:border-primary-300 shadow-sm hover:shadow-xl text-slate-900'
                   }`}
                 >
                   <div className="relative h-48 sm:h-52 overflow-hidden bg-slate-800">
@@ -291,7 +294,7 @@ export default function Blog() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent pointer-events-none" />
                     
-                    <span className="absolute top-3 left-3 px-3 py-1 rounded-full bg-blue-600/90 text-white text-[11px] font-bold uppercase tracking-wider backdrop-blur shadow-md">
+                    <span className="absolute top-3 left-3 px-3 py-1 rounded-full bg-primary-600/90 text-white text-[11px] font-bold uppercase tracking-wider backdrop-blur shadow-md">
                       {post.category}
                     </span>
 
@@ -306,7 +309,7 @@ export default function Blog() {
                       <div className={`flex items-center gap-2 text-xs mb-2 ${
                         isDark ? 'text-slate-400' : 'text-slate-500'
                       }`}>
-                        <Calendar className="w-3.5 h-3.5 text-blue-500" />
+                        <Calendar className="w-3.5 h-3.5 text-primary-500" />
                         <span>{post.date}</span>
                       </div>
 
@@ -341,7 +344,7 @@ export default function Blog() {
 
                       <button
                         onClick={() => setSelectedArticle(post)}
-                        className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 transition-colors cursor-pointer"
+                        className="inline-flex items-center gap-1.5 text-xs font-bold text-primary-600 dark:text-primary-400 hover:text-primary-700 transition-colors cursor-pointer"
                       >
                         <span>Leer Guía</span>
                         <ArrowRight className="w-3.5 h-3.5" />
@@ -365,7 +368,7 @@ export default function Blog() {
               aria-label={`Ir a artículo ${idx + 1}`}
               className={`h-2 rounded-full transition-all cursor-pointer ${
                 currentIndex === idx
-                  ? 'w-7 bg-blue-600'
+                  ? 'w-7 bg-primary-600'
                   : isDark ? 'w-2 bg-slate-800 hover:bg-slate-700' : 'w-2 bg-slate-300 hover:bg-slate-400'
               }`}
             />
@@ -408,7 +411,7 @@ export default function Blog() {
 
                 <div className="absolute bottom-5 left-6 right-6 text-white">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="px-2.5 py-1 rounded-full bg-blue-600 text-[11px] font-bold uppercase tracking-wider">
+                    <span className="px-2.5 py-1 rounded-full bg-primary-600 text-[11px] font-bold uppercase tracking-wider">
                       {selectedArticle.category}
                     </span>
                     <span className="text-xs text-slate-300 flex items-center gap-1">
@@ -436,7 +439,7 @@ export default function Blog() {
                       <span
                         key={tag}
                         className={`text-xs px-2.5 py-1 rounded-md font-medium ${
-                          isDark ? 'bg-slate-800 text-blue-300' : 'bg-blue-50 text-blue-700'
+                          isDark ? 'bg-slate-800 text-primary-300' : 'bg-primary-50 text-primary-700'
                         }`}
                       >
                         #{tag}
@@ -448,7 +451,7 @@ export default function Blog() {
                     href={`https://wa.me/${process.env.NEXT_PUBLIC_CONTACT_WHATSAPP.replace(/\D/g, '')}?text=${encodeURIComponent(`Hola, leí el artículo "${selectedArticle.title}" y deseo asesoría.`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-blue-600/30"
+                    className="px-4 py-2 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-primary-600/30"
                   >
                     <span>Consultar a un Experto</span>
                     <ArrowRight className="w-3.5 h-3.5" />

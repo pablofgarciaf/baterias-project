@@ -1,3 +1,4 @@
+// estado: ""
 /**
  * ═══════════════════════════════════════════════════════════════
  * 📄 ARCHITECTURE MAP — (site)/layout.tsx
@@ -28,7 +29,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <div
-      className={`min-h-screen font-sans antialiased selection:bg-blue-600 selection:text-white transition-colors duration-200 ${isDark ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'
+      className={`min-h-screen font-sans antialiased selection:bg-primary-600 selection:text-white transition-colors duration-200 ${isDark ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'
         }`}
     >
       {/* Sticky Header — shared across all public routes */}

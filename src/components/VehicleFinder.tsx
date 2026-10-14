@@ -1,3 +1,4 @@
+// estado: ""
 /**
  * ═══════════════════════════════════════════════════════════════
  * 📄 ARCHITECTURE MAP — VehicleFinder.tsx
@@ -40,7 +41,6 @@ import { motion, AnimatePresence } from 'motion/react';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db, isFirebaseConfigured } from '@/lib/firebase';
 import { VehicleBatteryMatch } from '@/types/sinergia';
-import { vehicleCatalog as defaultCatalog, vehicleYears as defaultYears } from '@/data/sinergiaData';
 import { useSiteContent } from '@/context/SiteContentContext';
 import { useTheme } from '@/context/ThemeContext';
 
@@ -174,11 +174,11 @@ function LuxuryDropdown({
         <label className={`text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 ${
           isDark ? 'text-slate-300' : 'text-slate-700'
         }`}>
-          <span className="text-blue-500 font-mono text-[11px] font-extrabold">{step}</span>
+          <span className="text-primary-500 font-mono text-[11px] font-extrabold">{step}</span>
           <span>{label}</span>
         </label>
         {selectedOption && (
-          <span className="inline-flex items-center text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-400 font-semibold border border-blue-400/20">
+          <span className="inline-flex items-center text-[10px] font-mono px-2 py-0.5 rounded-full bg-primary-500/15 text-primary-400 font-semibold border border-primary-400/20">
             Listo
           </span>
         )}
@@ -203,17 +203,17 @@ function LuxuryDropdown({
         } ${
           isDark 
             ? isOpen 
-              ? 'bg-slate-900 border-2 border-blue-500 shadow-lg shadow-blue-500/20' 
+              ? 'bg-slate-900 border-2 border-primary-500 shadow-lg shadow-primary-500/20' 
               : 'bg-slate-900/80 hover:bg-slate-900 border border-slate-700/70 hover:border-slate-600 shadow-sm' 
             : isOpen 
-              ? 'bg-white border-2 border-blue-500 shadow-lg shadow-blue-500/15' 
+              ? 'bg-white border-2 border-primary-500 shadow-lg shadow-primary-500/15' 
               : 'bg-slate-50 hover:bg-white border border-slate-200/90 hover:border-slate-300 shadow-sm'
         }`}
       >
         <div className="flex items-center gap-3 overflow-hidden mr-2">
           <div className={`p-2 rounded-xl shrink-0 ${
             selectedOption 
-              ? 'bg-blue-500/15 text-blue-500' 
+              ? 'bg-primary-500/15 text-primary-500' 
               : isDark ? 'bg-slate-800 text-slate-400' : 'bg-slate-200/80 text-slate-500'
           }`}>
             {icon}
@@ -230,7 +230,7 @@ function LuxuryDropdown({
         </div>
 
         <ChevronDown className={`w-4 h-4 shrink-0 text-slate-400 transition-transform duration-200 ${
-          isOpen ? 'rotate-180 text-blue-500' : ''
+          isOpen ? 'rotate-180 text-primary-500' : ''
         }`} />
       </button>
 
@@ -259,8 +259,8 @@ function LuxuryDropdown({
                   onChange={(e) => setSearchFilter(e.target.value)}
                   className={`w-full px-3 py-2 text-xs rounded-xl border outline-none font-medium ${
                     isDark 
-                      ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-400 focus:border-blue-500' 
-                      : 'bg-slate-100 border-slate-200 text-slate-900 placeholder-slate-400 focus:border-blue-500'
+                      ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-400 focus:border-primary-500' 
+                      : 'bg-slate-100 border-slate-200 text-slate-900 placeholder-slate-400 focus:border-primary-500'
                   }`}
                 />
               </div>
@@ -294,8 +294,8 @@ function LuxuryDropdown({
                       className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-colors text-left cursor-pointer ${
                         isSelected 
                           ? isDark 
-                            ? 'bg-blue-600/25 text-blue-300 font-bold border border-blue-500/30' 
-                            : 'bg-blue-50 text-blue-600 font-bold border border-blue-200'
+                            ? 'bg-primary-600/25 text-primary-300 font-bold border border-primary-500/30' 
+                            : 'bg-primary-50 text-primary-600 font-bold border border-primary-200'
                           : isHighlighted
                             ? isDark
                               ? 'bg-slate-800 text-white'
@@ -306,7 +306,7 @@ function LuxuryDropdown({
                       }`}
                     >
                       <span className="truncate">{opt.label}</span>
-                      {isSelected && <Check className="w-4 h-4 text-blue-500 shrink-0 ml-2" />}
+                      {isSelected && <Check className="w-4 h-4 text-primary-500 shrink-0 ml-2" />}
                     </button>
                   );
                 })
@@ -328,9 +328,8 @@ export default function VehicleFinder({ onLocateStore }: VehicleFinderProps) {
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const resultRef = useRef<HTMLDivElement>(null);
   
-  // Inicializamos inmediatamente con el catálogo ecuatoriano pre-cargado
-  const [vehicleCatalog, setVehicleCatalog] = useState<VehicleBatteryMatch[]>(defaultCatalog);
-  const [catalogLoading, setCatalogLoading] = useState(false);
+  const [vehicleCatalog, setVehicleCatalog] = useState<VehicleBatteryMatch[]>([]);
+  const [catalogLoading, setCatalogLoading] = useState(true);
 
   const { content } = useSiteContent();
   const { theme } = useTheme();
@@ -341,17 +340,17 @@ export default function VehicleFinder({ onLocateStore }: VehicleFinderProps) {
   useEffect(() => {
     let active = true;
     async function loadCatalog() {
-      if (!isFirebaseConfigured) return;
+      if (!isFirebaseConfigured) {
+        setCatalogLoading(false);
+        return;
+      }
       try {
         const snapshot = await getDocs(query(collection(db, 'catalog'), where('published', '==', true)));
-        if (active && !snapshot.empty) {
-          const remoteItems = snapshot.docs.map((item) => item.data() as VehicleBatteryMatch);
-          if (remoteItems.length > 0) {
-            setVehicleCatalog(remoteItems);
-          }
-        }
+        if (active) setVehicleCatalog(snapshot.docs.map((item) => item.data() as VehicleBatteryMatch));
       } catch {
-        // En caso de corte o desconexión, el catálogo ecuatoriano local garantiza servicio ininterrumpido
+        if (active) setVehicleCatalog([]);
+      } finally {
+        if (active) setCatalogLoading(false);
       }
     }
     void loadCatalog();
@@ -360,7 +359,7 @@ export default function VehicleFinder({ onLocateStore }: VehicleFinderProps) {
 
   const vehicleYears = useMemo(() => {
     const years = Array.from(new Set(vehicleCatalog.map((item) => item.year).filter(Boolean))).sort((a, b) => b - a);
-    return years.length > 0 ? years : defaultYears;
+    return years;
   }, [vehicleCatalog]);
 
   // Marcas disponibles
@@ -371,9 +370,7 @@ export default function VehicleFinder({ onLocateStore }: VehicleFinderProps) {
     const brands = vehicleCatalog
       .filter((v) => v.year === Number(selectedYear))
       .map((v) => v.brand);
-    return brands.length > 0 
-      ? Array.from(new Set(brands)).sort() 
-      : Array.from(new Set(vehicleCatalog.map((v) => v.brand))).sort();
+    return Array.from(new Set(brands)).sort();
   }, [selectedYear, vehicleCatalog]);
 
   // Modelos disponibles
@@ -382,9 +379,7 @@ export default function VehicleFinder({ onLocateStore }: VehicleFinderProps) {
     let list = vehicleCatalog.filter((v) => v.brand.toLowerCase() === selectedBrand.toLowerCase());
     if (selectedYear) {
       const filteredByYear = list.filter((v) => v.year === Number(selectedYear));
-      if (filteredByYear.length > 0) {
-        list = filteredByYear;
-      }
+      list = filteredByYear;
     }
     return Array.from(new Set(list.map((v) => v.model))).sort();
   }, [selectedYear, selectedBrand, vehicleCatalog]);
@@ -398,20 +393,12 @@ export default function VehicleFinder({ onLocateStore }: VehicleFinderProps) {
 
     // Latencia deliberada de micro-interacción para confirmar consulta al catálogo
     setTimeout(() => {
-      let match = vehicleCatalog.find(
+      const match = vehicleCatalog.find(
         (v) =>
           v.brand.toLowerCase() === brand.toLowerCase() &&
           v.model.toLowerCase() === model.toLowerCase() &&
           (year ? v.year === Number(year) : true)
       );
-
-      if (!match) {
-        match = vehicleCatalog.find(
-          (v) =>
-            v.brand.toLowerCase() === brand.toLowerCase() &&
-            v.model.toLowerCase() === model.toLowerCase()
-        );
-      }
 
       setResult(match || null);
       setIsSearching(false);
@@ -443,14 +430,14 @@ export default function VehicleFinder({ onLocateStore }: VehicleFinderProps) {
       }`}
     >
       {/* Background ambient lighting */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary-600/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="container-max relative z-10">
         
         {/* Header Section */}
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/15 border border-blue-400/30 text-blue-600 dark:text-blue-300 text-xs sm:text-sm font-bold uppercase tracking-wider mb-4">
-            <Zap className="w-4 h-4 text-amber-500 animate-pulse" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary-500/15 border border-primary-400/30 text-primary-600 dark:text-primary-300 text-xs sm:text-sm font-bold uppercase tracking-wider mb-4">
+            <Zap className="w-4 h-4 text-warning-500 animate-pulse" />
             {vfContent.badge}
           </div>
           <h2 className={`text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight ${
@@ -477,6 +464,13 @@ export default function VehicleFinder({ onLocateStore }: VehicleFinderProps) {
               : 'bg-white border-slate-200/90 shadow-slate-900/10'
           }`}
         >
+          {!catalogLoading && vehicleCatalog.length === 0 && (
+            <div role="status" className="mb-6 rounded-2xl border border-primary-500/30 bg-primary-500/10 p-5 text-center text-sm">
+              <p className="font-bold">El catálogo de compatibilidad está en revisión</p>
+              <p className="mt-1 opacity-80">Puedes consultar las tecnologías y aprender qué medidas comprobar. Las recomendaciones por vehículo aparecerán cuando se publiquen fichas verificadas.</p>
+              <a href="/productos" className="mt-3 inline-block font-semibold text-primary-500 underline underline-offset-4">Ver guía de tecnologías</a>
+            </div>
+          )}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6">
             
             {/* Step 1: Año */}
@@ -541,8 +535,8 @@ export default function VehicleFinder({ onLocateStore }: VehicleFinderProps) {
             <div className={`flex items-center gap-2 text-xs ${
               isDark ? 'text-slate-400' : 'text-slate-500'
             }`}>
-              <HelpCircle className="w-4 h-4 text-blue-500 shrink-0" />
-              <span>Base verificada para Quito (2.850 msnm), Guayaquil, Cuenca y flotas del Ecuador.</span>
+              <HelpCircle className="w-4 h-4 text-primary-500 shrink-0" />
+              <span>{catalogLoading ? 'Consultando referencias publicadas…' : vehicleCatalog.length === 0 ? 'Las recomendaciones estarán disponibles cuando se apruebe el catálogo.' : 'Orientación inicial: confirma siempre motor, medidas, polaridad y ficha técnica.'}</span>
             </div>
 
             <div className="flex items-center gap-3 w-full sm:w-auto">
@@ -564,7 +558,7 @@ export default function VehicleFinder({ onLocateStore }: VehicleFinderProps) {
                 type="button"
                 onClick={() => performSearch()}
                 disabled={!selectedBrand || !selectedModel || isSearching}
-                className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-secondary-500 hover:bg-secondary-600 text-white font-bold text-sm shadow-lg shadow-secondary-600/25 flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 {isSearching ? (
                   <>
@@ -592,13 +586,13 @@ export default function VehicleFinder({ onLocateStore }: VehicleFinderProps) {
               transition={{ duration: 0.2 }}
               className={`mt-8 max-w-4xl mx-auto rounded-3xl p-8 border shadow-xl text-center backdrop-blur-xl ${
                 isDark 
-                  ? 'bg-slate-900/90 border-blue-500/30 text-white shadow-blue-950/20' 
-                  : 'bg-white/95 border-blue-200 text-slate-900 shadow-blue-900/10'
+                  ? 'bg-slate-900/90 border-primary-500/30 text-white shadow-primary-950/20' 
+                  : 'bg-white/95 border-primary-200 text-slate-900 shadow-primary-900/10'
               }`}
             >
               <div className="flex flex-col items-center justify-center gap-3">
-                <div className="w-14 h-14 rounded-2xl bg-blue-600/15 border border-blue-500/30 flex items-center justify-center text-blue-500 shadow-inner">
-                  <Loader2 className="w-7 h-7 animate-spin text-blue-500" />
+                <div className="w-14 h-14 rounded-2xl bg-primary-600/15 border border-primary-500/30 flex items-center justify-center text-primary-500 shadow-inner">
+                  <Loader2 className="w-7 h-7 animate-spin text-primary-500" />
                 </div>
                 
                 <div>
@@ -608,13 +602,13 @@ export default function VehicleFinder({ onLocateStore }: VehicleFinderProps) {
                   <p className={`text-xs sm:text-sm mt-1.5 max-w-lg mx-auto ${
                     isDark ? 'text-slate-400' : 'text-slate-600'
                   }`}>
-                    Verificando especificaciones oficiales, norma DIN, polaridad y amperaje requerido para <strong className="text-blue-500">{selectedBrand} {selectedModel}</strong>.
+                    Consultando la referencia publicada para <strong className="text-primary-500">{selectedBrand} {selectedModel}</strong>.
                   </p>
                 </div>
 
                 <div className="w-56 h-2 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden mt-2">
                   <motion.div
-                    className="h-full bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-500 rounded-full"
+                    className="h-full bg-gradient-to-r from-primary-600 via-primary-500 to-primary-500 rounded-full"
                     initial={{ width: '0%' }}
                     animate={{ width: '100%' }}
                     transition={{ duration: 0.5, ease: 'easeInOut' }}
@@ -645,9 +639,9 @@ export default function VehicleFinder({ onLocateStore }: VehicleFinderProps) {
               }`}>
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-xs font-bold flex items-center gap-1 border border-emerald-500/30">
+                    <span className="px-3 py-1 rounded-full bg-success-500/15 text-success-600 dark:text-success-400 text-xs font-bold flex items-center gap-1 border border-success-500/30">
                       <CheckCircle2 className="w-3.5 h-3.5" />
-                      Compatibilidad Oficial Verificada
+                      Referencia publicada · confirmar con la ficha del vehículo
                     </span>
                     <span className={`text-xs font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                       Motor: {result.engine}
@@ -663,13 +657,10 @@ export default function VehicleFinder({ onLocateStore }: VehicleFinderProps) {
                 {result.recommendedBattery.priceEcuador > 0 && (
                   <div className="sm:text-right">
                     <span className={`text-xs block ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                      PVP Sugerido Ecuador
+                      Precio indicado en la ficha
                     </span>
-                    <span className="text-3xl font-extrabold text-blue-600 dark:text-blue-400">
+                    <span className="text-3xl font-extrabold text-primary-600 dark:text-primary-400">
                       ${result.recommendedBattery.priceEcuador.toFixed(2)}
-                    </span>
-                    <span className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold block mt-0.5">
-                      Recibe hasta $15 de descuento entregando tu batería usada
                     </span>
                   </div>
                 )}
@@ -678,16 +669,16 @@ export default function VehicleFinder({ onLocateStore }: VehicleFinderProps) {
               {/* Recommended Battery Highlight Card */}
               <div className={`mt-6 p-4 sm:p-5 rounded-2xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${
                 isDark 
-                  ? 'bg-blue-950/30 border-blue-500/30' 
-                  : 'bg-blue-50/80 border-blue-200'
+                  ? 'bg-primary-950/30 border-primary-500/30' 
+                  : 'bg-primary-50/80 border-primary-200'
               }`}>
                 <div className="flex items-center gap-3.5">
-                  <div className="w-11 h-11 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-blue-600/30">
-                    <Zap className="w-6 h-6 text-amber-300" />
+                  <div className="w-11 h-11 rounded-xl bg-primary-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-primary-600/30">
+                    <Zap className="w-6 h-6 text-warning-300" />
                   </div>
                   <div>
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 block font-mono">
-                      Batería Homologada Recomendada
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-primary-600 dark:text-primary-400 block font-mono">
+                      Referencia publicada para consulta
                     </span>
                     <h4 className={`text-lg sm:text-xl font-extrabold ${
                       isDark ? 'text-white' : 'text-slate-950'
@@ -698,9 +689,9 @@ export default function VehicleFinder({ onLocateStore }: VehicleFinderProps) {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-bold">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-success-500/15 border border-success-500/30 text-success-600 dark:text-success-400 text-xs font-bold">
                     <CheckCircle2 className="w-3.5 h-3.5" />
-                    100% Calce Exacto Garantizado
+                    Confirma compatibilidad antes de comprar
                   </span>
                 </div>
               </div>
@@ -716,7 +707,7 @@ export default function VehicleFinder({ onLocateStore }: VehicleFinderProps) {
                   <span className={`text-lg font-extrabold mt-1 block ${isDark ? 'text-white' : 'text-slate-900'}`}>
                     {result.recommendedBattery.bciGroup}
                   </span>
-                  <span className="text-[11px] text-blue-500 dark:text-blue-400 font-semibold">
+                  <span className="text-[11px] text-primary-500 dark:text-primary-400 font-semibold">
                     {result.recommendedBattery.technology}
                   </span>
                 </div>
@@ -727,11 +718,11 @@ export default function VehicleFinder({ onLocateStore }: VehicleFinderProps) {
                   <span className={`text-xs uppercase font-bold block ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                     Arranque en Frío (CCA)
                   </span>
-                  <span className="text-lg font-extrabold text-amber-500 mt-1 block">
+                  <span className="text-lg font-extrabold text-warning-500 mt-1 block">
                     {result.recommendedBattery.cca} A
                   </span>
                   <span className={`text-[11px] font-semibold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                    Excelente arranque en páramo y frío andino
+                    Compara este valor con el requerido por el vehículo
                   </span>
                 </div>
 
@@ -753,22 +744,26 @@ export default function VehicleFinder({ onLocateStore }: VehicleFinderProps) {
                   isDark ? 'bg-slate-900/60 border-slate-700' : 'bg-slate-50 border-slate-200/80'
                 }`}>
                   <span className={`text-xs uppercase font-bold block ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                    Garantía Nacional
+                    Garantía indicada
                   </span>
-                  <span className="text-lg font-extrabold text-emerald-600 dark:text-emerald-400 mt-1 block">
-                    {result.recommendedBattery.warrantyMonths > 0 ? `${result.recommendedBattery.warrantyMonths} meses` : 'Garantía oficial'}
+                  <span className="text-lg font-extrabold text-success-600 dark:text-success-400 mt-1 block">
+                    {result.recommendedBattery.warrantyMonths > 0 ? `${result.recommendedBattery.warrantyMonths} meses` : 'Por confirmar'}
                   </span>
                   <span className={`text-[11px] font-semibold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                    Respaldo directo Maresa en todo el Ecuador
+                    Confirma las condiciones con el vendedor
                   </span>
                 </div>
               </div>
+
+              <p className={`mt-4 text-sm ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+                Medidas: {result.recommendedBattery.dimensions || 'confirma en la ficha'} · Polaridad: {result.recommendedBattery.polarity || 'confirma en la ficha'}.
+              </p>
 
               {/* Technical Features Pills */}
               {result.recommendedBattery.features && result.recommendedBattery.features.length > 0 && (
                 <div className="mt-4 pt-4 border-t border-slate-700/40">
                   <span className={`text-xs font-bold block mb-2 uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                    Ventajas Homologadas para este Vehículo:
+                    Características de la ficha publicada:
                   </span>
                   <div className="flex flex-wrap gap-2">
                     {result.recommendedBattery.features.map((feat, idx) => (
@@ -780,7 +775,7 @@ export default function VehicleFinder({ onLocateStore }: VehicleFinderProps) {
                             : 'bg-slate-100 border-slate-200 text-slate-700'
                         }`}
                       >
-                        <Sparkles className="w-3 h-3 text-amber-500 shrink-0" />
+                        <Sparkles className="w-3 h-3 text-warning-500 shrink-0" />
                         {feat}
                       </span>
                     ))}
@@ -795,7 +790,7 @@ export default function VehicleFinder({ onLocateStore }: VehicleFinderProps) {
                     href={`https://wa.me/${contactWhatsApp}?text=Hola%2C%20deseo%20consultar%20disponibilidad%20de%20la%20batería%20${encodeURIComponent(result.recommendedBattery.model)}%20para%20${encodeURIComponent(result.brand + ' ' + result.model)}.`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full sm:flex-1 py-4 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 transition-all active:scale-95 cursor-pointer"
+                    className="w-full sm:flex-1 py-4 px-6 rounded-xl bg-secondary-500 hover:bg-secondary-600 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-secondary-600/25 transition-all active:scale-95 cursor-pointer"
                   >
                     <span>Pedir esta Batería por WhatsApp</span>
                   </a>
@@ -811,7 +806,7 @@ export default function VehicleFinder({ onLocateStore }: VehicleFinderProps) {
                         : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-300'
                     }`}
                   >
-                    <MapPin className="w-4 h-4 text-blue-500" />
+                    <MapPin className="w-4 h-4 text-primary-500" />
                     <span>Ver Puntos de Venta</span>
                   </button>
                 )}

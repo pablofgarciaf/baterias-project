@@ -1,3 +1,4 @@
+// estado: ""
 /**
  * ═══════════════════════════════════════════════════════════════
  * 📄 ARCHITECTURE MAP — GeoQuickAnswer.tsx
@@ -27,8 +28,8 @@ export default function GeoQuickAnswer() {
     >
       <div className="container-max flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-600/30 text-blue-300 font-semibold border border-blue-500/30 text-[11px] tracking-wide uppercase">
-            <Zap className="w-3 h-3 text-amber-400" />
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary-600/30 text-primary-300 font-semibold border border-primary-500/30 text-[11px] tracking-wide uppercase">
+            <Zap className="w-3 h-3 text-warning-400" />
             Baterías Maresa
           </span>
           <span className="text-slate-300">
@@ -38,14 +39,14 @@ export default function GeoQuickAnswer() {
 
         <div className="flex items-center gap-4 text-slate-400 flex-wrap">
           <span className="flex items-center gap-1 hover:text-white transition-colors">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+            <ShieldCheck className="w-3.5 h-3.5 text-success-400" />
             Tecnología correcta
           </span>
           <span className="flex items-center gap-1 hover:text-white transition-colors">
-            <RefreshCw className="w-3.5 h-3.5 text-blue-400" />
+            <RefreshCw className="w-3.5 h-3.5 text-primary-400" />
             CCA y capacidad
           </span>
-          <span className="flex items-center gap-1 text-blue-400 font-medium">
+          <span className="flex items-center gap-1 text-primary-400 font-medium">
             <PhoneCall className="w-3 h-3" />
             Tamaño y polaridad
           </span>

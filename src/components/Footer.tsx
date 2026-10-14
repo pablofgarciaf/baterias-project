@@ -1,3 +1,4 @@
+// estado: ""
 /**
  * ═══════════════════════════════════════════════════════════════
  * 📄 ARCHITECTURE MAP — Footer.tsx
@@ -42,14 +43,14 @@ export default function Footer({ onOpenAdmin }: FooterProps) {
           {/* Col 1: Brand & Corporación Maresa */}
           <div>
             <div className="flex items-center gap-2.5 mb-4">
-              <div className="p-2.5 rounded-xl bg-blue-600 text-white shadow-md shadow-blue-600/30">
+              <div className="p-2.5 rounded-xl bg-primary-600 text-white shadow-md shadow-primary-600/30">
                 <Battery className="w-6 h-6 text-white" />
               </div>
               <div>
                 <span className="font-display font-extrabold text-xl text-white block leading-none">
                   Baterías Maresa
                 </span>
-                <span className="text-xs text-blue-400 font-bold uppercase tracking-wider block mt-0.5">
+                <span className="text-xs text-primary-400 font-bold uppercase tracking-wider block mt-0.5">
                   Nombre comercial provisional
                 </span>
               </div>
@@ -76,7 +77,7 @@ export default function Footer({ onOpenAdmin }: FooterProps) {
                 'Cuidados de la batería',
               ].map((p) => (
                 <li key={p}>
-                  <a href="/productos" className="hover:text-blue-400 transition-colors">
+                  <a href="/productos" className="hover:text-primary-400 transition-colors">
                     {p}
                   </a>
                 </li>
@@ -109,18 +110,18 @@ export default function Footer({ onOpenAdmin }: FooterProps) {
             <p className="text-xs text-slate-400 mb-4 leading-relaxed">
               Explora consejos para elegir, instalar y cuidar la batería de tu vehículo.
             </p>
-            <a href="/blog" className="text-xs text-blue-400 hover:text-blue-300">Leer las guías técnicas</a>
+            <a href="/blog" className="text-xs text-primary-400 hover:text-primary-300">Leer las guías técnicas</a>
 
             {/* Clear Admin Access Callout */}
             {onOpenAdmin && (
               <div className="mt-6 p-3 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Lock className="w-3.5 h-3.5 text-amber-400" />
+                  <Lock className="w-3.5 h-3.5 text-warning-400" />
                   <span className="text-xs text-slate-300 font-semibold">CMS Backoffice</span>
                 </div>
                 <button
                   onClick={onOpenAdmin}
-                  className="px-2.5 py-1 rounded-lg bg-blue-600/30 hover:bg-blue-600 text-blue-300 hover:text-white text-xs font-bold transition-all cursor-pointer"
+                  className="px-2.5 py-1 rounded-lg bg-primary-600/30 hover:bg-primary-600 text-primary-300 hover:text-white text-xs font-bold transition-all cursor-pointer"
                 >
                   Abrir CMS
                 </button>
@@ -140,7 +141,7 @@ export default function Footer({ onOpenAdmin }: FooterProps) {
               <a
                 key={p.id}
                 href={`/agencias?provincia=${encodeURIComponent(p.name)}`}
-                className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-blue-600 hover:text-white text-[11px] text-slate-400 transition-colors"
+                className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-primary-600 hover:text-white text-[11px] text-slate-400 transition-colors"
               >
                 {p.name}
               </a>
@@ -156,7 +157,7 @@ export default function Footer({ onOpenAdmin }: FooterProps) {
             {onOpenAdmin && (
               <button
                 onClick={onOpenAdmin}
-                className="text-blue-400 hover:text-white underline font-semibold transition-colors cursor-pointer"
+                className="text-primary-400 hover:text-white underline font-semibold transition-colors cursor-pointer"
               >
                 Acceso Administrativo (CMS)
               </button>

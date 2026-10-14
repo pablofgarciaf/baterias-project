@@ -1,3 +1,4 @@
+// estado: ""
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -23,27 +24,9 @@ service cloud.firestore {
     }
 
     match /b2b_leads/{leadId} {
-      allow create: if request.resource.data.keys().hasAll([
-          'companyName', 'contactName', 'email', 'phone', 'province',
-          'city', 'businessType', 'estimatedVolume', 'status', 'createdAt'
-        ])
-        && request.resource.data.keys().hasOnly([
-          'id', 'companyName', 'contactName', 'email', 'phone', 'province',
-          'city', 'businessType', 'estimatedVolume', 'notes', 'status',
-          'createdAt', 'firebaseTimestamp'
-        ])
-        && request.resource.data.status == 'Pendiente'
-        && request.resource.data.companyName is string
-        && request.resource.data.companyName.size() >= 2
-        && request.resource.data.companyName.size() <= 120
-        && request.resource.data.contactName is string
-        && request.resource.data.contactName.size() >= 2
-        && request.resource.data.contactName.size() <= 120
-        && request.resource.data.email is string
-        && request.resource.data.email.size() <= 254
-        && request.resource.data.phone is string
-        && request.resource.data.phone.size() <= 40
-        && (!('notes' in request.resource.data) || (request.resource.data.notes is string && request.resource.data.notes.size() <= 2000));
+      // La captación pública se habilitará mediante un endpoint protegido
+      // después de aprobar privacidad, validación y controles de abuso.
+      allow create: if false;
       allow get, list: if isAdmin();
       allow update: if isAdmin()
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
@@ -52,8 +35,22 @@ service cloud.firestore {
     }
 
     match /distributors/{distributorId} {
-      allow read: if true;
-      allow create, update, delete: if isAdmin();
+      allow get, list: if isAdmin() || resource.data.published == true;
+      allow create, update: if isAdmin() && (
+        !('published' in request.resource.data) || request.resource.data.published != true || (
+          request.resource.data.isAuthorized == true
+          && request.resource.data.name is string && request.resource.data.name.size() >= 2
+          && request.resource.data.city is string && request.resource.data.city.size() >= 2
+          && request.resource.data.address is string && request.resource.data.address.size() >= 5
+          && request.resource.data.phone is string && request.resource.data.phone.size() >= 7
+          && request.resource.data.schedule is string && request.resource.data.schedule.size() >= 3
+          && request.resource.data.approvalSource is string && request.resource.data.approvalSource.size() >= 5
+          && request.resource.data.reviewedBy is string && request.resource.data.reviewedBy.size() >= 2
+          && request.resource.data.latitude is number && request.resource.data.latitude >= -5 && request.resource.data.latitude <= 2
+          && request.resource.data.longitude is number && request.resource.data.longitude >= -92 && request.resource.data.longitude <= -75
+        )
+      );
+      allow delete: if isAdmin();
     }
 
     match /site_content/{sectionId} {
@@ -66,7 +63,24 @@ service cloud.firestore {
 
     match /catalog/{itemId} {
       allow get, list: if isAdmin() || resource.data.published == true;
-      allow create, update, delete: if isAdmin();
+      allow create, update: if isAdmin() && (
+        !('published' in request.resource.data) || request.resource.data.published != true || (
+          request.resource.data.brand is string && request.resource.data.brand.size() >= 2
+          && request.resource.data.model is string && request.resource.data.model.size() >= 2
+          && request.resource.data.engine is string && request.resource.data.engine.size() >= 1
+          && request.resource.data.year is number && request.resource.data.year >= 1950 && request.resource.data.year <= 2100
+          && request.resource.data.sourceReference is string && request.resource.data.sourceReference.size() >= 5
+          && request.resource.data.reviewedBy is string && request.resource.data.reviewedBy.size() >= 2
+          && request.resource.data.recommendedBattery is map
+          && request.resource.data.recommendedBattery.model is string && request.resource.data.recommendedBattery.model.size() >= 2
+          && request.resource.data.recommendedBattery.bciGroup is string && request.resource.data.recommendedBattery.bciGroup.size() >= 1
+          && request.resource.data.recommendedBattery.dimensions is string && request.resource.data.recommendedBattery.dimensions.size() >= 3
+          && request.resource.data.recommendedBattery.polarity is string && request.resource.data.recommendedBattery.polarity.size() >= 3
+          && request.resource.data.recommendedBattery.cca is number && request.resource.data.recommendedBattery.cca > 0
+          && request.resource.data.recommendedBattery.ah is number && request.resource.data.recommendedBattery.ah > 0
+        )
+      );
+      allow delete: if isAdmin();
     }
 
     match /{document=**} {

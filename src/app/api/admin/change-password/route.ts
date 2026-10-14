@@ -1,3 +1,4 @@
+// estado: ""
 import type { NextRequest } from 'next/server';
 import { adminError, requireStaff } from '@/lib/adminAccess';
 

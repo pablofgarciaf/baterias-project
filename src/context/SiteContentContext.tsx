@@ -1,4 +1,5 @@
-﻿/**
+﻿// estado: ""
+/**
  * ═══════════════════════════════════════════════════════════════
  * 📄 ARCHITECTURE MAP — SiteContentContext.tsx
  * ═══════════════════════════════════════════════════════════════
@@ -177,7 +178,7 @@ export const defaultSiteContent: SiteContent = {
   vehicleFinder: {
     badge: 'Buscador Inteligente de Baterías',
     title: 'Explora baterías compatibles con tu vehículo',
-    subtitle: 'Selecciona año, marca y modelo para una orientación inicial. Confirma la referencia en el manual del vehículo y con el catálogo oficial.',
+    subtitle: 'Selecciona año, marca y modelo cuando haya fichas publicadas. Confirma siempre la referencia en el manual del vehículo y con la ficha del fabricante.',
     technicalHelpTitle: '¿Dudas sobre el modelo de tu vehículo?',
     technicalHelpSubtitle: 'La recomendación automática es orientativa y debe comprobarse antes de comprar.',
     whatsappButtonText: 'Consultar con un Técnico Especialista',
@@ -203,7 +204,7 @@ export const defaultSiteContent: SiteContent = {
     benefit3Title: 'Condiciones por escrito',
     benefit3Desc: 'Solicita precio, disponibilidad, entrega y garantía antes de cerrar un pedido.',
     benefit4Title: 'Un canal de consulta',
-    benefit4Desc: 'Deja tus datos y el detalle de tu negocio en el formulario de contacto.',
+    benefit4Desc: 'El formulario se habilitará cuando el canal comercial y la privacidad estén aprobados.',
     submitButtonText: 'Enviar Solicitud Comercial',
     submitButtonColor: '#2563eb'
   },
@@ -232,12 +233,12 @@ export const defaultSiteContent: SiteContent = {
     badge: 'BENEFICIOS EXCLUSIVOS',
     speedSeconds: 30,
     items: [
-      { id: '1', title: 'INSTALACIÓN A DOMICILIO', subtitle: 'Sin recargo en zonas urbanas principales', tag: 'GRATIS' },
-      { id: '2', title: 'DIAGNÓSTICO COMPUTARIZADO', subtitle: 'Chequeo de alternador y arranque', tag: '30 MIN' },
-      { id: '3', title: 'GARANTÍA DE FÁBRICA', subtitle: 'Hasta 24 meses de respaldo directo', tag: 'OFICIAL' },
-      { id: '4', title: 'PLAN CANJE VERDE', subtitle: 'Recibe descuento entregando tu batería usada', tag: 'RECICLAJE' },
-      { id: '5', title: 'COBERTURA NACIONAL', subtitle: 'Red de agencias y talleres en todo Ecuador', tag: '24/7' },
-      { id: '6', title: 'TECNOLOGÍAS AGM & EFB', subtitle: 'Especialistas en sistemas Start-Stop', tag: 'PREMIUM' }
+      { id: '1', title: 'CORRIENTE DE ARRANQUE', subtitle: 'Compara el CCA con el requisito del vehículo', tag: 'CCA' },
+      { id: '2', title: 'CAPACIDAD', subtitle: 'Revisa los Ah recomendados por el fabricante', tag: 'AH' },
+      { id: '3', title: 'MEDIDAS Y BORNES', subtitle: 'Confirma tamaño, sujeción y polaridad', tag: 'BCI' },
+      { id: '4', title: 'TECNOLOGÍA', subtitle: 'AGM, EFB o convencional según el vehículo', tag: 'GUÍA' },
+      { id: '5', title: 'SISTEMA DE CARGA', subtitle: 'Revísalo si la batería falla repetidamente', tag: 'CUIDADO' },
+      { id: '6', title: 'BATERÍA USADA', subtitle: 'Entrégala a un gestor autorizado', tag: 'RECICLAJE' }
     ]
   }
 };
