@@ -4,7 +4,7 @@
 > ⚠️ Este archivo se actualiza en el MISMO turno en que se crea, elimina o reestructura un archivo.
 > Ningún cambio estructural se considera terminado si este mapa quedó desincronizado.
 
-**Última actualización:** 2026-09-23 (Header transparente + Hero full-screen)
+**Última actualización:** 2026-10-14 (pruebas de importación y flujo de calidad automatizado)
 **Stack:** Next.js 15 (App Router + Turbopack) · React 19 · Tailwind CSS v4 (PostCSS) · Firebase Firestore/Auth · motion (Framer Motion) · lucide-react · xlsx · @google/genai (Gemini API)
 
 ---
@@ -34,7 +34,7 @@
 | Archivo | Tipo | Zona | Descripción |
 |---|---|---|---|
 | `src/app/(site)/layout.tsx` | Client Component | Sitio Público | Header + Footer + WhatsApp FAB compartidos en todas las rutas públicas |
-| `src/components/Header.tsx` | Client Component | Sitio Público | Nav fixed: transparente en Home (scroll→sólido), sólido en internas. Dropdown "Servicios" agrupa 6 secciones. Mobile accordion |
+| `src/components/Header.tsx` | Client Component | Sitio Público | Nav sticky y sólida que ocupa espacio antes del hero. Dropdown y menú móvil |
 | `src/components/Footer.tsx` | Client Component | Sitio Público | Footer corporativo, contacto ofuscado, redes sociales, provincias |
 | `src/components/WhatsAppFloatingButton.tsx` | Client Component | Sitio Público | FAB flotante WhatsApp/llamada, expandible |
 
@@ -45,9 +45,9 @@
 | Archivo | Tipo | Zona | Descripción |
 |---|---|---|---|
 | `src/app/(site)/page.tsx` | Client Component | Sitio Público | Home: Hero + GeoQuickAnswer + About + Features + Dealers |
-| `src/components/Hero.tsx` | Client Component | Sitio Público | Hero full-screen con imagen de fondo (desktop/mobile webp), overlay gradient, stats. Imágenes: `/hero-desktop.webp` y `/hero-mobile.webp` |
+| `src/components/Hero.tsx` | Client Component | Sitio Público | Hero de altura adaptable bajo el Header, imagen de fondo y dos CTA. Imágenes provisionales `/hero-maresa-2026-desktop.png` y `/hero-maresa-2026-mobile.png`; CMS puede aportar otras |
 | `src/components/GeoQuickAnswer.tsx` | Server Component | Sitio Público | Cápsula GEO para IA (aside semántico, byte 0) |
-| `src/components/About.tsx` | Client Component | Sitio Público | Historia corporativa, 4 pilares, imagen |
+| `src/components/About.tsx` | Client Component | Sitio Público | Guía introductoria, 4 pilares, fotografía provisional `/hero-nosotros-2026.png` |
 | `src/components/Features.tsx` | Server Component | Sitio Público | Grid 6 diferenciales de servicio |
 | `src/components/Dealers.tsx` | Server Component | Sitio Público | CTA distribuidores, stats, beneficios |
 
@@ -100,7 +100,8 @@
 |---|---|---|---|
 | `src/app/(site)/reciclaje/page.tsx` | Server Component | Sitio Público | Metadata SEO → ReciclajeClient |
 | `src/app/(site)/reciclaje/ReciclajeClient.tsx` | Client Component | Sitio Público | Shell cliente reciclaje |
-| `src/components/Recycling.tsx` | Client Component | Sitio Público | Programa reciclaje, métricas impacto, CTA |
+| `src/components/HeroReciclaje.tsx` | Client Component | Sitio Público | Hero adaptable con fotografía provisional `/hero-reciclaje-2026.png` y CTA de atención |
+| `src/components/Recycling.tsx` | Client Component | Sitio Público | Guía de entrega responsable en cuatro pasos, CTA; sin métricas no verificadas |
 
 ---
 
@@ -119,7 +120,7 @@
 | Archivo | Tipo | Zona | Descripción |
 |---|---|---|---|
 | `src/app/(site)/nosotros/page.tsx` | Server Component | Sitio Público | Metadata SEO → NosotrosClient |
-| `src/app/(site)/nosotros/NosotrosClient.tsx` | Client Component | Sitio Público | Shell cliente nosotros |
+| `src/app/(site)/nosotros/NosotrosClient.tsx` | Client Component | Sitio Público | Shell cliente nosotros y hero con fotografía provisional `/hero-nosotros-2026.png` |
 
 ---
 
@@ -193,6 +194,13 @@
 ---
 
 ## 🔄 Protocolo de Cambios
+
+### Verificación automatizada
+
+| Archivo | Zona | Descripción |
+|---|---|---|
+| `tests/spreadsheet.test.mjs` | Compartido | Pruebas de CSV, XLSX, límites de importación y formatos rechazados |
+| `.github/workflows/quality.yml` | Entrega | Instala dependencias y verifica pruebas, lint, auditoría de producción y compilación |
 
 1. **SIEMPRE** lee este archivo primero.
 2. Identifica el archivo a modificar en las tablas.

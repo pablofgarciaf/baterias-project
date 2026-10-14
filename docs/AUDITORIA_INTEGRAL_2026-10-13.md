@@ -1,7 +1,7 @@
 <!-- estado: "" -->
 # Auditoría integral del sitio Baterías Maresa
 
-**Fecha:** 13 de octubre de 2026. **Estado:** diagnóstico inicial más correcciones locales verificadas en la misma fecha. Los hallazgos de abajo documentan el estado encontrado antes de corregir; la sección final indica qué cambió y qué sigue abierto. **Alcance excluido por decisión del propietario:** obtención del dominio oficial. La falta de dominio no reduce las calificaciones de esta auditoría.
+**Fecha:** 13 de octubre de 2026; verificación adicional el 14 de octubre. **Estado:** diagnóstico inicial más correcciones verificadas. Los hallazgos de abajo documentan el estado encontrado antes de corregir; la sección de actualizaciones indica qué cambió y qué sigue abierto. **Alcance excluido por decisión del propietario:** obtención del dominio oficial. La falta de dominio no reduce las calificaciones de esta auditoría.
 
 ## Veredicto ejecutivo
 
@@ -21,13 +21,17 @@ No existe una calificación objetiva universal de «10/10». La tabla siguiente 
 
 ## Método y límites de verificación
 
-### Actualización de correcciones locales (13 de octubre)
+### Actualización de correcciones (14 de octubre)
+
+Se fijaron versiones corregidas de tres dependencias transitivas en `package.json` y `package-lock.json`: `@grpc/grpc-js` 1.14.6, PostCSS 8.5.30 bajo Next y UUID 11.1.1 bajo ExcelJS. `npm audit --omit=dev` terminó con **0 vulnerabilidades conocidas de producción** después de instalar el lockfile actualizado. Una prueba de generación y lectura de XLSX pasó. `npm test` pasó 4/4 casos del importador (CSV entrecomillado, XLSX, exceso de filas y formato rechazado), y `npm run build` generó 18 rutas. Se añadió el flujo `.github/workflows/quality.yml` para repetir instalación, pruebas, lint, auditoría de producción y compilación en GitHub. El flujo remoto todavía debe completar su primera ejecución; la prueba completa de roles y el acceso real al panel continúan pendientes. Estas verificaciones no acreditan por sí solas un 10/10 ni un pentest.
+
+### Correcciones locales previas (13 de octubre)
 
 **Cierre adicional:** Storage está deshabilitado por decisión del propietario y queda fuera de esta validación. Las reglas activas de Firestore se consultaron de solo lectura mediante Firebase Rules API: su contenido operativo coincide con `firestore.rules` local una vez eliminados formato y comentarios. No se probaron aún los permisos con cuentas de roles distintos.
 
 Se reemplazó la dependencia `xlsx` 0.18.5 por ExcelJS para importación XLSX/CSV y exportación XLSX del panel. La carga de prospectos que solo modificaba memoria y desaparecía al recargar fue retirada; la exportación de prospectos persistidos continúa. Las importaciones de catálogo y agencias siguen guardándose como borradores. Los archivos importados se limitan a 2 MB, 400 filas y 40 columnas. La compilación de producción pasó y generó 18 rutas; `/admin` bajó de aproximadamente 499 kB a 361 kB de First Load JS por carga diferida del lector de hojas.
 
-**Seguridad de dependencias pendiente:** `npm audit --omit=dev` reporta 8 entradas (5 altas, 3 moderadas). Entre ellas figuran dependencias transitivas de Firebase (`@grpc/grpc-js`), Next/PostCSS y ExcelJS/UUID. Este resultado impide calificar seguridad 10/10 o declarar cierre de la auditoría. No se aplicó `npm audit fix --force` porque propone cambios mayores de Firebase/Next y una regresión potencial del flujo de autenticación. El archivo `package-lock.json` queda versionable para instalaciones reproducibles.
+**Seguridad de dependencias:** el hallazgo inicial de 8 avisos de producción quedó corregido con las versiones transitivas fijadas arriba. El resultado de 0 avisos es una comprobación puntual; requiere repetición en CI y no demuestra la ausencia de vulnerabilidades propias.
 
 | Hallazgo | Estado comprobado | Próximo paso |
 |---|---|---|
