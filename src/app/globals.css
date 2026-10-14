@@ -24,8 +24,8 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: var(--font-open-sans), 'Open Sans', system-ui, sans-serif;
-  --font-display: var(--font-montserrat), Montserrat, system-ui, sans-serif;
+  --font-sans: 'Open Sans', system-ui, sans-serif;
+  --font-display: Montserrat, system-ui, sans-serif;
 
   /* Naranja observado en maresacenter.com; neutros de interfaz, no manual oficial. */
   --color-brand-orange: #f7941d;

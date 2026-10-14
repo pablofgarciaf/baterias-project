@@ -23,7 +23,7 @@
 
 | Archivo | Tipo | Zona | Descripción |
 |---|---|---|---|
-| `src/app/layout.tsx` | Server Component | Compartido | Root layout: fonts (Playfair Display + Inter), metadata global, JSON-LD Schema, Providers wrapper |
+| `src/app/layout.tsx` | Server Component | Compartido | Root layout: Open Sans y Montserrat locales desde `@fontsource`, metadata global y Providers wrapper |
 | `src/app/globals.css` | Stylesheet | Compartido | Tailwind v4 @theme tokens, colores, animaciones, utilidades CSS |
 | `src/app/providers.tsx` | Client Component | Compartido | ThemeProvider + SiteContentProvider wrappers |
 
