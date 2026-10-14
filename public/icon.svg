@@ -1,6 +1,7 @@
 <!-- estado: "" -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="6" fill="#0A2240"/>
-  <rect x="0" y="26" width="32" height="6" fill="#D31145"/>
-  <text x="16" y="21" text-anchor="middle" font-family="system-ui,sans-serif" font-weight="800" font-size="11" fill="white" letter-spacing="-0.5">MBT</text>
+  <rect width="32" height="32" rx="7" fill="#2C2C2C"/>
+  <rect x="13" y="6" width="6" height="3" rx="1" fill="#F7941D"/>
+  <rect x="8" y="9" width="16" height="18" rx="3" fill="#F7941D"/>
+  <path d="M17.4 12.3 13 18h3l-1.4 5.7 4.4-6h-3z" fill="#2C2C2C"/>
 </svg>

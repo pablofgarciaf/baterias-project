@@ -1,3 +1,4 @@
+<!-- estado: "" -->
 # Módulo de Agencias y Geolocalización (Store Locator)
 
 Este documento detalla la arquitectura del buscador de agencias. Está vinculado con [[01_Arquitectura]].

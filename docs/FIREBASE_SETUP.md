@@ -1,3 +1,4 @@
+<!-- estado: "" -->
 # Firebase: usuarios, permisos y puesta en marcha
 
 ## Modelo de usuarios

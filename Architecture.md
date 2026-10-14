@@ -1,3 +1,4 @@
+<!-- estado: "" -->
 # 🏗️ ARCHITECTURE MAP — Baterías Maresa (Next.js)
 > **LÉEME PRIMERO.** Este archivo es el mapa maestro del proyecto.
 > Antes de modificar cualquier archivo, lee sus comentarios Architecture Map (líneas 1-20 aprox).

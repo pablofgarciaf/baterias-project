@@ -1,3 +1,4 @@
+<!-- estado: "" -->
 # UI System
 
 Este documento describe los componentes visuales clave utilizados en el ecosistema de la web pública (EnergyEngine / Corporación Maresa).

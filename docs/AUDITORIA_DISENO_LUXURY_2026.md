@@ -1,3 +1,4 @@
+<!-- estado: "" -->
 # 🎨 AUDITORÍA INTEGRAL DE DISEÑO UI/UX — BATERÍAS MARESA
 **Fecha:** 12 de Octubre, 2026  
 **Estándar Aplicado:** `agency-ui-designer` + `UI Finish-Gate Reviewer` + `Emil Kowalski Design Engineering` + `Apple Luxury Standards` (`DESIGN_LUXURY.md`)  

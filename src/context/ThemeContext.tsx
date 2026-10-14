@@ -37,9 +37,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const savedTheme = localStorage.getItem('maresa_theme') as Theme | null;
-    setThemeState(savedTheme === 'light' || savedTheme === 'dark' ? savedTheme : prefersDark ? 'dark' : 'light');
+    setThemeState(savedTheme === 'dark' ? 'dark' : 'light');
     setMounted(true);
   }, []);
 

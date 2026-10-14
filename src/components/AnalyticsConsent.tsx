@@ -84,7 +84,7 @@ export default function AnalyticsConsent() {
           </div>
         </div>
       ) : (
-        <button type="button" onClick={() => setShowChoice(true)} className="fixed bottom-3 left-3 z-[100] rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-800 shadow-md hover:bg-slate-100">Privacidad y medición</button>
+        <button type="button" onClick={() => setShowChoice(true)} className="mx-auto my-4 block rounded-full border border-primary-300 bg-white px-4 py-2 text-xs font-medium text-primary-800 shadow-sm hover:bg-primary-50">Privacidad y medición</button>
       )}
     </>
   );

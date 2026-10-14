@@ -1,4 +1,4 @@
-// estado: ""
+// estado: "en edición"
 /**
  * ═══════════════════════════════════════════════════════════════
  * 📄 ARCHITECTURE MAP — VehicleFinder.tsx
@@ -698,7 +698,7 @@ export default function VehicleFinder({ onLocateStore }: VehicleFinderProps) {
 
               {/* Battery Specs Bento Grid */}
               <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <div className={`p-4 rounded-2xl border ${
+                {result.recommendedBattery.warrantyMonths > 0 && <div className={`p-4 rounded-2xl border ${
                   isDark ? 'bg-slate-900/60 border-slate-700' : 'bg-slate-50 border-slate-200/80'
                 }`}>
                   <span className={`text-xs uppercase font-bold block ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
@@ -747,12 +747,12 @@ export default function VehicleFinder({ onLocateStore }: VehicleFinderProps) {
                     Garantía indicada
                   </span>
                   <span className="text-lg font-extrabold text-success-600 dark:text-success-400 mt-1 block">
-                    {result.recommendedBattery.warrantyMonths > 0 ? `${result.recommendedBattery.warrantyMonths} meses` : 'Por confirmar'}
+                    {result.recommendedBattery.warrantyMonths} meses
                   </span>
                   <span className={`text-[11px] font-semibold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                     Confirma las condiciones con el vendedor
                   </span>
-                </div>
+                </div>}
               </div>
 
               <p className={`mt-4 text-sm ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>

@@ -193,7 +193,7 @@ export default function B2BLeadCapture({ asPage = false }: { asPage?: boolean })
                   </p>
                   <button
                     onClick={() => setIsSuccess(false)}
-                    className="mt-4 py-3 px-6 rounded-xl bg-secondary-500 hover:bg-secondary-600 text-white text-sm font-bold transition-all"
+                    className="mt-4 py-3 px-6 rounded-xl bg-secondary-500 hover:bg-secondary-400 text-primary-950 text-sm font-bold transition-all"
                   >
                     Enviar otra postulación
                   </button>
@@ -427,7 +427,7 @@ export default function B2BLeadCapture({ asPage = false }: { asPage?: boolean })
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full py-3 px-6 rounded-xl bg-secondary-500 hover:bg-secondary-600 text-white font-bold text-sm shadow-xl shadow-secondary-600/25 flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
+                    className="w-full py-3 px-6 rounded-xl bg-secondary-500 hover:bg-secondary-400 text-primary-950 font-bold text-sm shadow-xl shadow-secondary-600/25 flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
                   >
                     <Send className="w-4 h-4" />
                     <span>{isSubmitting ? 'Enviando...' : 'Formulario pendiente de habilitación'}</span>

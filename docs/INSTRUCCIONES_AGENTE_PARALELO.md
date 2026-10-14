@@ -1,3 +1,4 @@
+<!-- estado: "" -->
 # 📋 INSTRUCCIONES DE INTEGRACIÓN & CONTINUIDAD (Para Agente Paralelo)
 
 **Fecha:** 2026-10-11  
