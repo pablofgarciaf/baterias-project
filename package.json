@@ -2,6 +2,9 @@
   "name": "baterias-maresa",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "dev": "next dev",
     "dev:https": "node dev-https.js",
