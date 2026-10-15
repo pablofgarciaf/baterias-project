@@ -5,23 +5,23 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { useTheme } from '@/context/ThemeContext';
 import {
-  MapPin, Search, Navigation, Phone,
-  MessageCircle, Crosshair, ChevronRight, Zap,
-  Building2, Clock, CheckCircle2, RotateCcw,
-  Sparkles, Compass, ArrowRight, Loader2
+  MapPin, Search, Navigation,
+  MessageCircle, Crosshair,
+  Building2, Clock, CheckCircle2,
+  ArrowRight, Loader2
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
 import { provinces } from '@/data/provinces';
 import { DistributorLocation } from '@/types/sinergia';
 import { getDistributors } from '@/lib/firebaseStore';
+import type { MapLocation } from '@/components/PremiumMap';
 
-// Cargar Google Maps oficial de forma dinámica
+// Carga diferida del mapa interactivo con marcadores de los puntos disponibles.
 const PremiumMap = dynamic(() => import('@/components/PremiumMap'), {
   ssr: false,
   loading: () => (
     <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900 text-slate-300 gap-3">
       <Loader2 className="w-8 h-8 text-primary-500 animate-spin" />
-      <span className="text-xs font-bold">Cargando mapa...</span>
+    <span className="text-xs font-bold">Cargando mapa de locales...</span>
     </div>
   ),
 });
@@ -35,6 +35,10 @@ const officialMaresaLocations = [
   { name: 'Maresa Center Valle de los Chillos', city: 'Quito', address: 'Av. Gral. Rumiñahui y Giovanni Farina', latitude: -0.3118, longitude: -78.4524 },
   { name: 'Maresa Center Manta', city: 'Manta', address: 'Av. 113 Calle 199 N1114', latitude: -0.9537, longitude: -80.7089 },
 ];
+const fallbackMapLocations: MapLocation[] = officialMaresaLocations.map((location) => ({
+  id: location.name,
+  ...location,
+}));
 
 export default function AgenciasClient() {
   const { theme } = useTheme();
@@ -46,9 +50,11 @@ export default function AgenciasClient() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedDistributor, setSelectedDistributor] = useState<(DistributorLocation & { distance?: number }) | null>(null);
   const [findingNearest, setFindingNearest] = useState(false);
+  const [gpsError, setGpsError] = useState('');
   const [gpsActive, setGpsActive] = useState(false);
   const [mobileView, setMobileView] = useState<'map' | 'list'>('map');
-  const [nearestLocation, setNearestLocation] = useState<{ name: string; city: string; distance: number } | null>(null);
+  const [fallbackSelected, setFallbackSelected] = useState<(typeof officialMaresaLocations)[number] | null>(null);
+  const [nearestLocation, setNearestLocation] = useState<{ name: string; city: string; address: string; latitude: number; longitude: number; distance: number } | null>(null);
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
 
@@ -60,7 +66,6 @@ export default function AgenciasClient() {
     }
     getDistributors().then(data => {
       setDistributorsList(data);
-      setSelectedDistributor(data[0] || null);
     }).finally(() => setLocationsLoading(false));
   }, []);
 
@@ -82,23 +87,32 @@ export default function AgenciasClient() {
 
     return list;
   }, [selectedProvince, searchQuery, distributorsList, gpsActive]);
+  const distributorMapLocations = useMemo(() => filteredDistributors.map((location) => ({
+    id: location.id,
+    name: location.name,
+    city: location.city,
+    address: location.address,
+    latitude: location.latitude,
+    longitude: location.longitude,
+  })), [filteredDistributors]);
 
   // Mantener sincronizada la agencia activa
   useEffect(() => {
     if (filteredDistributors.length > 0) {
       const exists = selectedDistributor && filteredDistributors.some(d => d.id === selectedDistributor.id);
-      if (!exists) {
+      if (selectedDistributor && !exists) {
         setSelectedDistributor(filteredDistributors[0]);
       }
-    } else {
+    } else if (selectedDistributor) {
       setSelectedDistributor(null);
     }
   }, [filteredDistributors, selectedDistributor]);
 
   // Manejador del botón GPS: calcula, ordena y envía directamente al mapa
   const handleFindNearest = () => {
+    setGpsError('');
     if (!navigator.geolocation) {
-      alert('La geolocalización no está disponible en este navegador.');
+      setGpsError('Este navegador no permite compartir la ubicación. Elige un local del directorio.');
       return;
     }
 
@@ -116,10 +130,28 @@ export default function AgenciasClient() {
               return { ...location, distance: 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)) };
             })
             .sort((a, b) => a.distance - b.distance)[0];
-          setNearestLocation(nearest ? { name: nearest.name, city: nearest.city, distance: nearest.distance } : null);
+          if (nearest) {
+            setFallbackSelected(nearest);
+            setNearestLocation({
+              name: nearest.name,
+              city: nearest.city,
+              address: nearest.address,
+              latitude: nearest.latitude,
+              longitude: nearest.longitude,
+              distance: nearest.distance,
+            });
+            window.setTimeout(() => mapContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+          } else {
+            setNearestLocation(null);
+          }
           setFindingNearest(false);
         },
-        () => setFindingNearest(false),
+        (error) => {
+          setGpsError(error.code === error.PERMISSION_DENIED
+            ? 'No autorizaste el acceso a tu ubicación. Elige un local del directorio; no te enviaremos a una ciudad por defecto.'
+            : 'No pudimos obtener tu ubicación. Elige un local del directorio e inténtalo de nuevo si quieres usar el GPS.');
+          setFindingNearest(false);
+        },
         { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 },
       );
       return;
@@ -162,12 +194,9 @@ export default function AgenciasClient() {
       (error) => {
         setFindingNearest(false);
         console.warn('GPS notice:', error.message);
-        // Fallback: enfocar la matriz principal en mapa
-        setSelectedDistributor(distributorsList[0]);
-        setMobileView('map');
-        if (mapContainerRef.current) {
-          mapContainerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+        setGpsError(error.code === error.PERMISSION_DENIED
+          ? 'No autorizaste el acceso a tu ubicación. Elige un local del directorio; no te enviaremos a una ciudad por defecto.'
+          : 'No pudimos obtener tu ubicación. Elige un local del directorio e inténtalo de nuevo si quieres usar el GPS.');
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
     );
@@ -208,16 +237,48 @@ export default function AgenciasClient() {
           <button type="button" onClick={handleFindNearest} disabled={findingNearest} className="mt-7 inline-flex min-h-12 items-center gap-2 rounded-xl bg-secondary-500 px-5 font-bold text-primary-950 transition-colors hover:bg-secondary-400 disabled:opacity-60">
             <Crosshair className="h-4 w-4" />{findingNearest ? 'Buscando ubicación…' : 'Encontrar local más cercano'}
           </button>
-          {nearestLocation && <p role="status" className="mt-3 text-sm font-semibold">El local más cercano es {nearestLocation.name}, {nearestLocation.city} (distancia geográfica aproximada: {Math.round(nearestLocation.distance)} km). <a className="text-secondary-700 underline" href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${nearestLocation.name}, Ecuador`)}`} target="_blank" rel="noopener noreferrer">Ver ruta en Google Maps</a></p>}
-          <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {officialMaresaLocations.map((location) => (
-              <article key={location.name} className={`flex h-full flex-col rounded-2xl border p-6 ${isDark ? 'border-primary-700 bg-primary-900' : 'border-primary-200 bg-white'}`}>
-                <span className="text-xs font-bold uppercase tracking-wide text-secondary-600">{location.city}</span>
-                <h2 className="mt-2 text-lg font-bold">{location.name}</h2>
-                <p className={`mt-3 flex items-start gap-2 text-sm leading-relaxed ${isDark ? 'text-primary-200' : 'text-primary-600'}`}><MapPin className="mt-0.5 h-4 w-4 shrink-0 text-secondary-500" />{location.address}</p>
-                <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${location.name}, ${location.address}, Ecuador`)}`} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex items-center gap-2 self-start text-sm font-bold text-secondary-600 hover:underline">Ver ubicación <ArrowRight className="h-4 w-4" /></a>
-              </article>
-            ))}
+          {gpsError && <p role="alert" className={`mt-3 max-w-2xl text-sm ${isDark ? 'text-orange-200' : 'text-orange-800'}`}>{gpsError}</p>}
+          {nearestLocation && (
+            <div role="status" className={`mt-4 rounded-xl border p-4 text-sm ${isDark ? 'border-primary-700 bg-primary-900' : 'border-primary-200 bg-white'}`}>
+              <p className="font-bold">Local estimado más cercano: {nearestLocation.name}, {nearestLocation.city}</p>
+              <p className="mt-1">Aproximadamente {Math.round(nearestLocation.distance)} km en línea recta. Confirma la dirección antes de salir.</p>
+              <a className="mt-2 inline-flex items-center gap-2 font-bold text-secondary-700 underline" href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${nearestLocation.address}, ${nearestLocation.city}, Ecuador`)}`} target="_blank" rel="noopener noreferrer">Ver ruta al local <ArrowRight className="h-4 w-4" /></a>
+            </div>
+          )}
+          <div className="mt-8 grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(420px,1fr)]">
+            <div className="order-2 grid gap-4 sm:grid-cols-2 xl:order-1">
+              {officialMaresaLocations.map((location) => {
+                const isSelected = fallbackSelected?.name === location.name;
+                return (
+                  <article key={location.name} className={`flex h-full flex-col rounded-2xl border p-5 transition-shadow ${isDark ? 'border-primary-700 bg-primary-900' : 'border-slate-200 bg-white shadow-sm'} ${isSelected ? 'ring-2 ring-secondary-500/60' : ''}`}>
+                    <span className="text-xs font-bold uppercase tracking-wide text-secondary-600">{location.city}</span>
+                    <h2 className="mt-2 text-lg font-bold">{location.name}</h2>
+                    <p className={`mt-3 flex items-start gap-2 text-sm leading-relaxed ${isDark ? 'text-primary-200' : 'text-primary-600'}`}><MapPin className="mt-0.5 h-4 w-4 shrink-0 text-secondary-500" />{location.address}</p>
+                    <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-2 pt-5">
+                      <button type="button" onClick={() => { setFallbackSelected(location); window.setTimeout(() => mapContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0); }} aria-pressed={isSelected} className="inline-flex min-h-10 items-center gap-2 text-sm font-bold text-secondary-700 hover:underline"><MapPin className="h-4 w-4" />Ver en mapa</button>
+                      <a href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${location.address}, ${location.city}, Ecuador`)}`} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-10 items-center gap-2 text-sm font-bold text-secondary-700 hover:underline">Cómo llegar <ArrowRight className="h-4 w-4" /></a>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+            <section ref={mapContainerRef} aria-label="Mapa de puntos de atención" className={`order-1 scroll-mt-24 overflow-hidden rounded-2xl border shadow-lg xl:order-2 ${isDark ? 'border-primary-700 bg-primary-900' : 'border-slate-200 bg-white'}`}>
+              <div className={`border-b px-5 py-4 ${isDark ? 'border-primary-700' : 'border-slate-200'}`}>
+                <span className="text-xs font-bold uppercase tracking-[0.16em] text-secondary-700">Mapa de atención</span>
+                <h2 className="mt-1 text-lg font-extrabold">{fallbackSelected?.name || 'Locales de atención publicados'}</h2>
+                <p className={`mt-1 text-sm ${isDark ? 'text-primary-200' : 'text-slate-600'}`}>{fallbackSelected ? fallbackSelected.address : 'Selecciona un marcador o un local para ver su ubicación aproximada y cómo llegar.'}</p>
+              </div>
+              <div className="h-[360px] sm:h-[440px]">
+                <PremiumMap
+                  locations={fallbackMapLocations}
+                  selectedLocationId={fallbackSelected?.name ?? null}
+                  agencyName="Mapa de puntos de atención publicados por Maresa"
+                  isDark={isDark}
+                  onSelectLocation={(id) => setFallbackSelected(officialMaresaLocations.find((location) => location.name === id) ?? null)}
+                />
+              </div>
+              <p className={`border-t px-5 py-3 text-xs ${isDark ? 'border-primary-700 text-primary-300' : 'border-slate-200 text-slate-500'}`}>Los marcadores son referenciales; usa la dirección publicada para confirmar el destino.</p>
+            </section>
           </div>
           <a href="https://maresapartsb2c.corpmaresa.com.ec/locales" target="_blank" rel="noopener noreferrer" className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-secondary-600 underline underline-offset-4">Consultar el directorio completo de Maresa <ArrowRight className="h-4 w-4" /></a>
         </div>
@@ -283,6 +344,7 @@ export default function AgenciasClient() {
               </>
             )}
           </button>
+          {gpsError && <p role="alert" className={`mt-3 max-w-2xl text-sm ${isDark ? 'text-orange-200' : 'text-orange-800'}`}>{gpsError}</p>}
         </div>
 
         {/* FILTROS Y BUSCADOR COMPACTOS CON ESTILO MARESA */}
@@ -537,7 +599,7 @@ export default function AgenciasClient() {
                     )}
 
                     <a
-                      href={`https://www.google.com/maps/dir/?api=1&destination=${selectedDistributor.latitude},${selectedDistributor.longitude}`}
+                      href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${selectedDistributor.address}, ${selectedDistributor.city}, Ecuador`)}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="py-2 px-3.5 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-primary-600/30 active:scale-95 transition-all"
@@ -551,20 +613,16 @@ export default function AgenciasClient() {
 
               {/* Contenedor del Mapa Oficial de Google Maps: Altura compacta calibrada a 440px para igualar exactamente las 3 tarjetas de la izquierda */}
               <div className="h-[360px] sm:h-[400px] lg:h-[440px] w-full relative bg-slate-900">
-                {selectedDistributor ? (
-                  <PremiumMap
-                    latitude={selectedDistributor.latitude}
-                    longitude={selectedDistributor.longitude}
-                    agencyName={selectedDistributor.name}
-                  mapsIframe={selectedDistributor.mapsIframe}
-                    address={selectedDistributor.address}
-                    isDark={isDark}
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs">
-                    Selecciona una agencia para ver el mapa
-                  </div>
-                )}
+                <PremiumMap
+                  locations={distributorMapLocations}
+                  selectedLocationId={selectedDistributor?.id ?? null}
+                  agencyName="Mapa de puntos de atención"
+                  isDark={isDark}
+                  onSelectLocation={(id) => {
+                    const location = filteredDistributors.find((item) => item.id === id);
+                    if (location) setSelectedDistributor(location);
+                  }}
+                />
               </div>
 
             </div>

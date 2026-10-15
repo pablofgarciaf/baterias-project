@@ -79,7 +79,8 @@
 |---|---|---|---|
 | `src/app/(site)/agencias/page.tsx` | Server Component | Sitio Público | Metadata SEO → AgenciasClient |
 | `src/app/(site)/agencias/AgenciasClient.tsx` | Client Component | Sitio Público | Directorio de Firestore; cuando no hay puntos publicados muestra locales del directorio oficial de Maresa |
-| `src/components/StoreLocator.tsx` | Client Component | Sitio Público | Mapa agencias, búsqueda, filtro provincia, OpenStreetMap |
+| `src/components/PremiumMap.tsx` | Client Component | Sitio Público | Mapa Leaflet con marcadores seleccionables, límites de ubicaciones, rutas por dirección y mapas base claro/oscuro |
+| `src/components/StoreLocator.tsx` | Client Component | Sitio Público | Mapa alternativo de agencias, búsqueda, filtro provincia, OpenStreetMap |
 | `src/components/Provinces.tsx` | Client Component | Sitio Público | 24 provincias Ecuador, filtro región, búsqueda |
 
 ---

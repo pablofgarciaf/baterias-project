@@ -25,19 +25,15 @@ import VehicleFinder from '@/components/VehicleFinder';
 import About from '@/components/About';
 import Features from '@/components/Features';
 import { useTheme } from '@/context/ThemeContext';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { motion } from 'motion/react';
 import {
-  Search,
-  Car,
   ArrowRight,
   MapPin,
   Package,
-  Handshake,
   Recycle,
   GraduationCap,
-  Star,
   Zap,
-  Shield,
   Navigation,
   BookOpen,
   Leaf,
@@ -112,46 +108,81 @@ const teaserSections = [
 ];
 
 function InfiniteCarousel({ items, isDark }: { items: typeof teaserSections; isDark: boolean }) {
-  const touchStart = useRef<number | null>(null);
-  const wasSwiped = useRef(false);
+  const pointerStart = useRef<number | null>(null);
+  const wasDragged = useRef(false);
+  const pauseAutoplay = useRef(false);
   const [firstIndex, setFirstIndex] = useState(0);
   const move = (direction: -1 | 1) => {
     setFirstIndex((current) => (current + direction + items.length) % items.length);
   };
   const orderedItems = [...items.slice(firstIndex), ...items.slice(0, firstIndex)];
 
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      if (!pauseAutoplay.current && document.visibilityState === 'visible') {
+        setFirstIndex((current) => (current + 1) % items.length);
+      }
+    }, 5500);
+    return () => window.clearInterval(timer);
+  }, [items.length]);
+
   return (
     <div>
-      <div className="mb-5 flex justify-end gap-2">
-        <button type="button" onClick={() => move(-1)} aria-label="Servicio anterior" className="grid h-10 w-10 place-items-center rounded-full border border-primary-300 text-primary-800 transition-colors hover:border-secondary-500 hover:bg-secondary-500 hover:text-primary-950"><ChevronLeft className="h-5 w-5" /></button>
-        <button type="button" onClick={() => move(1)} aria-label="Servicio siguiente" className="grid h-10 w-10 place-items-center rounded-full bg-secondary-500 text-primary-950 transition-colors hover:bg-secondary-400"><ChevronRight className="h-5 w-5" /></button>
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <span className={`text-xs font-semibold ${isDark ? 'text-slate-400' : 'text-slate-500'}`} aria-live="polite">{firstIndex + 1} / {items.length}</span>
+        <div className="flex gap-2">
+        <button type="button" onClick={() => move(-1)} aria-label="Servicio anterior" className="grid h-10 w-10 place-items-center rounded-full border border-primary-300 text-primary-800 transition-[transform,background-color,border-color] duration-[180ms] ease-[cubic-bezier(.23,1,.32,1)] hover:border-secondary-500 hover:bg-secondary-500 hover:text-primary-950 active:scale-95"><ChevronLeft className="h-5 w-5" /></button>
+        <button type="button" onClick={() => move(1)} aria-label="Servicio siguiente" className="grid h-10 w-10 place-items-center rounded-full bg-secondary-500 text-primary-950 transition-[transform,background-color] duration-[180ms] ease-[cubic-bezier(.23,1,.32,1)] hover:bg-secondary-400 active:scale-95"><ChevronRight className="h-5 w-5" /></button>
+        </div>
       </div>
     <div
       onClickCapture={(event) => {
-        if (!wasSwiped.current) return;
+        if (!wasDragged.current) return;
         event.preventDefault();
         event.stopPropagation();
-        wasSwiped.current = false;
+        wasDragged.current = false;
       }}
-      onTouchStart={(event) => { touchStart.current = event.touches[0]?.clientX ?? null; }}
-      onTouchEnd={(event) => {
-        if (touchStart.current === null) return;
-        const distance = touchStart.current - (event.changedTouches[0]?.clientX ?? touchStart.current);
-        if (Math.abs(distance) > 45) {
-          wasSwiped.current = true;
-          move(distance > 0 ? 1 : -1);
-          window.setTimeout(() => { wasSwiped.current = false; }, 500);
+      onPointerDown={(event) => {
+        if (event.pointerType !== 'touch' && event.pointerType !== 'pen') return;
+        pointerStart.current = event.clientX;
+        pauseAutoplay.current = true;
+      }}
+      onPointerMove={(event) => {
+        if (pointerStart.current === null) return;
+        if (Math.abs(pointerStart.current - event.clientX) > 12 && !event.currentTarget.hasPointerCapture(event.pointerId)) {
+          event.currentTarget.setPointerCapture(event.pointerId);
         }
-        touchStart.current = null;
       }}
+      onPointerUp={(event) => {
+        if (pointerStart.current === null) return;
+        const distance = pointerStart.current - event.clientX;
+        if (Math.abs(distance) > 45) {
+          wasDragged.current = true;
+          move(distance > 0 ? 1 : -1);
+          window.setTimeout(() => { wasDragged.current = false; }, 450);
+        }
+        pointerStart.current = null;
+        pauseAutoplay.current = false;
+      }}
+      onPointerCancel={() => { pointerStart.current = null; pauseAutoplay.current = false; }}
+      onLostPointerCapture={() => { pointerStart.current = null; pauseAutoplay.current = false; }}
+      onMouseEnter={() => { pauseAutoplay.current = true; }}
+      onMouseLeave={() => { pauseAutoplay.current = false; }}
+      onFocusCapture={() => { pauseAutoplay.current = true; }}
+      onBlurCapture={() => { pauseAutoplay.current = false; }}
       className="flex gap-5 overflow-hidden pb-2 touch-pan-y sm:gap-6"
     >
       {orderedItems.map((section) => (
-        <Link
+        <motion.div
           key={section.id}
+          layout
+          transition={{ duration: 0.45, ease: [0.23, 1, 0.32, 1] }}
+          className="shrink-0 w-[82%] sm:w-[48%] lg:w-[30%] snap-start"
+        >
+        <Link
           href={section.href}
           data-card
-          className={`group shrink-0 w-[82%] sm:w-[48%] lg:w-[30%] snap-start block rounded-2xl border overflow-hidden transition-all duration-300 hover:shadow-xl ${
+          className={`group block h-full rounded-2xl border overflow-hidden transition-[border-color,box-shadow,transform] duration-[180ms] ease-[cubic-bezier(.23,1,.32,1)] hover:shadow-xl active:scale-[0.99] ${
             isDark
               ? 'bg-slate-900/80 border-slate-800 hover:border-slate-600 hover:shadow-slate-900/50'
               : 'bg-white border-gray-100 hover:border-primary-200 hover:shadow-primary-100/40'
@@ -180,6 +211,7 @@ function InfiniteCarousel({ items, isDark }: { items: typeof teaserSections; isD
             </div>
           </div>
         </Link>
+        </motion.div>
       ))}
     </div>
     </div>

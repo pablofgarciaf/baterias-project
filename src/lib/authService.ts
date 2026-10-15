@@ -19,6 +19,33 @@ export const checkIsAuthorizedAdmin = (data: unknown): boolean => {
   return user.role === 'admin' || (Array.isArray(user.roles) && user.roles.includes('admin'));
 };
 
+const getLoginErrorMessage = (error: unknown): string => {
+  const code = error && typeof error === 'object' && 'code' in error
+    ? String((error as { code: unknown }).code)
+    : undefined;
+  switch (code) {
+    case 'auth/invalid-credential':
+    case 'auth/invalid-login-credentials':
+    case 'auth/user-not-found':
+    case 'auth/wrong-password':
+      return 'Correo o contraseña incorrectos. Comprueba que estás usando la cuenta creada en Firebase Authentication.';
+    case 'auth/operation-not-allowed':
+      return 'El acceso por correo y contraseña está deshabilitado en Firebase Authentication. Actívalo en el proveedor de acceso Email/Password.';
+    case 'auth/invalid-api-key':
+    case 'auth/api-key-not-valid.-please-pass-a-valid-api-key.':
+    case 'auth/app-not-authorized':
+      return 'La configuración de Firebase de este entorno no corresponde a una aplicación web autorizada. Revisa el proyecto y las restricciones de la API key.';
+    case 'auth/user-disabled':
+      return 'Esta cuenta está deshabilitada en Firebase Authentication. Un administrador debe reactivarla.';
+    case 'auth/too-many-requests':
+      return 'Firebase bloqueó temporalmente los intentos de acceso. Espera unos minutos antes de volver a intentarlo.';
+    case 'auth/network-request-failed':
+      return 'No se pudo conectar con Firebase Authentication. Revisa la conexión y vuelve a intentar.';
+    default:
+      return 'No se pudo iniciar sesión. Revisa las credenciales y la configuración del proveedor Email/Password en Firebase.';
+  }
+};
+
 export const verifyAdminUser = async (user: User | null): Promise<{ authorized: boolean; forcePasswordChange: boolean; role: 'admin' | 'editor' | null }> => {
   if (!isFirebaseConfigured || !user?.email) {
     return { authorized: false, forcePasswordChange: false, role: null };
@@ -55,7 +82,10 @@ export const loginAdminUser = async (email: string, password: string): Promise<{
     return { success: true, forcePasswordChange: status.forcePasswordChange, role: status.role || undefined };
   } catch (error) {
     await signOut(auth).catch(() => undefined);
-    return { success: false, error: error instanceof Error && error.message.includes('credencial privada') ? error.message : 'No se pudo iniciar sesión. Revisa tus credenciales y la configuración.' };
+    if (error instanceof Error && error.message.includes('credencial privada')) {
+      return { success: false, error: error.message };
+    }
+    return { success: false, error: getLoginErrorMessage(error) };
   }
 };
 
