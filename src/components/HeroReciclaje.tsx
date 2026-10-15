@@ -10,7 +10,7 @@ export default function HeroReciclaje() {
   const rec = content.recycling;
   const oldDefault = 'https://images.pexels.com/photos/35520664/pexels-photo-35520664.jpeg?auto=compress&cs=tinysrgb&w=1920';
   const image = !rec.backgroundImage || rec.backgroundImage === '/hero-reciclaje.webp' || rec.backgroundImage === oldDefault || rec.backgroundImage === '/hero-reciclaje-2026.png'
-    ? '/hero-reciclaje-auto-2026.png'
+    ? '/hero-reciclaje.webp'
     : rec.backgroundImage;
 
   return (
@@ -22,7 +22,7 @@ export default function HeroReciclaje() {
         loading="eager"
         fetchPriority="high"
       />
-      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-primary-950/95 via-primary-950/75 to-primary-950/20" />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-primary-950/85 via-primary-950/55 to-primary-950/15" />
 
       <div className="container-max relative w-full py-20 sm:py-24 lg:py-28">
         <div className="max-w-2xl">
@@ -38,7 +38,7 @@ export default function HeroReciclaje() {
             {rec.subtitle}
           </p>
           <div className="mt-8 flex items-start">
-            <Link href="/agencias" className="inline-flex min-h-12 max-w-full items-center justify-center gap-2 rounded-lg bg-secondary-500 px-5 py-3 text-center text-sm font-bold text-primary-950 transition-colors hover:bg-secondary-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
+            <Link href="/agencias" className="inline-flex min-h-12 max-w-full items-center justify-center gap-2 rounded-full bg-secondary-500 px-6 py-3 text-center text-sm font-bold text-primary-950 shadow-lg shadow-black/20 transition hover:-translate-y-0.5 hover:bg-secondary-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:px-7">
               <Recycle className="h-4 w-4" />
               {rec.ctaButtonText}
               <ArrowRight className="h-4 w-4" />

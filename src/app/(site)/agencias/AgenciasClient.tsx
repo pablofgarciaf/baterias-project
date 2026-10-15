@@ -14,6 +14,7 @@ import { provinces } from '@/data/provinces';
 import { DistributorLocation } from '@/types/sinergia';
 import { getDistributors } from '@/lib/firebaseStore';
 import type { MapLocation } from '@/components/PremiumMap';
+import { embedSrcFromIframe } from '@/lib/mapsIframe';
 
 // Carga diferida del mapa interactivo con marcadores de los puntos disponibles.
 const PremiumMap = dynamic(() => import('@/components/PremiumMap'), {
@@ -57,6 +58,9 @@ export default function AgenciasClient() {
   const [nearestLocation, setNearestLocation] = useState<{ name: string; city: string; address: string; latitude: number; longitude: number; distance: number } | null>(null);
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
+  const [dismissedEmbedId, setDismissedEmbedId] = useState<string | null>(null);
+  const selectedEmbedSrc = selectedDistributor ? embedSrcFromIframe(selectedDistributor.mapsIframe) : null;
+  const showEmbed = Boolean(selectedEmbedSrc && selectedDistributor && dismissedEmbedId !== selectedDistributor.id);
 
   useEffect(() => {
     const requestedProvince = new URLSearchParams(window.location.search).get('provincia');
@@ -94,6 +98,7 @@ export default function AgenciasClient() {
     address: location.address,
     latitude: location.latitude,
     longitude: location.longitude,
+    routeByCoordinates: true,
   })), [filteredDistributors]);
 
   // Mantener sincronizada la agencia activa
@@ -217,6 +222,7 @@ export default function AgenciasClient() {
 
   const handleOpenMapForAgency = (dist: DistributorLocation) => {
     setSelectedDistributor(dist);
+    setDismissedEmbedId(null);
     setMobileView('map');
     setTimeout(() => {
       if (mapContainerRef.current) {
@@ -602,7 +608,7 @@ export default function AgenciasClient() {
                     )}
 
                     <a
-                      href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${selectedDistributor.address}, ${selectedDistributor.city}, Ecuador`)}`}
+                      href={`https://www.google.com/maps/dir/?api=1&destination=${Number.isFinite(selectedDistributor.latitude) && Number.isFinite(selectedDistributor.longitude) && (selectedDistributor.latitude !== 0 || selectedDistributor.longitude !== 0) ? `${selectedDistributor.latitude},${selectedDistributor.longitude}` : encodeURIComponent(`${selectedDistributor.address}, ${selectedDistributor.city}, Ecuador`)}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="py-2 px-3.5 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-primary-600/30 active:scale-95 transition-all"
@@ -626,6 +632,25 @@ export default function AgenciasClient() {
                     if (location) setSelectedDistributor(location);
                   }}
                 />
+                {showEmbed && selectedEmbedSrc && (
+                  <div className="absolute inset-0 z-[1000] bg-primary-950">
+                    <iframe
+                      src={selectedEmbedSrc}
+                      title={`Mapa de ${selectedDistributor?.name ?? 'la agencia'}`}
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      className="h-full w-full border-0"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setDismissedEmbedId(selectedDistributor?.id ?? null)}
+                      className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-lg bg-primary-950/90 px-3 py-2 text-xs font-bold text-white shadow-lg ring-1 ring-white/15 transition-colors hover:bg-primary-900 cursor-pointer"
+                    >
+                      <MapPin className="h-3.5 w-3.5 text-secondary-400" />
+                      Ver mapa general
+                    </button>
+                  </div>
+                )}
               </div>
 
             </div>

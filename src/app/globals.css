@@ -23,6 +23,9 @@
 
 @import "tailwindcss";
 
+/* dark: responde al interruptor del sitio (clase .dark en <html>), no a la preferencia del sistema. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: 'Open Sans', system-ui, sans-serif;
   --font-display: Montserrat, system-ui, sans-serif;

@@ -40,7 +40,7 @@ import { GlassCard } from './ui/GlassCard';
 import { GLASS_TOKENS } from '@/types/admin';
 import { DistributorLocation } from '@/types/sinergia';
 import { provinces } from '@/data/provinces';
-import { coordsFromMapsEmbed } from '@/lib/mapsIframe';
+import { coordsFromMapsEmbed, embedSrcFromIframe } from '@/lib/mapsIframe';
 import { auth } from '@/lib/firebase';
 import {
   getDistributors,
@@ -75,6 +75,7 @@ export default function DistributorsManager({ darkMode }: { darkMode: boolean })
   const [saving, setSaving] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [batchPublishing, setBatchPublishing] = useState(false);
+  const [previewId, setPreviewId] = useState<string | null>(null);
 
   useEffect(() => {
     loadDistributors();
@@ -756,6 +757,18 @@ export default function DistributorsManager({ darkMode }: { darkMode: boolean })
                               </p>
                             );
                           })()}
+                          {(() => {
+                            const src = embedSrcFromIframe(editedDistributor.mapsIframe);
+                            return src ? (
+                              <iframe
+                                src={src}
+                                title="Vista previa del mapa"
+                                loading="lazy"
+                                referrerPolicy="no-referrer-when-downgrade"
+                                className="mt-3 h-56 w-full rounded-xl border-0"
+                              />
+                            ) : null;
+                          })()}
                         </div>
                         <div className="mt-5 flex justify-end gap-2">
                           <button
@@ -802,10 +815,14 @@ export default function DistributorsManager({ darkMode }: { darkMode: boolean })
                         </td>
                         <td className="p-3">
                           {d.mapsIframe ? (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-success-500/20 text-success-400">
+                            <button
+                              type="button"
+                              onClick={() => setPreviewId(d.id)}
+                              className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-success-500/20 text-success-400 hover:bg-success-500/30 transition-colors cursor-pointer"
+                            >
                               <Globe className="w-3 h-3" />
-                              Configurado
-                            </span>
+                              Ver mapa
+                            </button>
                           ) : (
                             <span className="text-xs" style={{ color: styles.textSecondary }}>Sin iframe</span>
                           )}
@@ -845,6 +862,52 @@ export default function DistributorsManager({ darkMode }: { darkMode: boolean })
           </table>
         </div>
       </div>
+      {previewId && (() => {
+        const dist = distributors.find(item => item.id === previewId);
+        const src = embedSrcFromIframe(dist?.mapsIframe);
+        return (
+          <div
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Vista previa del mapa"
+            onClick={() => setPreviewId(null)}
+          >
+            <div
+              className="w-full max-w-3xl overflow-hidden rounded-2xl border border-white/10 bg-primary-950 shadow-2xl"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-3">
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-bold text-white">{dist?.name}</p>
+                  <p className="truncate text-xs text-white/60">{dist?.address}, {dist?.city}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setPreviewId(null)}
+                  aria-label="Cerrar vista previa"
+                  className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-600 text-white hover:bg-slate-500 cursor-pointer"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              {src ? (
+                <iframe
+                  src={src}
+                  title={`Mapa de ${dist?.name ?? 'la agencia'}`}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  className="h-[420px] w-full border-0"
+                />
+              ) : (
+                <p className="p-8 text-center text-sm text-white/70">
+                  El iframe guardado no es un enlace válido de Google Maps. Edítalo y pega el código desde Compartir → Insertar un mapa.
+                </p>
+              )}
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }

@@ -25,8 +25,8 @@ export default function Hero() {
           fetchPriority="high"
         />
       </picture>
-      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-primary-950/95 via-primary-950/75 to-primary-950/25" />
-      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-primary-950/45 via-transparent to-primary-950/15" />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-primary-950/80 via-primary-950/50 to-transparent" />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-primary-950/60 via-transparent to-primary-950/20" />
 
       <div className="container-max relative w-full pb-20 pt-32 sm:pb-24 sm:pt-36 lg:pb-28 lg:pt-40">
         <div className="max-w-2xl">
@@ -47,7 +47,7 @@ export default function Hero() {
           <div className="mt-8 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
             <Link
               href="/buscador"
-              className="inline-flex min-h-12 max-w-full items-center justify-center gap-2 rounded-lg bg-secondary-500 px-5 py-3 text-sm font-bold text-primary-950 shadow-lg shadow-black/20 transition-colors hover:bg-secondary-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              className="inline-flex min-h-12 max-w-full items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-bold text-primary-950 shadow-[0_0_40px_rgba(255,255,255,0.2)] transition-all duration-300 hover:bg-slate-100 hover:shadow-[0_0_52px_rgba(255,255,255,0.3)] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:px-7 sm:py-3.5"
             >
               <Search className="h-4 w-4" />
               {heroContent.ctaButtonText}
@@ -55,7 +55,7 @@ export default function Hero() {
             </Link>
             <Link
               href="/agencias"
-              className="inline-flex min-h-12 max-w-full items-center justify-center gap-2 rounded-lg border border-white/60 bg-primary-950/30 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              className="inline-flex min-h-12 max-w-full items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 px-6 py-3 text-sm font-semibold text-white backdrop-blur-xl transition-all duration-300 hover:border-white/40 hover:bg-white/20 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:px-7 sm:py-3.5"
             >
               <MapPin className="h-4 w-4" />
               {heroContent.secondaryButtonText}

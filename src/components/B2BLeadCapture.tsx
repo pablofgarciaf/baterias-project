@@ -98,6 +98,13 @@ export default function B2BLeadCapture({ asPage = false }: { asPage?: boolean })
     }
   };
 
+  const labelCls = `block text-[11px] font-bold uppercase tracking-wider mb-1.5 ${isDark ? 'text-slate-300' : 'text-slate-700'}`;
+  const fieldCls = `w-full px-3 py-2 rounded-xl border text-[13px] outline-none transition-all ${
+    isDark
+      ? 'bg-slate-800 border-slate-700 text-white focus:border-primary-500'
+      : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-primary-500'
+  }`;
+
   return (
     <section
       id="quiero-ser-proveedor"
@@ -112,28 +119,34 @@ export default function B2BLeadCapture({ asPage = false }: { asPage?: boolean })
       <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-primary-500/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="container-max relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
-          {/* Left Column: Commercial Proposition */}
-          <motion.div initial={{opacity: 0, filter: "blur(10px)", x: -20}} whileInView={{opacity: 1, filter: "blur(0px)", x: 0}} viewport={{once: true}} transition={{duration: 0.6}} className="lg:col-span-5">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary-500/15 border border-primary-400/30 text-primary-600 dark:text-primary-300 text-xs sm:text-sm font-bold uppercase tracking-wider mb-6">
+        <div className="mx-auto mb-8 max-w-2xl text-center sm:mb-10">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary-500/15 border border-primary-400/30 text-primary-600 dark:text-primary-300 text-[11px] sm:text-xs font-bold uppercase tracking-wider mb-4">
               <TrendingUp className="w-4 h-4 text-primary-600 dark:text-primary-400" />
               {b2b.badge}
             </div>
 
-            <Heading className={`text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight ${
+            <Heading className={`text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight ${
               isDark ? 'text-white' : 'text-slate-950'
             }`}>
               {b2b.title}
             </Heading>
 
-            <p className={`mt-4 text-base sm:text-lg leading-relaxed ${
+            <p className={`mt-3 text-sm sm:text-base leading-relaxed ${
               isDark ? 'text-slate-300' : 'text-slate-600'
             }`}>
               {b2b.subtitle}
             </p>
 
-            <div className="mt-8 space-y-4">
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 lg:gap-6 items-start">
+          
+          {/* Left Column: Commercial Proposition */}
+          <motion.div initial={{opacity: 0, filter: "blur(10px)", x: -20}} whileInView={{opacity: 1, filter: "blur(0px)", x: 0}} viewport={{once: true}} transition={{duration: 0.6}} className="lg:col-span-1">
+            <p className={`mb-4 text-lg font-extrabold leading-snug tracking-tight sm:text-xl ${isDark ? 'text-white' : 'text-slate-950'}`}>
+              Cuéntanos qué necesitas y <span className="text-secondary-500">preparamos una propuesta</span> para tu negocio.
+            </p>
+            <div className="grid grid-cols-1 gap-3">
               {
                 (b2b.benefits && b2b.benefits.length > 0 ? b2b.benefits : [
                   { icon: Percent, title: b2b.benefit1Title, desc: b2b.benefit1Desc },
@@ -149,7 +162,7 @@ export default function B2BLeadCapture({ asPage = false }: { asPage?: boolean })
                     viewport={{once: true}}
                     transition={{duration: 0.4, delay: idx * 0.1}}
                     key={idx} 
-                    className={`group flex items-start gap-4 p-4 sm:p-5 rounded-2xl border transition-all duration-300 hover:scale-[1.02] cursor-default ${
+                    className={`group flex items-start gap-3 p-4 rounded-2xl border transition-all duration-300 hover:scale-[1.02] cursor-default ${
                       isDark 
                         ? 'bg-white/5 backdrop-blur-xl border-white/10 hover:border-white/20 hover:bg-white/10' 
                         : 'bg-white border-slate-200 hover:border-primary-200 hover:shadow-xl hover:shadow-primary-900/5'
@@ -178,9 +191,9 @@ export default function B2BLeadCapture({ asPage = false }: { asPage?: boolean })
             whileInView={{opacity: 1, filter: "blur(0px)", x: 0}} 
             viewport={{once: true}} 
             transition={{duration: 0.6, delay: 0.2}} 
-            className="lg:col-span-7"
+            className="lg:col-span-2"
           >
-            <div className={`rounded-3xl p-6 sm:p-8 shadow-2xl border backdrop-blur-xl transition-colors ${
+            <div className={`rounded-3xl p-5 sm:p-6 shadow-2xl border backdrop-blur-xl transition-colors ${
               isDark 
                 ? 'bg-slate-900/50 border-white/10 text-white' 
                 : 'bg-white/80 border-slate-200 text-slate-900 shadow-slate-900/10'
@@ -205,10 +218,10 @@ export default function B2BLeadCapture({ asPage = false }: { asPage?: boolean })
                   </button>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-3">
-                  <fieldset>
+                <form onSubmit={handleSubmit}>
+                  <fieldset className="m-0 min-w-0 space-y-4 border-0 p-0">
                   <div>
-                    <h3 className={`text-xl font-extrabold ${isDark ? 'text-white' : 'text-slate-950'}`}>
+                    <h3 className={`text-base font-extrabold ${isDark ? 'text-white' : 'text-slate-950'}`}>
                       Formulario de Postulación de Distribuidor
                     </h3>
                     <p className={`text-xs mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
@@ -223,13 +236,9 @@ export default function B2BLeadCapture({ asPage = false }: { asPage?: boolean })
                     </div>
                   )}
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${
-                        isDark ? 'text-slate-300' : 'text-slate-700'
-                      }`}>
-                        Negocio / Razón Social *
-                      </label>
+                  <div className="grid grid-cols-1 gap-x-4 gap-y-3.5 sm:grid-cols-3">
+                    <div className="sm:col-span-2">
+                      <label className={labelCls}>Negocio / Razón Social *</label>
                       <input
                         type="text"
                         required
@@ -237,64 +246,11 @@ export default function B2BLeadCapture({ asPage = false }: { asPage?: boolean })
                         aria-label="Negocio o razón social"
                         value={formData.companyName}
                         onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
-                        className={`w-full px-3.5 py-2.5 rounded-xl border text-sm outline-none transition-all ${
-                          isDark 
-                            ? 'bg-slate-800 border-slate-700 text-white focus:border-primary-500' 
-                            : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-primary-500'
-                        }`}
+                        className={fieldCls}
                       />
                     </div>
-
                     <div>
-                      <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${
-                        isDark ? 'text-slate-300' : 'text-slate-700'
-                      }`}>
-                        Nombre de Contacto *
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="Ej: Ing. Juan Pérez"
-                        aria-label="Nombre de contacto"
-                        value={formData.contactName}
-                        onChange={(e) => setFormData({ ...formData, contactName: e.target.value })}
-                        className={`w-full px-3.5 py-2.5 rounded-xl border text-sm outline-none transition-all ${
-                          isDark 
-                            ? 'bg-slate-800 border-slate-700 text-white focus:border-primary-500' 
-                            : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-primary-500'
-                        }`}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${
-                        isDark ? 'text-slate-300' : 'text-slate-700'
-                      }`}>
-                        Correo Electrónico *
-                      </label>
-                      <input
-                        type="email"
-                        required
-                        placeholder="comercial@tunegocio.ec"
-                        aria-label="Correo electrónico"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className={`w-full px-3.5 py-2.5 rounded-xl border text-sm outline-none transition-all ${
-                          isDark 
-                            ? 'bg-slate-800 border-slate-700 text-white focus:border-primary-500' 
-                            : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-primary-500'
-                        }`}
-                      />
-                    </div>
-
-                    <div>
-                      <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${
-                        isDark ? 'text-slate-300' : 'text-slate-700'
-                      }`}>
-                        Teléfono / WhatsApp *
-                      </label>
+                      <label className={labelCls}>Teléfono / WhatsApp *</label>
                       <input
                         type="tel"
                         required
@@ -302,78 +258,29 @@ export default function B2BLeadCapture({ asPage = false }: { asPage?: boolean })
                         aria-label="Teléfono o WhatsApp"
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        className={`w-full px-3.5 py-2.5 rounded-xl border text-sm outline-none transition-all ${
-                          isDark 
-                            ? 'bg-slate-800 border-slate-700 text-white focus:border-primary-500' 
-                            : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-primary-500'
-                        }`}
+                        className={fieldCls}
                       />
                     </div>
-                  </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${
-                        isDark ? 'text-slate-300' : 'text-slate-700'
-                      }`}>
-                        Provincia *
-                      </label>
-                      <select
-                        aria-label="Provincia"
-                        value={formData.province}
-                        onChange={(e) => setFormData({ ...formData, province: e.target.value })}
-                        className={`w-full px-3.5 py-2.5 rounded-xl border text-sm outline-none transition-all ${
-                          isDark 
-                            ? 'bg-slate-800 border-slate-700 text-white' 
-                            : 'bg-slate-50 border-slate-300 text-slate-900'
-                        }`}
-                      >
-                        {provinces.map((p) => (
-                          <option key={p.id} value={p.name}>
-                            {p.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${
-                        isDark ? 'text-slate-300' : 'text-slate-700'
-                      }`}>
-                        Ciudad / Cantón *
-                      </label>
+                    <div className="sm:col-span-2">
+                      <label className={labelCls}>Correo Electrónico *</label>
                       <input
-                        type="text"
+                        type="email"
                         required
-                        placeholder="Ej: Quito, Guayaquil, Cuenca"
-                        aria-label="Ciudad o cantón"
-                        value={formData.city}
-                        onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                        className={`w-full px-3.5 py-2.5 rounded-xl border text-sm outline-none transition-all ${
-                          isDark 
-                            ? 'bg-slate-800 border-slate-700 text-white focus:border-primary-500' 
-                            : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-primary-500'
-                        }`}
+                        placeholder="comercial@tunegocio.ec"
+                        aria-label="Correo electrónico"
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        className={fieldCls}
                       />
                     </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${
-                        isDark ? 'text-slate-300' : 'text-slate-700'
-                      }`}>
-                        Tipo de Negocio *
-                      </label>
+                      <label className={labelCls}>Tipo de Negocio *</label>
                       <select
                         aria-label="Tipo de negocio"
                         value={formData.businessType}
                         onChange={(e) => setFormData({ ...formData, businessType: e.target.value as B2BLead['businessType'] })}
-                        className={`w-full px-3.5 py-2.5 rounded-xl border text-sm outline-none transition-all ${
-                          isDark 
-                            ? 'bg-slate-800 border-slate-700 text-white' 
-                            : 'bg-slate-50 border-slate-300 text-slate-900'
-                        }`}
+                        className={fieldCls}
                       >
                         <option value="Taller Mecánico">Taller Mecánico</option>
                         <option value="Distribuidor Mayorista">Distribuidor Mayorista</option>
@@ -384,20 +291,52 @@ export default function B2BLeadCapture({ asPage = false }: { asPage?: boolean })
                     </div>
 
                     <div>
-                      <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${
-                        isDark ? 'text-slate-300' : 'text-slate-700'
-                      }`}>
-                        Volumen Mensual Estimado
-                      </label>
+                      <label className={labelCls}>Nombre de Contacto *</label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="Ej: Ing. Juan Pérez"
+                        aria-label="Nombre de contacto"
+                        value={formData.contactName}
+                        onChange={(e) => setFormData({ ...formData, contactName: e.target.value })}
+                        className={fieldCls}
+                      />
+                    </div>
+                    <div>
+                      <label className={labelCls}>Provincia *</label>
+                      <select
+                        aria-label="Provincia"
+                        value={formData.province}
+                        onChange={(e) => setFormData({ ...formData, province: e.target.value })}
+                        className={fieldCls}
+                      >
+                        {provinces.map((p) => (
+                          <option key={p.id} value={p.name}>
+                            {p.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className={labelCls}>Ciudad / Cantón *</label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="Ej: Quito, Guayaquil, Cuenca"
+                        aria-label="Ciudad o cantón"
+                        value={formData.city}
+                        onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                        className={fieldCls}
+                      />
+                    </div>
+
+                    <div>
+                      <label className={labelCls}>Volumen Mensual Estimado</label>
                       <select
                         aria-label="Volumen mensual estimado"
                         value={formData.estimatedVolume}
                         onChange={(e) => setFormData({ ...formData, estimatedVolume: e.target.value })}
-                        className={`w-full px-3.5 py-2.5 rounded-xl border text-sm outline-none transition-all ${
-                          isDark 
-                            ? 'bg-slate-800 border-slate-700 text-white' 
-                            : 'bg-slate-50 border-slate-300 text-slate-900'
-                        }`}
+                        className={fieldCls}
                       >
                         <option value="1 - 10 unidades/mes">1 - 10 unidades/mes</option>
                         <option value="10 - 30 unidades/mes">10 - 30 unidades/mes</option>
@@ -405,26 +344,17 @@ export default function B2BLeadCapture({ asPage = false }: { asPage?: boolean })
                         <option value="Más de 100 unidades/mes">Más de 100 unidades/mes</option>
                       </select>
                     </div>
-                  </div>
-
-                  <div>
-                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${
-                      isDark ? 'text-slate-300' : 'text-slate-700'
-                    }`}>
-                      Comentarios adicionales (Opcional)
-                    </label>
-                    <textarea
-                      aria-label="Comentarios adicionales"
-                      rows={1}
-                      placeholder="Indícanos marcas con las que trabajas actualmente o requerimientos especiales..."
-                      value={formData.notes}
-                      onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                      className={`w-full px-3.5 py-2 rounded-xl border text-sm outline-none transition-all ${
-                        isDark 
-                          ? 'bg-slate-800 border-slate-700 text-white focus:border-primary-500' 
-                          : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-primary-500'
-                      }`}
-                    />
+                    <div className="sm:col-span-2">
+                      <label className={labelCls}>Comentarios adicionales (Opcional)</label>
+                      <textarea
+                        aria-label="Comentarios adicionales"
+                        rows={1}
+                        placeholder="Marcas con las que trabajas o requerimientos especiales..."
+                        value={formData.notes}
+                        onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                        className={`${fieldCls} resize-none`}
+                      />
+                    </div>
                   </div>
 
                   <label className={`flex items-start gap-2 text-xs leading-relaxed ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
@@ -444,7 +374,7 @@ export default function B2BLeadCapture({ asPage = false }: { asPage?: boolean })
                   <button
                     type="submit"
                     disabled={isSubmitting || !consent}
-                    className="w-full py-3 px-6 rounded-xl bg-secondary-500 hover:bg-secondary-400 text-primary-950 font-bold text-sm shadow-xl shadow-secondary-600/25 flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
+                    className="w-full py-2.5 px-5 rounded-xl bg-secondary-500 hover:bg-secondary-400 text-primary-950 font-bold text-[13px] shadow-xl shadow-secondary-600/25 flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
                   >
                     <Send className="w-4 h-4" />
                     <span>{isSubmitting ? 'Enviando...' : 'Enviar postulación'}</span>

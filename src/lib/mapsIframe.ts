@@ -38,3 +38,21 @@ export function coordsFromMapsEmbed(input?: string | null): MapCoordinates | nul
   }
   return null;
 }
+
+/**
+ * Devuelve una URL segura para incrustar a partir de lo que pegó el administrador.
+ * Solo se acepta https de Google Maps; nunca se inyecta HTML del usuario en la página.
+ */
+export function embedSrcFromIframe(input?: string | null): string | null {
+  if (!input) return null;
+  const match = input.match(/src\s*=\s*["']([^"']+)["']/i);
+  const raw = (match ? match[1] : input.trim()).replace(/&amp;/g, '&');
+  try {
+    const url = new URL(raw);
+    const okHost = url.protocol === 'https:' && (url.hostname === 'www.google.com' || url.hostname === 'maps.google.com');
+    if (!okHost || !url.pathname.startsWith('/maps')) return null;
+    return url.toString();
+  } catch {
+    return null;
+  }
+}

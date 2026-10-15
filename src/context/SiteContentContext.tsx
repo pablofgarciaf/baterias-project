@@ -203,8 +203,8 @@ export const defaultSiteContent: SiteContent = {
     benefit2Desc: 'Cuéntanos cuánto compras y con qué frecuencia para preparar una propuesta pertinente.',
     benefit3Title: 'Condiciones por escrito',
     benefit3Desc: 'Solicita precio, disponibilidad, entrega y garantía antes de cerrar un pedido.',
-    benefit4Title: 'Un canal de consulta',
-    benefit4Desc: 'El formulario se habilitará cuando el canal comercial y la privacidad estén aprobados.',
+    benefit4Title: 'Atención personalizada',
+    benefit4Desc: 'Nuestro equipo comercial revisa tu solicitud y te da seguimiento.',
     submitButtonText: 'Enviar Solicitud Comercial',
     submitButtonColor: '#f7941d'
   },

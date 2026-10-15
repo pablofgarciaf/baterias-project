@@ -11,6 +11,8 @@ export interface MapLocation {
   address: string;
   latitude: number;
   longitude: number;
+  /** Si es verdadero, la ruta se calcula por coordenadas y no por el texto de la dirección. */
+  routeByCoordinates?: boolean;
 }
 
 interface PremiumMapProps {
@@ -76,7 +78,7 @@ export default function PremiumMap({
       const route = document.createElement('a');
       route.textContent = 'Cómo llegar';
       route.style.cssText = 'font-weight:700;color:#b84700;text-decoration:underline';
-      route.href = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${location.address}, ${location.city}, Ecuador`)}`;
+      route.href = `https://www.google.com/maps/dir/?api=1&destination=${location.routeByCoordinates ? `${location.latitude},${location.longitude}` : encodeURIComponent(`${location.address}, ${location.city}, Ecuador`)}`;
       route.target = '_blank';
       route.rel = 'noopener noreferrer';
       popup.append(title, address, route);
