@@ -16,8 +16,15 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-import { redirect } from 'next/navigation';
+import type { Metadata } from 'next';
+import ContactoB2BClient from './ContactoB2BClient';
+
+export const metadata: Metadata = {
+  title: 'Quiero ser proveedor',
+  description:
+    'Postula tu taller o negocio para distribuir baterías Maresa. Déjanos los datos de tu empresa y te contactamos.',
+};
 
 export default function ContactoB2BPage() {
-  redirect('/agencias');
+  return <ContactoB2BClient />;
 }

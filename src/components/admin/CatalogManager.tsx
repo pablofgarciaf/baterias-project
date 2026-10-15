@@ -325,11 +325,11 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
     const border = darkMode ? GLASS_TOKENS.borderDark : GLASS_TOKENS.border;
     const textPrimary = darkMode ? 'text-white' : 'text-slate-950';
     const textSecondary = darkMode ? 'text-slate-400' : 'text-slate-500';
-    const inputBg = darkMode ? 'rgba(15, 23, 42, 0.6)' : 'rgba(255, 255, 255, 0.6)';
+    const inputBg = darkMode ? 'rgba(30, 30, 29, 0.6)' : 'rgba(255, 255, 255, 0.6)';
     const inputBorder = darkMode ? GLASS_TOKENS.borderDark : GLASS_TOKENS.border;
-    const inputText = darkMode ? '#f1f5f9' : '#0f172a';
-    const placeholder = darkMode ? '#64748b' : '#94a3b8';
-    const hoverBg = darkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(148, 163, 184, 0.1)';
+    const inputText = darkMode ? '#eeeeea' : '#1e1e1d';
+    const placeholder = darkMode ? '#8c8c86' : '#b6b6b0';
+    const hoverBg = darkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(182, 182, 176, 0.1)';
 
     return {
       card: {
@@ -703,7 +703,7 @@ export default function CatalogManager({ darkMode }: { darkMode: boolean }) {
                       </div>
                       <h3 className="text-base font-bold mb-2" style={{ color: styles.textPrimary }}>{item.model}</h3>
                       <span className={`mb-3 inline-block rounded-full px-2 py-1 text-xs font-semibold ${item.published ? 'bg-success-500/15 text-success-400' : 'bg-warning-500/15 text-warning-400'}`}>{item.published ? 'Publicado' : 'Borrador'}</span>
-                      <div className="p-3 rounded-lg mb-3" style={{ background: darkMode ? 'rgba(15, 23, 42, 0.6)' : 'rgba(255, 255, 255, 0.6)', border: `1px solid ${border}` }}>
+                      <div className="p-3 rounded-lg mb-3" style={{ background: darkMode ? 'rgba(30, 30, 29, 0.6)' : 'rgba(255, 255, 255, 0.6)', border: `1px solid ${border}` }}>
                         <div className="flex items-center justify-between text-xs font-semibold mb-1" style={{ color: styles.textPrimary }}>
                           <span>{item.recommendedBattery.model}</span>
                           <span className="text-primary-500">{item.recommendedBattery.priceEcuador > 0 ? `$${item.recommendedBattery.priceEcuador.toFixed(2)}` : 'Precio pendiente'}</span>

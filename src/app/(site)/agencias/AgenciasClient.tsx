@@ -229,19 +229,19 @@ export default function AgenciasClient() {
     return (
       <main className={`min-h-screen py-16 sm:py-20 ${isDark ? 'bg-primary-950 text-white' : 'bg-[#f6f6f4] text-primary-950'}`}>
         <div className="container-max">
-          <p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-secondary-600">Encuentra un local</p>
-          <h1 className="max-w-3xl text-3xl font-extrabold tracking-tight sm:text-5xl">Locales publicados por Maresa</h1>
+          <p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-secondary-600">Consulta puntos de atención</p>
+          <h1 className="max-w-3xl text-3xl font-extrabold tracking-tight sm:text-5xl">Puntos de atención</h1>
           <p className={`mt-4 max-w-2xl text-base leading-relaxed ${isDark ? 'text-primary-300' : 'text-primary-600'}`}>
-            Consulta la dirección que te resulte más conveniente y pregunta directamente al local por la disponibilidad de baterías.
+            Consulta las ubicaciones publicadas y confirma horarios y servicios antes de desplazarte.
           </p>
           <button type="button" onClick={handleFindNearest} disabled={findingNearest} className="mt-7 inline-flex min-h-12 items-center gap-2 rounded-xl bg-secondary-500 px-5 font-bold text-primary-950 transition-colors hover:bg-secondary-400 disabled:opacity-60">
-            <Crosshair className="h-4 w-4" />{findingNearest ? 'Buscando ubicación…' : 'Encontrar local más cercano'}
+            <Crosshair className="h-4 w-4" />{findingNearest ? 'Calculando ubicación y abriendo mapa...' : 'Agencia más cercana (GPS) • Ver en Mapa'}
           </button>
           {gpsError && <p role="alert" className={`mt-3 max-w-2xl text-sm ${isDark ? 'text-orange-200' : 'text-orange-800'}`}>{gpsError}</p>}
           {nearestLocation && (
             <div role="status" className={`mt-4 rounded-xl border p-4 text-sm ${isDark ? 'border-primary-700 bg-primary-900' : 'border-primary-200 bg-white'}`}>
-              <p className="font-bold">Local estimado más cercano: {nearestLocation.name}, {nearestLocation.city}</p>
-              <p className="mt-1">Aproximadamente {Math.round(nearestLocation.distance)} km en línea recta. Confirma la dirección antes de salir.</p>
+              <p className="font-bold">Agencia más cercana: {nearestLocation.name}, {nearestLocation.city}</p>
+              <p className="mt-1">A {Math.round(nearestLocation.distance)} km en línea recta.</p>
               <a className="mt-2 inline-flex items-center gap-2 font-bold text-secondary-700 underline" href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${nearestLocation.address}, ${nearestLocation.city}, Ecuador`)}`} target="_blank" rel="noopener noreferrer">Ver ruta al local <ArrowRight className="h-4 w-4" /></a>
             </div>
           )}
@@ -265,8 +265,8 @@ export default function AgenciasClient() {
             <section ref={mapContainerRef} aria-label="Mapa de puntos de atención" className={`order-1 scroll-mt-24 overflow-hidden rounded-2xl border shadow-lg xl:order-2 ${isDark ? 'border-primary-700 bg-primary-900' : 'border-slate-200 bg-white'}`}>
               <div className={`border-b px-5 py-4 ${isDark ? 'border-primary-700' : 'border-slate-200'}`}>
                 <span className="text-xs font-bold uppercase tracking-[0.16em] text-secondary-700">Mapa de atención</span>
-                <h2 className="mt-1 text-lg font-extrabold">{fallbackSelected?.name || 'Locales de atención publicados'}</h2>
-                <p className={`mt-1 text-sm ${isDark ? 'text-primary-200' : 'text-slate-600'}`}>{fallbackSelected ? fallbackSelected.address : 'Selecciona un marcador o un local para ver su ubicación aproximada y cómo llegar.'}</p>
+                <h2 className="mt-1 text-lg font-extrabold">{fallbackSelected?.name || 'Puntos de atención'}</h2>
+                <p className={`mt-1 text-sm ${isDark ? 'text-primary-200' : 'text-slate-600'}`}>{fallbackSelected ? fallbackSelected.address : 'Selecciona un marcador o un punto de atención para ver su ubicación y cómo llegar.'}</p>
               </div>
               <div className="h-[360px] sm:h-[440px]">
                 <PremiumMap
@@ -277,7 +277,6 @@ export default function AgenciasClient() {
                   onSelectLocation={(id) => setFallbackSelected(officialMaresaLocations.find((location) => location.name === id) ?? null)}
                 />
               </div>
-              <p className={`border-t px-5 py-3 text-xs ${isDark ? 'border-primary-700 text-primary-300' : 'border-slate-200 text-slate-500'}`}>Los marcadores son referenciales; usa la dirección publicada para confirmar el destino.</p>
             </section>
           </div>
           <a href="https://maresapartsb2c.corpmaresa.com.ec/locales" target="_blank" rel="noopener noreferrer" className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-secondary-600 underline underline-offset-4">Consultar el directorio completo de Maresa <ArrowRight className="h-4 w-4" /></a>
@@ -302,10 +301,12 @@ export default function AgenciasClient() {
                 <Building2 className="w-3.5 h-3.5 text-warning-500" />
                 Consulta puntos de atención
               </span>
+              {!locationsLoading && distributorsList.length > 0 && (
               <span className={`text-xs font-black flex items-center gap-1 ${distributorsList.length > 0 ? 'text-success-600 dark:text-success-400' : 'text-accent-600 dark:text-accent-300'}`}>
                 {distributorsList.length > 0 ? <CheckCircle2 className="w-3.5 h-3.5" /> : <MapPin className="w-3.5 h-3.5" />}
                 {distributorsList.length} puntos publicados
               </span>
+              )}
             </div>
 
             <h1 className={`text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight ${
@@ -368,7 +369,7 @@ export default function AgenciasClient() {
                     : 'bg-slate-50 border-slate-200 text-slate-900 focus:border-primary-500 focus:ring-1 focus:ring-primary-500/30'
                 }`}
               >
-                <option value="Todas">Todas las provincias ({distributorsList.length} puntos)</option>
+                <option value="Todas">Todas las provincias</option>
                 {provinces.map(p => (
                   <option key={p.id} value={p.name}>{p.name}</option>
                 ))}
@@ -442,7 +443,7 @@ export default function AgenciasClient() {
               <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-slate-200 dark:border-primary-900/30">
                 <span className="text-xs font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-primary-600"></span>
-                  Puntos disponibles ({filteredDistributors.length})
+                  Puntos de atención{filteredDistributors.length > 0 ? ` (${filteredDistributors.length})` : ''}
                 </span>
                 {gpsActive && (
                   <span className="text-[11px] font-bold text-success-600 dark:text-success-400 flex items-center gap-1">
@@ -457,8 +458,9 @@ export default function AgenciasClient() {
                 {filteredDistributors.length === 0 ? (
                   <div className="p-8 text-center">
                     <MapPin className="w-9 h-9 text-slate-400 mx-auto mb-2 opacity-60" />
-                    <p className="font-bold text-sm mb-1">{distributorsList.length === 0 ? 'Aún no hay puntos de atención publicados' : 'No hay puntos con este filtro'}</p>
-                    <p className="text-xs text-slate-500 mb-4">{distributorsList.length === 0 ? 'Estamos verificando direcciones, contactos y horarios antes de mostrarlos.' : 'Prueba otra provincia o búsqueda.'}</p>
+                    <p className="font-bold text-sm mb-1">{locationsLoading ? 'Cargando puntos de atención…' : 'No hay puntos con este filtro'}</p>
+                    <p className="text-xs text-slate-500 mb-4">{locationsLoading ? 'Un momento, preparando el directorio.' : 'Prueba otra provincia o búsqueda.'}</p>
+                    {!locationsLoading && (
                     <button
                       type="button"
                       onClick={() => { setSelectedProvince('Todas'); setSearchQuery(''); setGpsActive(false); }}
@@ -466,6 +468,7 @@ export default function AgenciasClient() {
                     >
                       Limpiar filtros
                     </button>
+                    )}
                   </div>
                 ) : (
                   filteredDistributors.map((dist) => {

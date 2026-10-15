@@ -40,6 +40,7 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { useTheme } from '@/context/ThemeContext';
 import Link from 'next/link';
+import Marquee from './Marquee';
 import { usePathname } from 'next/navigation';
 
 const navLinks = [
@@ -47,6 +48,7 @@ const navLinks = [
   { label: 'Escoge tu Batería', href: '/#escoge-tu-bateria', icon: Search },
   { label: 'Quiénes Somos', href: '/nosotros', icon: Users },
   { label: 'Puntos de Venta', href: '/agencias', icon: MapPin },
+  { label: 'Quiero ser Proveedor', href: '/contacto-b2b', icon: Handshake },
 ];
 
 const moreLinks = [
@@ -88,13 +90,15 @@ export default function Header() {
     return pathname.startsWith(href);
   };
 
-  const solid = true;
+  // En el inicio el menú flota sin fondo sobre el hero y se vuelve sólido al hacer scroll.
+  const overHero = pathname === '/';
+  const solid = !overHero || scrolled || mobileOpen;
 
   const headerBg = solid
     ? isDark
       ? 'bg-slate-950/90 backdrop-blur-2xl border-b border-white/[0.06] shadow-lg shadow-black/20'
       : 'bg-white/95 backdrop-blur-2xl border-b border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.05)]'
-    : 'bg-transparent border-b border-transparent';
+    : 'bg-gradient-to-b from-black/45 to-transparent border-b border-transparent';
 
   const linkBase = solid
     ? isDark ? 'text-slate-300' : 'text-slate-600'
@@ -113,8 +117,9 @@ export default function Header() {
     : 'bg-secondary-500';
 
   return (
-    <header className={`sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'shadow-md shadow-black/10' : ''}`}>
-      {/* La navegación ocupa espacio propio: el hero empieza debajo. */}
+    <header className={`${overHero ? 'fixed inset-x-0 top-0' : 'sticky top-0'} z-50 transition-all duration-300 ${scrolled ? 'shadow-md shadow-black/10' : ''}`}>
+      {/* Marquesina sobre el menú: se oculta al hacer scroll. */}
+      {overHero && <Marquee scrolled={scrolled} />}
       <div className={`transition-all duration-500 ${headerBg}`}>
         <div className="container-max">
           <div className="flex items-center justify-between h-14 lg:h-16">

@@ -74,8 +74,8 @@ export const ImageUploader = React.forwardRef<HTMLDivElement, ImageUploaderProps
       border: `2px dashed ${isDragActive
         ? 'rgb(211 17 69 / 0.8)'
         : isDark
-        ? 'rgba(148, 163, 184, 0.3)'
-        : 'rgba(148, 163, 184, 0.4)'}`,
+        ? 'rgba(182, 182, 176, 0.3)'
+        : 'rgba(182, 182, 176, 0.4)'}`,
       background: isDragActive
         ? isDark
           ? 'rgba(211, 17, 69, 0.15)'
@@ -89,8 +89,8 @@ export const ImageUploader = React.forwardRef<HTMLDivElement, ImageUploaderProps
       padding: '0.75rem 1rem',
       borderRadius: '0.75rem',
       border: `1px solid ${isDark ? GLASS_TOKENS.borderDark : GLASS_TOKENS.border}`,
-      background: isDark ? 'rgba(15, 23, 42, 0.6)' : 'rgba(255, 255, 255, 0.6)',
-      color: isDark ? '#f1f5f9' : '#0f172a',
+      background: isDark ? 'rgba(30, 30, 29, 0.6)' : 'rgba(255, 255, 255, 0.6)',
+      color: isDark ? '#eeeeea' : '#1e1e1d',
       fontSize: '0.875rem',
       outline: 'none',
       transition: 'all 0.2s ease',
@@ -268,7 +268,7 @@ export const ImageUploader = React.forwardRef<HTMLDivElement, ImageUploaderProps
           {isLoading && (
             <div className="flex flex-col items-center gap-2 text-center" role="status" aria-live="polite">
               <Loader2 className="w-8 h-8 text-primary-500 animate-spin" aria-hidden="true" />
-              <span className="text-sm font-medium" style={{ color: isDark ? '#94a3b8' : '#64748b' }}>
+              <span className="text-sm font-medium" style={{ color: isDark ? '#b6b6b0' : '#8c8c86' }}>
                 Procesando imagen...
               </span>
             </div>
@@ -289,10 +289,10 @@ export const ImageUploader = React.forwardRef<HTMLDivElement, ImageUploaderProps
                 <Upload className={`w-6 h-6 ${isDragActive ? 'text-primary-400' : isDark ? 'text-slate-500' : 'text-slate-400'}`} aria-hidden="true" />
               </div>
               <div className="space-y-1">
-                <p className="text-sm font-semibold" style={{ color: isDark ? '#e2e8f0' : '#1e293b' }}>
+                <p className="text-sm font-semibold" style={{ color: isDark ? '#e4e4df' : '#30302e' }}>
                   {isDragActive ? 'Suelta para subir' : `Arrastra o haz clic para subir ${label}`}
                 </p>
-                <p className="text-xs" style={{ color: isDark ? '#64748b' : '#94a3b8' }}>
+                <p className="text-xs" style={{ color: isDark ? '#8c8c86' : '#b6b6b0' }}>
                   Formatos: WebP, PNG, JPG, GIF, AVIF • Máx. {maxSizeMB}MB
                 </p>
               </div>
@@ -328,7 +328,7 @@ export const ImageUploader = React.forwardRef<HTMLDivElement, ImageUploaderProps
               URL de la imagen
             </label>
             <div className="relative flex-1">
-              <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: isDark ? '#64748b' : '#94a3b8' }} aria-hidden="true" />
+              <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: isDark ? '#8c8c86' : '#b6b6b0' }} aria-hidden="true" />
               <input
                 ref={urlInputRef}
                 id="image-url-input"
@@ -354,8 +354,8 @@ export const ImageUploader = React.forwardRef<HTMLDivElement, ImageUploaderProps
               disabled={disabled}
               className="px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1"
               style={{
-                background: isDark ? 'rgba(148, 163, 184, 0.15)' : 'rgba(148, 163, 184, 0.2)',
-                color: isDark ? '#94a3b8' : '#64748b',
+                background: isDark ? 'rgba(182, 182, 176, 0.15)' : 'rgba(182, 182, 176, 0.2)',
+                color: isDark ? '#b6b6b0' : '#8c8c86',
                 border: `1px solid ${isDark ? GLASS_TOKENS.borderDark : GLASS_TOKENS.border}`,
               }}
               aria-label="Cancelar entrada de URL"

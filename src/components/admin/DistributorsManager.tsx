@@ -40,6 +40,8 @@ import { GlassCard } from './ui/GlassCard';
 import { GLASS_TOKENS } from '@/types/admin';
 import { DistributorLocation } from '@/types/sinergia';
 import { provinces } from '@/data/provinces';
+import { coordsFromMapsEmbed } from '@/lib/mapsIframe';
+import { auth } from '@/lib/firebase';
 import {
   getDistributors,
   saveDistributor,
@@ -71,6 +73,8 @@ export default function DistributorsManager({ darkMode }: { darkMode: boolean })
     mapsIframe: '',
   });
   const [saving, setSaving] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [batchPublishing, setBatchPublishing] = useState(false);
 
   useEffect(() => {
     loadDistributors();
@@ -106,8 +110,8 @@ export default function DistributorsManager({ darkMode }: { darkMode: boolean })
         phone: newDistributor.phone || '',
         whatsapp: newDistributor.whatsapp || '',
         schedule: newDistributor.schedule || '',
-        latitude: Number(newDistributor.latitude) || 0,
-        longitude: Number(newDistributor.longitude) || 0,
+        latitude: coordsFromMapsEmbed(newDistributor.mapsIframe)?.latitude ?? (Number(newDistributor.latitude) || 0),
+        longitude: coordsFromMapsEmbed(newDistributor.mapsIframe)?.longitude ?? (Number(newDistributor.longitude) || 0),
         services: newDistributor.services || [],
         isAuthorized: false,
         rating: 0,
@@ -151,15 +155,48 @@ export default function DistributorsManager({ darkMode }: { darkMode: boolean })
     setEditedDistributor({ ...dist });
   };
 
+  // Validacion unica para publicar (individual y por lote). Devuelve lo que falta.
+  const missingForPublish = (dist: DistributorLocation): string[] => {
+    const missing: string[] = [];
+    if ((dist.name || '').trim().length < 2) missing.push('nombre');
+    if ((dist.city || '').trim().length < 2) missing.push('ciudad');
+    if ((dist.address || '').trim().length < 5) missing.push('dirección');
+    if ((dist.phone || '').trim().length < 7) missing.push('teléfono');
+    if (!dist.schedule?.trim()) missing.push('horario');
+    if ((dist.approvalSource?.trim().length || 0) < 5) missing.push('fuente de aprobación');
+    const coords = coordsFromMapsEmbed(dist.mapsIframe) ?? { latitude: dist.latitude, longitude: dist.longitude };
+    const okCoords = Number.isFinite(coords.latitude) && Number.isFinite(coords.longitude)
+      && coords.latitude >= -5 && coords.latitude <= 2 && coords.longitude >= -92 && coords.longitude <= -75;
+    if (!okCoords) missing.push('ubicación (iframe de Google Maps)');
+    return missing;
+  };
+
+  const publishedPayload = (dist: DistributorLocation): DistributorLocation => {
+    const coords = coordsFromMapsEmbed(dist.mapsIframe);
+    return {
+      ...dist,
+      ...(coords ?? {}),
+      published: true,
+      isAuthorized: true,
+      reviewedBy: auth.currentUser?.displayName || auth.currentUser?.email || 'Administrador',
+      reviewedAt: new Date().toISOString(),
+    };
+  };
+
   const handlePublish = async (dist: DistributorLocation) => {
-    if (!dist.published && (dist.name.trim().length < 2 || dist.city.trim().length < 2 || dist.address.trim().length < 5 || dist.phone.trim().length < 7 || !dist.schedule?.trim() || (dist.approvalSource?.trim().length || 0) < 5 || (dist.reviewedBy?.trim().length || 0) < 2 || !Number.isFinite(dist.latitude) || !Number.isFinite(dist.longitude) || dist.latitude < -5 || dist.latitude > 2 || dist.longitude < -92 || dist.longitude > -75)) {
-      alert('Verifica nombre, ciudad, dirección, teléfono, horario, coordenadas, fuente de aprobación y revisor antes de publicar.');
-      return;
+    if (!dist.published) {
+      const missing = missingForPublish(dist);
+      if (missing.length > 0) {
+        alert(`Antes de publicar completa: ${missing.join(', ')}.`);
+        return;
+      }
+      if (!window.confirm('Confirma que la empresa aprobó esta ubicación, contacto y horario. Al publicar será visible para todos.')) return;
     }
-    if (!dist.published && !window.confirm('Confirma que la empresa aprobó esta ubicación, contacto y horario. Al publicar será visible para todos.')) return;
     setSaving(dist.id);
     try {
-      const updated = { ...dist, published: !dist.published, isAuthorized: !dist.published, reviewedAt: !dist.published ? new Date().toISOString() : dist.reviewedAt };
+      const updated = dist.published
+        ? { ...dist, published: false, isAuthorized: false }
+        : publishedPayload(dist);
       await saveDistributor(updated);
       setDistributors(previous => previous.map(item => item.id === dist.id ? updated : item));
     } catch {
@@ -169,11 +206,112 @@ export default function DistributorsManager({ darkMode }: { darkMode: boolean })
     }
   };
 
+  const buildEmbed = (latitude: number, longitude: number) =>
+    `<iframe src="https://www.google.com/maps?q=${latitude},${longitude}&z=17&output=embed" width="600" height="450" style="border:0" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
+
+  const handleFillIframes = async () => {
+    const targets = distributors.filter(d =>
+      !d.mapsIframe?.trim()
+      && Number.isFinite(d.latitude) && Number.isFinite(d.longitude)
+      && d.latitude >= -5 && d.latitude <= 2 && d.longitude >= -92 && d.longitude <= -75);
+    if (targets.length === 0) {
+      alert('Todas las agencias ya tienen iframe o no tienen coordenadas válidas para generarlo.');
+      return;
+    }
+    if (!window.confirm(`Se generará el iframe de Google Maps para ${targets.length} agencia(s) sin él, usando su ubicación guardada. ¿Continuar?`)) return;
+    setBatchPublishing(true);
+    const done = new Map<string, DistributorLocation>();
+    const failed: string[] = [];
+    for (const dist of targets) {
+      try {
+        const updated = { ...dist, mapsIframe: buildEmbed(dist.latitude, dist.longitude) };
+        await saveDistributor(updated);
+        done.set(dist.id, updated);
+      } catch {
+        failed.push(dist.name);
+      }
+    }
+    setDistributors(prev => prev.map(item => done.get(item.id) ?? item));
+    setBatchPublishing(false);
+    alert(`Iframes generados: ${done.size}.${failed.length ? `\nFallaron: ${failed.join(', ')}.` : ''}`);
+  };
+
+  const toggleSelected = (id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const pendingIds = distributors.filter(d => !d.published).map(d => d.id);
+  const allPendingSelected = pendingIds.length > 0 && pendingIds.every(id => selectedIds.has(id));
+  const toggleSelectAllPending = () => {
+    setSelectedIds(allPendingSelected ? new Set() : new Set(pendingIds));
+  };
+
+  const handlePublishSelected = async () => {
+    let targets = distributors.filter(d => selectedIds.has(d.id) && !d.published);
+    if (targets.length === 0) {
+      alert('Marca al menos una agencia en borrador.');
+      return;
+    }
+    const withoutSource = targets.filter(d => (d.approvalSource?.trim().length || 0) < 5);
+    if (withoutSource.length > 0) {
+      const source = window.prompt(
+        `${withoutSource.length} agencia(s) no tienen fuente de aprobación. Indica una para todas (por ejemplo: "Aprobado por Corporación Maresa"):`,
+        'Aprobado por Corporación Maresa',
+      );
+      if (source === null) return;
+      if (source.trim().length < 5) {
+        alert('Escribe una fuente de aprobación de al menos 5 caracteres.');
+        return;
+      }
+      targets = targets.map(d => (d.approvalSource?.trim().length || 0) < 5 ? { ...d, approvalSource: source.trim() } : d);
+    }
+    const valid: DistributorLocation[] = [];
+    const rejected: string[] = [];
+    targets.forEach(dist => {
+      const missing = missingForPublish(dist);
+      if (missing.length === 0) valid.push(dist);
+      else rejected.push(`• ${dist.name}: falta ${missing.join(', ')}`);
+    });
+    if (valid.length === 0) {
+      alert(`Ninguna de las seleccionadas cumple los requisitos:\n\n${rejected.join('\n')}`);
+      return;
+    }
+    const detail = rejected.length > 0 ? `\n\nNo se publicarán ${rejected.length} por datos incompletos:\n${rejected.join('\n')}` : '';
+    if (!window.confirm(`¿Publicar ${valid.length} agencia(s)? Confirmas que la empresa aprobó su ubicación, contacto y horario. Serán visibles para todos.${detail}`)) return;
+
+    setBatchPublishing(true);
+    const failed: string[] = [];
+    const done = new Map<string, DistributorLocation>();
+    for (const dist of valid) {
+      try {
+        const updated = publishedPayload(dist);
+        await saveDistributor(updated);
+        done.set(dist.id, updated);
+      } catch {
+        failed.push(dist.name);
+      }
+    }
+    setDistributors(prev => prev.map(item => done.get(item.id) ?? item));
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      done.forEach((_, id) => next.delete(id));
+      return next;
+    });
+    setBatchPublishing(false);
+    alert(`Publicadas: ${done.size}.${failed.length ? `\nFallaron al guardar: ${failed.join(', ')}.` : ''}${rejected.length ? `\nSin publicar por datos incompletos: ${rejected.length}.` : ''}`);
+  };
+
   const handleEditSave = async (id: string) => {
     setSaving(id);
     try {
-      await saveDistributor(editedDistributor as DistributorLocation);
-      setDistributors(prev => prev.map(d => d.id === id ? { ...d, ...editedDistributor } : d));
+      const detected = coordsFromMapsEmbed(editedDistributor.mapsIframe);
+      const toSave = (detected ? { ...editedDistributor, ...detected } : editedDistributor) as DistributorLocation;
+      await saveDistributor(toSave);
+      setDistributors(prev => prev.map(d => d.id === id ? { ...d, ...toSave } : d));
       setEditingId(null);
       setEditedDistributor({});
     } catch (err) {
@@ -263,12 +401,12 @@ export default function DistributorsManager({ darkMode }: { darkMode: boolean })
     const border = darkMode ? GLASS_TOKENS.borderDark : GLASS_TOKENS.border;
     const textPrimary = darkMode ? 'text-white' : 'text-slate-950';
     const textSecondary = darkMode ? 'text-slate-400' : 'text-slate-500';
-    const inputBg = darkMode ? 'rgba(15, 23, 42, 0.6)' : 'rgba(255, 255, 255, 0.6)';
+    const inputBg = darkMode ? 'rgba(30, 30, 29, 0.6)' : 'rgba(255, 255, 255, 0.6)';
     const inputBorder = darkMode ? GLASS_TOKENS.borderDark : GLASS_TOKENS.border;
-    const inputText = darkMode ? '#f1f5f9' : '#0f172a';
-    const placeholder = darkMode ? '#64748b' : '#94a3b8';
-    const hoverBg = darkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(148, 163, 184, 0.1)';
-    const accentBlue = darkMode ? 'rgba(10, 34, 64, 0.4)' : 'rgba(10, 34, 64, 0.1)';
+    const inputText = darkMode ? '#eeeeea' : '#1e1e1d';
+    const placeholder = darkMode ? '#8c8c86' : '#b6b6b0';
+    const hoverBg = darkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(182, 182, 176, 0.1)';
+    const accentBlue = darkMode ? 'rgba(247, 148, 29, 0.4)' : 'rgba(247, 148, 29, 0.1)';
     const accentRed = darkMode ? 'rgba(211, 17, 69, 0.2)' : 'rgba(211, 17, 69, 0.1)';
     const accentGreen = darkMode ? 'rgba(16, 185, 129, 0.2)' : 'rgba(16, 185, 129, 0.1)';
 
@@ -426,6 +564,24 @@ export default function DistributorsManager({ darkMode }: { darkMode: boolean })
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             <button
+              type="button"
+              onClick={() => void handleFillIframes()}
+              disabled={batchPublishing}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-600 hover:bg-slate-500 text-white font-semibold text-xs transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Globe className="w-3.5 h-3.5" />
+              Completar iframes
+            </button>
+            <button
+              type="button"
+              onClick={() => void handlePublishSelected()}
+              disabled={selectedIds.size === 0 || batchPublishing}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-secondary-500 hover:bg-secondary-400 text-primary-950 font-semibold text-xs transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {batchPublishing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+              Publicar seleccionadas{selectedIds.size > 0 ? ` (${selectedIds.size})` : ''}
+            </button>
+            <button
               onClick={exportToExcel}
               disabled={distributors.length === 0}
               className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-success-600 hover:bg-success-500 text-white font-semibold text-xs transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
@@ -470,14 +626,9 @@ export default function DistributorsManager({ darkMode }: { darkMode: boolean })
             {renderFormField('Rating', 'rating', 'number')}
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {renderFormField('Latitud', 'latitude', 'number')}
-            {renderFormField('Longitud', 'longitude', 'number')}
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {renderFormField('Fuente de aprobación', 'approvalSource')}
-            {renderFormField('Revisado por', 'reviewedBy')}
           </div>
-          {renderFormField('Iframe Google Maps', 'mapsIframe', 'textarea')}
+          {renderFormField('Iframe de Google Maps (de ahí se toma la ubicación)', 'mapsIframe', 'textarea')}
           <div className="flex justify-end gap-3 pt-2">
             <button
               type="button"
@@ -512,6 +663,16 @@ export default function DistributorsManager({ darkMode }: { darkMode: boolean })
           <table className="w-full text-left text-sm" style={{ color: styles.textSecondary }}>
             <thead>
               <tr className="uppercase text-xs tracking-wider border-b" style={{ borderColor: styles.border }}>
+                <th className="p-3 w-10">
+                  <input
+                    type="checkbox"
+                    aria-label="Seleccionar todas las agencias en borrador"
+                    checked={allPendingSelected}
+                    disabled={pendingIds.length === 0}
+                    onChange={toggleSelectAllPending}
+                    className="h-4 w-4 cursor-pointer accent-[#f7941d]"
+                  />
+                </th>
                 <th className="p-3 font-semibold" style={{ color: styles.textPrimary }}>Agencia</th>
                 <th className="p-3 font-semibold" style={{ color: styles.textPrimary }}>Ubicación</th>
                 <th className="p-3 font-semibold" style={{ color: styles.textPrimary }}>Dirección</th>
@@ -523,14 +684,14 @@ export default function DistributorsManager({ darkMode }: { darkMode: boolean })
             <tbody className="divide-y" style={{ borderColor: styles.border }}>
               {isLoading ? (
                 <tr>
-                  <td colSpan={6} className="p-8 text-center" style={{ color: styles.textSecondary }}>
+                  <td colSpan={7} className="p-8 text-center" style={{ color: styles.textSecondary }}>
                     <Loader2 className="w-6 h-6 animate-spin mx-auto text-primary-500" />
                     <p className="mt-2">Cargando distribuidores...</p>
                   </td>
                 </tr>
               ) : distributors.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="p-8 text-center" style={{ color: styles.textSecondary }}>
+                  <td colSpan={7} className="p-8 text-center" style={{ color: styles.textSecondary }}>
                     No hay puntos de venta registrados. Haz clic en «Nueva Ubicación».
                   </td>
                 </tr>
@@ -545,104 +706,87 @@ export default function DistributorsManager({ darkMode }: { darkMode: boolean })
                     style={{ background: editingId === d.id ? styles.accentBlue : undefined }}
                   >
                     {editingId === d.id ? (
-                      <>
-                        <td className="p-3 font-semibold" style={{ color: styles.textPrimary }}>
-                          <input
-                            value={editedDistributor.name || ''}
-                            onChange={e => setEditedDistributor(prev => ({ ...prev, name: e.target.value }))}
-                            style={styles.input}
-                            autoFocus
-                          />
-                        </td>
-                        <td className="p-3">
-                          <div className="space-y-1">
-                            <div style={styles.card} className="p-2">
-                              <label style={styles.label}>Provincia</label>
-                              <select
-                                value={editedDistributor.province || ''}
-                                onChange={e => setEditedDistributor(prev => ({ ...prev, province: e.target.value }))}
-                                style={styles.input}
-                              >
-                                {provinces.map(p => <option key={p.name} value={p.name}>{p.name}</option>)}
-                              </select>
-                            </div>
-                            <div style={styles.card} className="p-2">
-                              <label style={styles.label}>Ciudad</label>
-                              <input
-                                value={editedDistributor.city || ''}
-                                onChange={e => setEditedDistributor(prev => ({ ...prev, city: e.target.value }))}
-                                style={styles.input}
-                              />
-                            </div>
+                      <td colSpan={7} className="p-4 sm:p-6">
+                        <div className="mb-4 flex items-center justify-between gap-3">
+                          <h3 className="text-base font-bold" style={{ color: styles.textPrimary }}>Editar punto de venta</h3>
+                          <div className="flex items-center gap-3">
+                            <span className="text-xs" style={{ color: styles.textSecondary }}>{d.published ? 'Publicado' : 'Borrador · no visible al público'}</span>
+                            <button
+                              type="button"
+                              onClick={() => { setEditingId(null); setEditedDistributor({}); }}
+                              aria-label="Cerrar edición"
+                              title="Cerrar"
+                              className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-slate-600 text-white transition-colors hover:bg-slate-500 cursor-pointer"
+                            >
+                              <X className="h-4 w-4" />
+                            </button>
                           </div>
-                        </td>
-                        <td className="p-3 max-w-xs">
-                          <div style={styles.card} className="p-2">
-                            <label style={styles.label}>Dirección</label>
-                            <input
-                              value={editedDistributor.address || ''}
-                              onChange={e => setEditedDistributor(prev => ({ ...prev, address: e.target.value }))}
+                        </div>
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                          <div className="lg:col-span-3">{renderEditField('Nombre', 'name')}</div>
+                          <div style={styles.card} className="p-3">
+                            <label style={{ ...styles.label, marginBottom: '0.25rem' }}>Provincia</label>
+                            <select
+                              value={editedDistributor.province || ''}
+                              onChange={e => setEditedDistributor(prev => ({ ...prev, province: e.target.value }))}
                               style={styles.input}
-                            />
+                            >
+                              {provinces.map(p => <option key={p.name} value={p.name}>{p.name}</option>)}
+                            </select>
                           </div>
-                          {renderEditField('Horario', 'schedule')}
+                          {renderEditField('Ciudad', 'city')}
+                          {renderEditField('Teléfono', 'phone')}
+                          <div className="sm:col-span-2 lg:col-span-3">{renderEditField('Dirección', 'address')}</div>
+                          {renderEditField('WhatsApp', 'whatsapp')}
+                          <div className="sm:col-span-1 lg:col-span-2">{renderEditField('Horario', 'schedule')}</div>
                           {renderEditField('Fuente de aprobación', 'approvalSource')}
-                          {renderEditField('Revisado por', 'reviewedBy')}
-                        </td>
-                        <td className="p-3">
-                          <div className="grid grid-cols-2 gap-2">
-                            <div style={styles.card} className="p-2">
-                              <label style={styles.label}>Teléfono</label>
-                              <input
-                                value={editedDistributor.phone || ''}
-                                onChange={e => setEditedDistributor(prev => ({ ...prev, phone: e.target.value }))}
-                                style={styles.input}
-                              />
-                            </div>
-                            <div style={styles.card} className="p-2">
-                              <label style={styles.label}>WhatsApp</label>
-                              <input
-                                value={editedDistributor.whatsapp || ''}
-                                onChange={e => setEditedDistributor(prev => ({ ...prev, whatsapp: e.target.value }))}
-                                style={styles.input}
-                              />
-                            </div>
-                          </div>
-                        </td>
-                        <td className="p-3">
-                          <div style={styles.card} className="p-2">
-                            <label style={styles.label}>Iframe Google Maps</label>
-                            <textarea
-                              value={editedDistributor.mapsIframe || ''}
-                              onChange={e => setEditedDistributor(prev => ({ ...prev, mapsIframe: e.target.value }))}
-                              style={styles.textarea}
-                              rows={2}
-                              placeholder="Pega el <iframe> de Google Maps"
-                            />
-                          </div>
-                          {renderEditField('Latitud', 'latitude')}
-                          {renderEditField('Longitud', 'longitude')}
-                        </td>
-                        <td className="p-3 text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            <button
-                              onClick={() => handleEditSave(d.id)}
-                              disabled={saving === d.id}
-                              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-success-600 text-white hover:bg-success-500 transition-colors cursor-pointer disabled:opacity-50"
-                            >
-                              {saving === d.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Check className="w-3 h-3" />}
-                            </button>
-                            <button
-                              onClick={() => setEditingId(null)}
-                              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-600 text-white hover:bg-slate-500 transition-colors cursor-pointer"
-                            >
-                              <X className="w-3 h-3" />
-                            </button>
-                          </div>
-                        </td>
-                      </>
+                        </div>
+                        <div className="mt-3">
+                          {renderEditField('Iframe de Google Maps', 'mapsIframe', 'textarea')}
+                          {(() => {
+                            const detected = coordsFromMapsEmbed(editedDistributor.mapsIframe);
+                            const hasIframe = Boolean(editedDistributor.mapsIframe?.trim());
+                            return (
+                              <p className="mt-2 text-xs" style={{ color: detected ? '#16a34a' : styles.textSecondary }}>
+                                {detected
+                                  ? `Ubicación detectada automáticamente: ${detected.latitude.toFixed(5)}, ${detected.longitude.toFixed(5)}`
+                                  : hasIframe
+                                    ? 'No se pudo leer la ubicación de este iframe. Copia el código desde Google Maps → Compartir → Insertar un mapa.'
+                                    : 'Pega el iframe de Google Maps: de ahí se toma la ubicación para el mapa.'}
+                              </p>
+                            );
+                          })()}
+                        </div>
+                        <div className="mt-5 flex justify-end gap-2">
+                          <button
+                            type="button"
+                            onClick={() => { setEditingId(null); setEditedDistributor({}); }}
+                            className="inline-flex items-center gap-1.5 rounded-lg bg-slate-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-slate-500 cursor-pointer"
+                          >
+                            <X className="h-4 w-4" />Cancelar
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleEditSave(d.id)}
+                            disabled={saving === d.id}
+                            className="inline-flex items-center gap-1.5 rounded-lg bg-success-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-success-500 cursor-pointer disabled:opacity-50"
+                          >
+                            {saving === d.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}Guardar cambios
+                          </button>
+                        </div>
+                      </td>
                     ) : (
                       <>
+                        <td className="p-3 w-10">
+                          <input
+                            type="checkbox"
+                            aria-label={`Seleccionar ${d.name}`}
+                            checked={selectedIds.has(d.id)}
+                            disabled={d.published === true}
+                            onChange={() => toggleSelected(d.id)}
+                            className="h-4 w-4 cursor-pointer accent-[#f7941d] disabled:cursor-not-allowed disabled:opacity-40"
+                          />
+                        </td>
                         <td className="p-3 font-semibold" style={{ color: styles.textPrimary }}>{d.name}<span className="block text-xs font-normal">{d.published ? 'Publicado' : 'Borrador · no visible al público'}</span></td>
                         <td className="p-3">
                           <span className="text-primary-500 font-medium text-xs">{d.province}</span>

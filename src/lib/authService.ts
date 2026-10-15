@@ -19,6 +19,18 @@ export const checkIsAuthorizedAdmin = (data: unknown): boolean => {
   return user.role === 'admin' || (Array.isArray(user.roles) && user.roles.includes('admin'));
 };
 
+/** Valida la clave nueva antes de enviarla a Firebase. */
+export const validateNewPassword = (password: string, currentPassword = ''): string | null => {
+  if (password.length < 12) return 'La contraseña debe tener al menos 12 caracteres.';
+  if (!/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/\d/.test(password) || !/[^A-Za-z0-9]/.test(password)) {
+    return 'Incluye mayúscula, minúscula, número y un carácter especial (por ejemplo ! . # ?).';
+  }
+  if (/^\d{10}$/.test(password) || (currentPassword && password === currentPassword)) {
+    return 'La nueva contraseña no puede ser tu cédula ni repetir la actual.';
+  }
+  return null;
+};
+
 const getLoginErrorMessage = (error: unknown): string => {
   const code = error && typeof error === 'object' && 'code' in error
     ? String((error as { code: unknown }).code)
@@ -89,9 +101,10 @@ export const loginAdminUser = async (email: string, password: string): Promise<{
   }
 };
 
-export const completePasswordChange = async (password: string): Promise<{ success: boolean; error?: string }> => {
+export const completePasswordChange = async (password: string, currentPassword = ''): Promise<{ success: boolean; error?: string }> => {
   const user = auth.currentUser;
-  if (!user || password.length < 12) return { success: false, error: 'La contraseña debe tener al menos 12 caracteres.' };
+  const invalid = validateNewPassword(password, currentPassword);
+  if (!user || invalid) return { success: false, error: invalid || 'La sesión expiró. Vuelve a ingresar.' };
   try {
     const status = await verifyAdminUser(user);
     if (!status.authorized) return { success: false, error: 'Acceso no autorizado.' };

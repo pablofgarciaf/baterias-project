@@ -26,43 +26,68 @@ export default function RadialOrbitalTimeline({ timelineData }: { timelineData: 
   const containerRef = useRef<HTMLDivElement>(null);
   const orbitRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
+  const targetRef = useRef<number | null>(null);
+  const autoRotateRef = useRef(true);
+  const rotationRef = useRef(0);
+  const resumeRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  autoRotateRef.current = autoRotate;
 
+  // Posicion de lectura: 1 en punto (0 grados = 3 en punto, -90 = 12 en punto).
+  const ACTIVE_ANGLE = -60;
   const radius = 220; // Base radius for the orbit
   const angleStep = 360 / timelineData.length;
 
-  // Handle auto-rotation
+  // Un unico bucle: gira solo en automatico y, si hay un nodo elegido, lo lleva suavemente a la posicion activa.
+  // Al llegar espera 1 s y retoma el giro preestablecido desde ahi.
   useEffect(() => {
-    let animationFrame: number;
-    let lastTime = performance.now();
+    let frame: number;
+    let last = performance.now();
 
     const animate = (time: number) => {
-      if (autoRotate) {
-        const deltaTime = time - lastTime;
-        // Rotate 12.85 degrees per second (takes ~28s for a full rotation)
-        // This makes a card stay in the "active" hemisphere for exactly 7 seconds
-        // (7 seconds * 12.85 deg/sec = ~90 degrees of travel)
-        setRotationAngle((prev) => (prev + (12.85 * deltaTime) / 1000) % 360);
+      const dt = Math.min(time - last, 64);
+      last = time;
+      const prev = rotationRef.current;
+      let next = prev;
+      const target = targetRef.current;
+
+      if (target !== null) {
+        const delta = ((target - prev + 540) % 360) - 180; // camino mas corto
+        if (Math.abs(delta) < 0.15) {
+          next = ((target % 360) + 360) % 360;
+          targetRef.current = null;
+          if (resumeRef.current) clearTimeout(resumeRef.current);
+          resumeRef.current = setTimeout(() => setAutoRotate(true), 1000);
+        } else {
+          next = (((prev + delta * (1 - Math.exp(-dt / 140))) % 360) + 360) % 360;
+        }
+      } else if (autoRotateRef.current) {
+        next = (prev + (12.85 * dt) / 1000) % 360;
       }
-      lastTime = time;
-      animationFrame = requestAnimationFrame(animate);
+
+      if (next !== prev) {
+        rotationRef.current = next;
+        setRotationAngle(next);
+      }
+      frame = requestAnimationFrame(animate);
     };
 
-    animationFrame = requestAnimationFrame(animate);
+    frame = requestAnimationFrame(animate);
+    return () => {
+      cancelAnimationFrame(frame);
+      if (resumeRef.current) clearTimeout(resumeRef.current);
+    };
+  }, []);
 
-    return () => cancelAnimationFrame(animationFrame);
-  }, [autoRotate]);
-
-  // Auto-activate node when it enters the 3 o'clock (right) hemisphere
+  // En automatico, el nodo mas cercano a la posicion activa pasa a ser el seleccionado.
   useEffect(() => {
-    if (!autoRotate) return;
+    if (!autoRotate || targetRef.current !== null) return;
 
     let closestId = timelineData[0].id;
     let minDistance = 360;
 
     timelineData.forEach((item, index) => {
-      const angle = ((index / timelineData.length) * 360 + rotationAngle) % 360;
-      // Distance to 0 degrees (3 o'clock)
-      const dist = Math.min(angle, 360 - angle);
+      const angle = (((index * angleStep + rotationAngle) % 360) + 360) % 360;
+      const dist = Math.abs(((angle - ACTIVE_ANGLE + 540) % 360) - 180);
       if (dist < minDistance) {
         minDistance = dist;
         closestId = item.id;
@@ -72,20 +97,25 @@ export default function RadialOrbitalTimeline({ timelineData }: { timelineData: 
     if (activeNodeId !== closestId) {
       setActiveNodeId(closestId);
     }
-  }, [rotationAngle, timelineData, autoRotate, activeNodeId]);
+  }, [rotationAngle, timelineData, autoRotate, activeNodeId, angleStep]);
 
   const handleContainerClick = () => {
-    setAutoRotate(false);
+    // Un clic en el panel no detiene la animacion: solo seleccionar un nodo la reposiciona.
   };
 
   const toggleItem = (id: number) => {
     setActiveNodeId(id);
     const itemIndex = timelineData.findIndex((i) => i.id === id);
     if (itemIndex !== -1) {
-      const targetAngle = -itemIndex * angleStep;
-      setRotationAngle(targetAngle);
+      // El nodo elegido queda a la 1 en punto y el resto continua girando desde ahi.
+      targetRef.current = (((ACTIVE_ANGLE - itemIndex * angleStep) % 360) + 360) % 360;
     }
-    
+
+    // Pausa el giro mientras el nodo se posiciona; el bucle lo retoma 1 s despues de llegar.
+    setAutoRotate(false);
+    autoRotateRef.current = false;
+    if (resumeRef.current) clearTimeout(resumeRef.current);
+
     // Scroll to card on mobile
     if (window.innerWidth < 1024 && cardRef.current) {
       cardRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -183,7 +213,7 @@ export default function RadialOrbitalTimeline({ timelineData }: { timelineData: 
             return (
               <div
                 key={item.id}
-                className="absolute transition-all duration-300 cursor-pointer group"
+                className="absolute transition-opacity duration-300 cursor-pointer group"
                 style={nodeStyle}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -194,7 +224,7 @@ export default function RadialOrbitalTimeline({ timelineData }: { timelineData: 
                 <div
                   className={`absolute rounded-full -inset-4 ${isActive ? "animate-pulse duration-1000 opacity-100" : "opacity-0 group-hover:opacity-100 transition-opacity"}`}
                   style={{
-                    background: `radial-gradient(circle, rgba(59,130,246,0.3) 0%, rgba(0,0,0,0) 70%)`,
+                    background: `radial-gradient(circle, rgba(247,148,29,0.35) 0%, rgba(0,0,0,0) 70%)`,
                     width: `${item.energy * 0.8 + 60}px`,
                     height: `${item.energy * 0.8 + 60}px`,
                     left: '50%',
@@ -207,9 +237,9 @@ export default function RadialOrbitalTimeline({ timelineData }: { timelineData: 
                 <div
                   className={`
                   relative w-16 h-16 lg:w-20 lg:h-20 rounded-full flex items-center justify-center
-                  ${isActive ? "bg-primary-600 text-white" : isRelated ? "bg-slate-50 dark:bg-slate-800 text-primary-600 dark:text-primary-400" : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300"}
+                  ${isActive ? "bg-secondary-500 text-primary-950" : isRelated ? "bg-slate-50 dark:bg-slate-800 text-primary-600 dark:text-primary-400" : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300"}
                   border-2 
-                  ${isActive ? "border-primary-400 shadow-[0_0_30px_rgba(59,130,246,0.6)]" : isRelated ? "border-primary-400 animate-pulse" : "border-slate-200 dark:border-slate-700 shadow-sm"}
+                  ${isActive ? "border-secondary-300 shadow-[0_0_30px_rgba(247,148,29,0.55)]" : isRelated ? "border-primary-400 animate-pulse" : "border-slate-200 dark:border-slate-700 shadow-sm"}
                   transition-all duration-300
                 `}
                 >

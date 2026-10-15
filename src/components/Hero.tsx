@@ -13,7 +13,7 @@ export default function Hero() {
   const mobileImage = '/hero-maresa-2026-mobile.png';
 
   return (
-    <section className="relative isolate flex min-h-[calc(100svh-3.5rem)] items-center overflow-hidden bg-primary-950 lg:min-h-[calc(100svh-4rem)]">
+    <section className="relative isolate flex min-h-svh items-center overflow-hidden bg-primary-950">
       <picture className="absolute inset-0 -z-20">
         <source media="(max-width: 767px)" srcSet={mobileImage} />
         <source media="(min-width: 768px)" srcSet={desktopImage} />
@@ -28,7 +28,7 @@ export default function Hero() {
       <div className="absolute inset-0 -z-10 bg-gradient-to-r from-primary-950/95 via-primary-950/75 to-primary-950/25" />
       <div className="absolute inset-0 -z-10 bg-gradient-to-t from-primary-950/45 via-transparent to-primary-950/15" />
 
-      <div className="container-max relative w-full py-20 sm:py-24 lg:py-28">
+      <div className="container-max relative w-full pb-20 pt-32 sm:pb-24 sm:pt-36 lg:pb-28 lg:pt-40">
         <div className="max-w-2xl">
           <p className="mb-5 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.16em] text-white/85 sm:text-sm">
             <span className="h-1 w-7 rounded-full bg-secondary-500" aria-hidden="true" />

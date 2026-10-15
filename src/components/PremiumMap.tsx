@@ -57,7 +57,7 @@ export default function PremiumMap({
       const marker = L.marker([location.latitude, location.longitude], {
         icon: L.divIcon({
           className: '',
-          html: '<span aria-hidden="true" style="display:block;width:25px;height:25px;border:3px solid white;border-radius:50% 50% 50% 0;background:#f7901e;box-shadow:0 3px 12px #0f172a88;transform:rotate(-45deg)"></span>',
+          html: '<span aria-hidden="true" style="display:block;width:25px;height:25px;border:3px solid white;border-radius:50% 50% 50% 0;background:#f7901e;box-shadow:0 3px 12px #1e1e1d88;transform:rotate(-45deg)"></span>',
           iconSize: [30, 38],
           iconAnchor: [15, 34],
           popupAnchor: [0, -32],
@@ -68,7 +68,7 @@ export default function PremiumMap({
 
       const popup = document.createElement('div');
       popup.className = 'maresa-map-popup';
-      popup.style.cssText = 'display:grid;gap:6px;max-width:240px;font:13px/1.45 system-ui,sans-serif;color:#172033';
+      popup.style.cssText = 'display:grid;gap:6px;max-width:240px;font:13px/1.45 system-ui,sans-serif;color:#242423';
       const title = document.createElement('strong');
       title.textContent = location.name;
       const address = document.createElement('span');
@@ -129,15 +129,8 @@ export default function PremiumMap({
       mapRef.current = map;
       markerLayerRef.current = L.layerGroup().addTo(map);
       tileLayerRef.current = L.tileLayer(
-        isDark
-          ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-          : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        {
-          maxZoom: 19,
-          attribution: isDark
-            ? '&copy; OpenStreetMap &copy; CARTO'
-            : '&copy; OpenStreetMap contributors',
-        },
+        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        { maxZoom: 19, attribution: '&copy; OpenStreetMap contributors' },
       ).addTo(map);
       renderLocations();
       window.setTimeout(() => map.invalidateSize(), 80);
@@ -163,28 +156,12 @@ export default function PremiumMap({
     renderLocations();
   }, [renderLocations]);
 
-  useEffect(() => {
-    const L = leafletRef.current;
-    const map = mapRef.current;
-    if (!L || !map || !tileLayerRef.current) return;
-    tileLayerRef.current.remove();
-    tileLayerRef.current = L.tileLayer(
-      isDark
-        ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-        : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      {
-        maxZoom: 19,
-        attribution: isDark ? '&copy; OpenStreetMap &copy; CARTO' : '&copy; OpenStreetMap contributors',
-      },
-    ).addTo(map);
-  }, [isDark]);
-
   return (
     <div
       ref={containerRef}
       role="application"
       aria-label={agencyName}
-      className="maresa-leaflet-map h-full w-full"
+      className={`maresa-leaflet-map h-full w-full${isDark ? ' is-dark' : ''}`}
     />
   );
 }

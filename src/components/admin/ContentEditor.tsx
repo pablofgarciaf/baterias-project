@@ -201,7 +201,7 @@ export default function ContentEditor({ darkMode }: ContentEditorProps) {
   /* ─── input class helpers ─── */
   const inputCls = `w-full px-4 py-3.5 rounded-[16px] border text-sm outline-none transition-all duration-300 ${
     darkMode
-      ? 'bg-primary-950 border-primary-500/20 text-white placeholder-slate-500 focus:border-primary-400 focus:bg-primary-900 focus:shadow-[0_0_20px_rgba(10,34,64,0.25)]'
+      ? 'bg-primary-950 border-primary-500/20 text-white placeholder-slate-500 focus:border-primary-400 focus:bg-primary-900 focus:shadow-[0_0_20px_rgba(247, 148, 29,0.25)]'
       : 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400 focus:border-primary-600 focus:shadow-md'
   }`;
 
@@ -286,7 +286,7 @@ export default function ContentEditor({ darkMode }: ContentEditorProps) {
             <span className="text-[9px] font-bold uppercase tracking-widest opacity-50">Texto de Badge</span>
             <p
               className="text-xs font-semibold mt-1 line-clamp-2"
-              style={{ color: sectionDraft?.badgeColor || (darkMode ? '#9eb7ca' : '#0a2240') }}
+              style={{ color: sectionDraft?.badgeColor || (darkMode ? '#9eb7ca' : '#252524') }}
             >
               {sectionDraft?.badgeText || 'Badge preview'}
             </p>

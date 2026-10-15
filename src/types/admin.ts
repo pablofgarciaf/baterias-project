@@ -404,9 +404,9 @@ export interface GlassmorphismTokens {
 
 export const GLASS_TOKENS: GlassmorphismTokens = {
   bg: 'rgba(255, 255, 255, 0.08)',
-  bgDark: 'rgba(15, 23, 42, 0.6)',
+  bgDark: 'rgba(30, 30, 29, 0.6)',
   border: 'rgba(255, 255, 255, 0.12)',
-  borderDark: 'rgba(148, 163, 184, 0.15)',
+  borderDark: 'rgba(182, 182, 176, 0.15)',
   shadow: '0 8px 32px rgba(0, 0, 0, 0.12)',
   shadowHover: '0 16px 48px rgba(0, 0, 0, 0.18)',
   blur: 'blur(20px)',
@@ -417,23 +417,23 @@ export const GLASS_VARIANTS: Record<GlassVariant, Partial<GlassmorphismTokens>> 
   default: {},
   elevated: {
     bg: 'rgba(255, 255, 255, 0.12)',
-    bgDark: 'rgba(15, 23, 42, 0.7)',
+    bgDark: 'rgba(30, 30, 29, 0.7)',
     border: 'rgba(255, 255, 255, 0.18)',
-    borderDark: 'rgba(148, 163, 184, 0.2)',
+    borderDark: 'rgba(182, 182, 176, 0.2)',
     shadow: '0 16px 48px rgba(0, 0, 0, 0.18)',
   },
   outlined: {
     bg: 'transparent',
     bgDark: 'transparent',
     border: 'rgba(255, 255, 255, 0.2)',
-    borderDark: 'rgba(148, 163, 184, 0.25)',
+    borderDark: 'rgba(182, 182, 176, 0.25)',
     shadow: 'none',
   },
   subtle: {
     bg: 'rgba(255, 255, 255, 0.04)',
-    bgDark: 'rgba(15, 23, 42, 0.4)',
+    bgDark: 'rgba(30, 30, 29, 0.4)',
     border: 'rgba(255, 255, 255, 0.08)',
-    borderDark: 'rgba(148, 163, 184, 0.1)',
+    borderDark: 'rgba(182, 182, 176, 0.1)',
     shadow: 'none',
   },
 };

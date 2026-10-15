@@ -59,6 +59,7 @@ export default function B2BLeadCapture({ asPage = false }: { asPage?: boolean })
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [consent, setConsent] = useState(false);
 
   const { content } = useSiteContent();
   const { theme } = useTheme();
@@ -68,11 +69,16 @@ export default function B2BLeadCapture({ asPage = false }: { asPage?: boolean })
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setErrorMsg('');
+    if (!consent) {
+      setErrorMsg('Debes aceptar el tratamiento de tus datos para enviar la postulación.');
+      return;
+    }
     setIsSubmitting(true);
 
     try {
       await submitB2BLead(formData);
       setIsSuccess(true);
+      setConsent(false);
       setFormData({
         companyName: '',
         contactName: '',
@@ -200,16 +206,13 @@ export default function B2BLeadCapture({ asPage = false }: { asPage?: boolean })
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-3">
-                  <p role="status" className="rounded-xl border border-warning-500/30 bg-warning-500/10 p-3 text-sm">
-                    El formulario está en preparación. Se habilitará cuando la empresa apruebe la información de privacidad y el canal de atención. Por ahora no solicitamos tus datos.
-                  </p>
-                  <fieldset disabled>
+                  <fieldset>
                   <div>
                     <h3 className={`text-xl font-extrabold ${isDark ? 'text-white' : 'text-slate-950'}`}>
                       Formulario de Postulación de Distribuidor
                     </h3>
                     <p className={`text-xs mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                      Déjanos los datos de tu empresa para solicitar información cuando el canal comercial esté habilitado.
+                      Déjanos los datos de tu empresa y nuestro equipo comercial te contactará.
                     </p>
                   </div>
 
@@ -424,18 +427,32 @@ export default function B2BLeadCapture({ asPage = false }: { asPage?: boolean })
                     />
                   </div>
 
+                  <label className={`flex items-start gap-2 text-xs leading-relaxed ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+                    <input
+                      type="checkbox"
+                      checked={consent}
+                      onChange={(e) => setConsent(e.target.checked)}
+                      required
+                      className="mt-0.5 h-4 w-4 shrink-0 accent-[#f7941d]"
+                    />
+                    <span>
+                      Autorizo el tratamiento de mis datos para recibir información comercial, según la{' '}
+                      <a href="/privacidad" target="_blank" rel="noopener noreferrer" className="font-semibold underline">política de privacidad</a>.
+                    </span>
+                  </label>
+
                   <button
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || !consent}
                     className="w-full py-3 px-6 rounded-xl bg-secondary-500 hover:bg-secondary-400 text-primary-950 font-bold text-sm shadow-xl shadow-secondary-600/25 flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
                   >
                     <Send className="w-4 h-4" />
-                    <span>{isSubmitting ? 'Enviando...' : 'Formulario pendiente de habilitación'}</span>
+                    <span>{isSubmitting ? 'Enviando...' : 'Enviar postulación'}</span>
                   </button>
 
                   <div className="flex items-center justify-center gap-2 text-[11px] text-slate-500 text-center pt-1">
                     <ShieldCheck className="w-3.5 h-3.5 text-primary-500" />
-                    <span>No se capturan datos desde este formulario mientras está deshabilitado.</span>
+                    <span>Tus datos se usan solo para atender esta postulación comercial.</span>
                   </div>
                   </fieldset>
                 </form>

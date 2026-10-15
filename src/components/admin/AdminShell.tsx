@@ -310,7 +310,7 @@ export default function AdminShell({ role }: { role: 'admin' | 'editor' }) {
                 whileTap={{ scale: 0.97 }}
                 className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
                   isActive
-                    ? 'bg-primary-600/25 text-primary-200 shadow-[0_0_20px_rgba(10,34,64,0.25)] border border-primary-400/30'
+                    ? 'bg-primary-600/25 text-primary-200 shadow-[0_0_20px_rgba(247, 148, 29,0.25)] border border-primary-400/30'
                     : 'text-slate-400 hover:bg-white/5 hover:border-white/10 border border-transparent hover:text-white'
                 }`}
                 title={!isSidebarOpen && !isMobileDrawerOpen ? item.label : undefined}

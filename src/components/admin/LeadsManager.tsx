@@ -130,11 +130,11 @@ export default function LeadsManager({ darkMode }: { darkMode: boolean }) {
     const border = darkMode ? GLASS_TOKENS.borderDark : GLASS_TOKENS.border;
     const textPrimary = darkMode ? 'text-white' : 'text-slate-950';
     const textSecondary = darkMode ? 'text-slate-400' : 'text-slate-500';
-    const inputBg = darkMode ? 'rgba(15, 23, 42, 0.6)' : 'rgba(255, 255, 255, 0.6)';
+    const inputBg = darkMode ? 'rgba(30, 30, 29, 0.6)' : 'rgba(255, 255, 255, 0.6)';
     const inputBorder = darkMode ? GLASS_TOKENS.borderDark : GLASS_TOKENS.border;
-    const inputText = darkMode ? '#f1f5f9' : '#0f172a';
-    const placeholder = darkMode ? '#64748b' : '#94a3b8';
-    const hoverBg = darkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(148, 163, 184, 0.1)';
+    const inputText = darkMode ? '#eeeeea' : '#1e1e1d';
+    const placeholder = darkMode ? '#8c8c86' : '#b6b6b0';
+    const hoverBg = darkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(182, 182, 176, 0.1)';
 
     return {
       card: {

@@ -20,7 +20,7 @@
 
 import Link from 'next/link';
 import Hero from '@/components/Hero';
-import Marquee from '@/components/Marquee';
+import Stats from '@/components/Stats';
 import VehicleFinder from '@/components/VehicleFinder';
 import About from '@/components/About';
 import Features from '@/components/Features';
@@ -226,13 +226,15 @@ export default function HomePage() {
     <>
       {/* 1. Hero Principal — 100vh con GeoQuickAnswer integrado */}
       <Hero />
-      <Marquee />
 
       {/* 2. Buscador Vehicular — encuentra tu batería */}
       <VehicleFinder />
 
       {/* 3. Quiénes Somos — 45 Años de Liderazgo */}
       <About />
+
+      {/* Stats animados (datos de ejemplo hasta tener cifras reales) */}
+      <Stats />
 
       {/* 3. Escoge tu Batería (Teaser → /buscador) */}
       {/* 4. Catálogo (Teaser → /productos) */}

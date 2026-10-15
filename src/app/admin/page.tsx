@@ -37,6 +37,7 @@ import {
   completePasswordChange,
   requestPasswordReset,
   verifyAdminUser,
+  validateNewPassword,
 } from '@/lib/authService';
 
 export default function AdminPage() {
@@ -156,8 +157,9 @@ export default function AdminPage() {
     e.preventDefault();
     setChangeError('');
 
-    if (newPassword.length < 12) {
-      setChangeError('La nueva contraseña debe tener al menos 12 caracteres.');
+    const invalidPassword = validateNewPassword(newPassword, password);
+    if (invalidPassword) {
+      setChangeError(invalidPassword);
       return;
     }
     if (newPassword !== confirmPassword) {
@@ -167,7 +169,7 @@ export default function AdminPage() {
 
     setIsChangingPassword(true);
     try {
-      const res = await completePasswordChange(newPassword);
+      const res = await completePasswordChange(newPassword, password);
       if (res.success) {
         setShowChangeModal(false);
         setIsAuthenticated(false);
@@ -432,7 +434,10 @@ export default function AdminPage() {
                     <input
                       type={showNewPassword ? 'text' : 'password'}
                       required
-                      placeholder="Mínimo 12 caracteres"
+                      minLength={12}
+                      autoComplete="new-password"
+                      aria-describedby="admin-password-rules"
+                      placeholder="Crea una clave segura"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                       className={`w-full px-3.5 pr-10 py-2.5 rounded-xl border text-sm outline-none ${
@@ -447,6 +452,9 @@ export default function AdminPage() {
                       {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
+                  <p id="admin-password-rules" className={`mt-2 text-[11px] ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                    Mínimo 12 caracteres, con mayúscula, minúscula, número y símbolo. No puede ser tu cédula ni la clave actual.
+                  </p>
                 </div>
 
                 <div>

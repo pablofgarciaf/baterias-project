@@ -206,7 +206,7 @@ export const defaultSiteContent: SiteContent = {
     benefit4Title: 'Un canal de consulta',
     benefit4Desc: 'El formulario se habilitará cuando el canal comercial y la privacidad estén aprobados.',
     submitButtonText: 'Enviar Solicitud Comercial',
-    submitButtonColor: '#2563eb'
+    submitButtonColor: '#f7941d'
   },
   recycling: {
     badge: 'Compromiso Ambiental',
