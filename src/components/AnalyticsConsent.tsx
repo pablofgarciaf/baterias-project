@@ -15,11 +15,13 @@ export default function AnalyticsConsent() {
   const [preference, setPreference] = useState<Preference>(null);
   const [ready, setReady] = useState(false);
   const [showChoice, setShowChoice] = useState(false);
+  const [loadedPreference, setLoadedPreference] = useState(false);
 
   useEffect(() => {
     const saved = window.localStorage.getItem(preferenceKey);
     if (saved === 'accepted' || saved === 'rejected') setPreference(saved);
     else setShowChoice(true);
+    setLoadedPreference(true);
   }, []);
 
   useEffect(() => {
@@ -74,8 +76,8 @@ export default function AnalyticsConsent() {
           }}
         />
       )}
-      {showChoice ? (
-        <div role="dialog" aria-label="Preferencias de medición" className="fixed bottom-4 left-4 right-4 z-[100] max-w-xl rounded-2xl border border-slate-200 bg-white p-4 text-slate-900 shadow-2xl sm:right-auto">
+      {loadedPreference && (showChoice ? (
+        <div role="dialog" aria-label="Preferencias de cookies" className="fixed bottom-4 left-4 right-4 z-[100] max-w-xl rounded-2xl border border-slate-200 bg-white p-4 text-slate-900 shadow-2xl sm:right-auto">
           <p className="text-sm font-semibold">Medición del sitio</p>
           <p className="mt-1 text-sm leading-relaxed">Con tu permiso usamos Google Analytics para conocer el uso de esta web. Puedes rechazarlo o cambiar tu elección después. <a className="underline" href="/privacidad">Más información</a>.</p>
           <div className="mt-3 flex flex-wrap gap-2">
@@ -84,8 +86,8 @@ export default function AnalyticsConsent() {
           </div>
         </div>
       ) : (
-        <button type="button" onClick={() => setShowChoice(true)} className="mx-auto my-4 block rounded-full border border-primary-300 bg-white px-4 py-2 text-xs font-medium text-primary-800 shadow-sm hover:bg-primary-50">Privacidad y medición</button>
-      )}
+        <button type="button" onClick={() => setShowChoice(true)} className="text-slate-400 transition-colors hover:text-white">Cookies</button>
+      ))}
     </>
   );
 }

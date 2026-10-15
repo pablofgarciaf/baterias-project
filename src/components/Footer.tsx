@@ -23,6 +23,7 @@
 
 import { Battery, Phone, MapPin, Facebook, Instagram, Twitter, Linkedin, Youtube, Send, ShieldCheck, Lock, PhoneCall } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
+import AnalyticsConsent from '@/components/AnalyticsConsent';
 
 interface FooterProps {
   onOpenAdmin?: () => void;
@@ -143,6 +144,7 @@ export default function Footer({ onOpenAdmin }: FooterProps) {
           <p>&copy; 2026 Baterías Maresa.</p>
           <div className="flex gap-4 items-center flex-wrap">
             <a href="/privacidad" className="hover:text-slate-300 transition-colors">Privacidad</a>
+            <AnalyticsConsent />
             {onOpenAdmin && (
               <button
                 onClick={onOpenAdmin}

@@ -66,7 +66,7 @@ export default function Blog({ asPage = false }: { asPage?: boolean }) {
   const [activeCategory, setActiveCategory] = useState<string>('Todas');
   const [selectedArticle, setSelectedArticle] = useState<BlogPost | null>(null);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
-  const [itemsPerView, setItemsPerView] = useState<number>(2);
+  const [itemsPerView, setItemsPerView] = useState<number>(3);
 
   const trackRef = useRef<HTMLDivElement>(null);
 
@@ -81,8 +81,10 @@ export default function Blog({ asPage = false }: { asPage?: boolean }) {
     const handleResize = () => {
       if (window.innerWidth < 640) {
         setItemsPerView(1);
-      } else {
+      } else if (window.innerWidth < 1024) {
         setItemsPerView(2);
+      } else {
+        setItemsPerView(3);
       }
     };
 
@@ -199,7 +201,7 @@ export default function Blog({ asPage = false }: { asPage?: boolean }) {
         </div>
 
         <div className="flex items-center gap-2 sm:gap-4">
-          <button type="button" onClick={handlePrev} disabled={maxIndex === 0} aria-label="Artículo anterior" className={`grid h-10 w-10 shrink-0 place-items-center rounded-full border transition-colors disabled:opacity-40 ${isDark ? 'bg-slate-800 text-white border-slate-700' : 'bg-white text-slate-800 border-slate-300 hover:border-secondary-500'}`}>
+          <button type="button" onClick={handlePrev} disabled={maxIndex === 0} aria-label="Artículo anterior" className={`grid h-9 w-9 sm:h-10 sm:w-10 shrink-0 place-items-center rounded-full border transition-colors disabled:opacity-40 ${isDark ? 'bg-slate-800 text-white border-slate-700' : 'bg-white text-slate-800 border-slate-300 hover:border-secondary-500'}`}>
             <ChevronLeft className="w-6 h-6" />
           </button>
           <div 
@@ -207,13 +209,13 @@ export default function Blog({ asPage = false }: { asPage?: boolean }) {
             id="blog-carousel-track"
             onScroll={handleScroll}
             aria-label="Guías técnicas; desliza para explorar"
-            className="flex min-w-0 max-w-[700px] flex-1 gap-6 overflow-x-auto overscroll-x-contain snap-x snap-mandatory scroll-smooth pb-6 pt-3 scrollbar-hide"
+            className="flex min-w-0 flex-1 gap-6 overflow-x-auto overscroll-x-contain snap-x snap-mandatory scroll-smooth pb-6 pt-3 scrollbar-hide"
           >
             {filteredPosts.map((post) => (
               <div
                 key={post.id}
                 data-blog-card
-                className="w-[88%] shrink-0 snap-start sm:w-[calc(50%-12px)]"
+                className="w-[88%] shrink-0 snap-start sm:w-[calc(50%-12px)] lg:w-[calc((100%-48px)/3)]"
               >
                 <div 
                   className={`h-full flex flex-col rounded-2xl overflow-hidden border transition-all duration-300 hover:-translate-y-1 ${
@@ -293,7 +295,7 @@ export default function Blog({ asPage = false }: { asPage?: boolean }) {
               </div>
             ))}
           </div>
-          <button type="button" onClick={handleNext} disabled={maxIndex === 0} aria-label="Artículo siguiente" className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-secondary-500 text-primary-950 transition-colors hover:bg-secondary-400 disabled:opacity-40">
+          <button type="button" onClick={handleNext} disabled={maxIndex === 0} aria-label="Artículo siguiente" className="grid h-9 w-9 sm:h-10 sm:w-10 shrink-0 place-items-center rounded-full bg-secondary-500 text-primary-950 transition-colors hover:bg-secondary-400 disabled:opacity-40">
             <ChevronRight className="w-6 h-6" />
           </button>
       </div>

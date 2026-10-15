@@ -20,11 +20,12 @@
 
 import Link from 'next/link';
 import Hero from '@/components/Hero';
+import Marquee from '@/components/Marquee';
 import VehicleFinder from '@/components/VehicleFinder';
 import About from '@/components/About';
 import Features from '@/components/Features';
 import { useTheme } from '@/context/ThemeContext';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import {
   Search,
   Car,
@@ -111,15 +112,13 @@ const teaserSections = [
 ];
 
 function InfiniteCarousel({ items, isDark }: { items: typeof teaserSections; isDark: boolean }) {
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const touchStart = useRef<number | null>(null);
+  const wasSwiped = useRef(false);
+  const [firstIndex, setFirstIndex] = useState(0);
   const move = (direction: -1 | 1) => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const cards = [...el.querySelectorAll<HTMLElement>('[data-card]')];
-    const current = cards.findIndex((card) => card.offsetLeft - el.offsetLeft >= el.scrollLeft - 8);
-    const next = (Math.max(current, 0) + direction + cards.length) % cards.length;
-    el.scrollTo({ left: cards[next].offsetLeft - el.offsetLeft, behavior: 'smooth' });
+    setFirstIndex((current) => (current + direction + items.length) % items.length);
   };
+  const orderedItems = [...items.slice(firstIndex), ...items.slice(0, firstIndex)];
 
   return (
     <div>
@@ -128,10 +127,26 @@ function InfiniteCarousel({ items, isDark }: { items: typeof teaserSections; isD
         <button type="button" onClick={() => move(1)} aria-label="Servicio siguiente" className="grid h-10 w-10 place-items-center rounded-full bg-secondary-500 text-primary-950 transition-colors hover:bg-secondary-400"><ChevronRight className="h-5 w-5" /></button>
       </div>
     <div
-      ref={scrollRef}
-      className="flex gap-5 overflow-x-auto overscroll-x-contain snap-x snap-mandatory scrollbar-hide pb-2 sm:gap-6"
+      onClickCapture={(event) => {
+        if (!wasSwiped.current) return;
+        event.preventDefault();
+        event.stopPropagation();
+        wasSwiped.current = false;
+      }}
+      onTouchStart={(event) => { touchStart.current = event.touches[0]?.clientX ?? null; }}
+      onTouchEnd={(event) => {
+        if (touchStart.current === null) return;
+        const distance = touchStart.current - (event.changedTouches[0]?.clientX ?? touchStart.current);
+        if (Math.abs(distance) > 45) {
+          wasSwiped.current = true;
+          move(distance > 0 ? 1 : -1);
+          window.setTimeout(() => { wasSwiped.current = false; }, 500);
+        }
+        touchStart.current = null;
+      }}
+      className="flex gap-5 overflow-hidden pb-2 touch-pan-y sm:gap-6"
     >
-      {items.map((section) => (
+      {orderedItems.map((section) => (
         <Link
           key={section.id}
           href={section.href}
@@ -179,6 +194,7 @@ export default function HomePage() {
     <>
       {/* 1. Hero Principal — 100vh con GeoQuickAnswer integrado */}
       <Hero />
+      <Marquee />
 
       {/* 2. Buscador Vehicular — encuentra tu batería */}
       <VehicleFinder />

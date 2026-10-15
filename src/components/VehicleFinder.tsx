@@ -1,4 +1,4 @@
-// estado: "en edición"
+// estado: ""
 /**
  * ═══════════════════════════════════════════════════════════════
  * 📄 ARCHITECTURE MAP — VehicleFinder.tsx
@@ -698,7 +698,7 @@ export default function VehicleFinder({ onLocateStore }: VehicleFinderProps) {
 
               {/* Battery Specs Bento Grid */}
               <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-4">
-                {result.recommendedBattery.warrantyMonths > 0 && <div className={`p-4 rounded-2xl border ${
+                <div className={`p-4 rounded-2xl border ${
                   isDark ? 'bg-slate-900/60 border-slate-700' : 'bg-slate-50 border-slate-200/80'
                 }`}>
                   <span className={`text-xs uppercase font-bold block ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
@@ -740,7 +740,7 @@ export default function VehicleFinder({ onLocateStore }: VehicleFinderProps) {
                   </span>
                 </div>
 
-                <div className={`p-4 rounded-2xl border ${
+                {result.recommendedBattery.warrantyMonths > 0 && <div className={`p-4 rounded-2xl border ${
                   isDark ? 'bg-slate-900/60 border-slate-700' : 'bg-slate-50 border-slate-200/80'
                 }`}>
                   <span className={`text-xs uppercase font-bold block ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>

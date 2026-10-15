@@ -8,12 +8,9 @@ import { useSiteContent } from '@/context/SiteContentContext';
 export default function Hero() {
   const { content } = useSiteContent();
   const heroContent = content.hero;
-  const desktopImage = !heroContent.backgroundImage || heroContent.backgroundImage === '/hero-desktop.webp'
-    ? '/hero-maresa-2026-desktop.png'
-    : heroContent.backgroundImage;
-  const mobileImage = !heroContent.mobileImage || heroContent.mobileImage === '/hero-mobile.webp'
-    ? '/hero-maresa-2026-mobile.png'
-    : heroContent.mobileImage;
+  // Una fuente estable evita que el fondo cambie tras cargar el contenido remoto.
+  const desktopImage = '/hero-maresa-2026-desktop.png';
+  const mobileImage = '/hero-maresa-2026-mobile.png';
 
   return (
     <section className="relative isolate flex min-h-[calc(100svh-3.5rem)] items-center overflow-hidden bg-primary-950 lg:min-h-[calc(100svh-4rem)]">

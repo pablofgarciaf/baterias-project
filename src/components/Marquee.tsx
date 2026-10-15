@@ -33,20 +33,20 @@ export default function Marquee({ scrolled = false }: MarqueeProps) {
           : 'max-h-14 opacity-100 translate-y-0'
       } ${
         isDark
-          ? 'bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border-b border-white/[0.08] text-slate-200'
-          : 'bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-b border-slate-700/50 text-white shadow-inner'
+          ? 'bg-gradient-to-r from-neutral-950 via-neutral-900 to-neutral-950 border-b border-white/[0.08] text-neutral-200'
+          : 'bg-gradient-to-r from-neutral-900 via-neutral-800 to-neutral-900 border-b border-neutral-700/50 text-white shadow-inner'
       }`}
     >
       <div className="relative w-full overflow-hidden py-2.5">
         {/* Máscaras de gradiente lateral (fade cinematográfico estilo Apple / Modulares GM) */}
         <div 
           className={`pointer-events-none absolute inset-y-0 left-0 z-20 w-16 sm:w-28 bg-gradient-to-r ${
-            isDark ? 'from-slate-950' : 'from-slate-900'
+            isDark ? 'from-neutral-950' : 'from-neutral-900'
           } to-transparent`} 
         />
         <div 
           className={`pointer-events-none absolute inset-y-0 right-0 z-20 w-16 sm:w-28 bg-gradient-to-l ${
-            isDark ? 'from-slate-950' : 'from-slate-900'
+            isDark ? 'from-neutral-950' : 'from-neutral-900'
           } to-transparent`} 
         />
 
@@ -58,20 +58,20 @@ export default function Marquee({ scrolled = false }: MarqueeProps) {
               className="inline-flex items-center gap-3 shrink-0 group cursor-default"
             >
               {item.tag && (
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-widest uppercase bg-primary-600/20 text-primary-400 border border-primary-500/30 group-hover:bg-primary-600/30 transition-colors">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-widest uppercase bg-secondary-500/20 text-secondary-300 border border-secondary-500/30 group-hover:bg-secondary-600/30 transition-colors">
                   {item.tag}
                 </span>
               )}
               <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold tracking-tight text-white/95 group-hover:text-primary-300 transition-colors">
+                <span className="text-xs font-semibold tracking-tight text-white/95 group-hover:text-secondary-300 transition-colors">
                   {item.title}
                 </span>
-                <span className="text-primary-400/50 text-xs font-mono">•</span>
+                <span className="text-secondary-400/70 text-xs font-mono">•</span>
                 <span className="text-xs font-normal text-slate-300/90 tracking-wide">
                   {item.subtitle}
                 </span>
               </div>
-              <Sparkles className="w-3 h-3 text-warning-400/80 shrink-0 ml-4 opacity-70 group-hover:opacity-100 transition-opacity" />
+              <Sparkles className="w-3 h-3 text-secondary-400/80 shrink-0 ml-4 opacity-70 group-hover:opacity-100 transition-opacity" />
             </div>
           ))}
         </div>

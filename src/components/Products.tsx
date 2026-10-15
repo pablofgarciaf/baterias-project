@@ -135,7 +135,7 @@ export default function Products({ asPage = false }: { asPage?: boolean }) {
   const [activeFilter, setActiveFilter] = useState<string>('Todas');
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [selectedBatteryForSpecs, setSelectedBatteryForSpecs] = useState<BatteryShowcaseItem | null>(null);
-  const [itemsPerView, setItemsPerView] = useState<number>(2);
+  const [itemsPerView, setItemsPerView] = useState<number>(3);
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 
@@ -152,8 +152,10 @@ export default function Products({ asPage = false }: { asPage?: boolean }) {
     const handleResize = () => {
       if (window.innerWidth < 640) {
         setItemsPerView(1);
-      } else {
+      } else if (window.innerWidth < 1024) {
         setItemsPerView(2);
+      } else {
+        setItemsPerView(3);
       }
     };
 
@@ -168,13 +170,17 @@ export default function Products({ asPage = false }: { asPage?: boolean }) {
     trackRef.current?.scrollTo({ left: 0 });
   }, [activeFilter, itemsPerView]);
 
-  const maxIndex = Math.max(0, filteredItems.length - itemsPerView);
+  const rotateAll = itemsPerView === 3 && filteredItems.length === 3;
+  const maxIndex = rotateAll ? 2 : Math.max(0, filteredItems.length - itemsPerView);
+  const visibleItems = rotateAll
+    ? [...filteredItems.slice(currentIndex), ...filteredItems.slice(0, currentIndex)]
+    : filteredItems;
 
   const goTo = (index: number) => {
     const track = trackRef.current;
     const target = (index + maxIndex + 1) % (maxIndex + 1);
     const card = track?.querySelectorAll<HTMLElement>('[data-product-card]')[target];
-    if (track && card) track.scrollTo({ left: target * (card.offsetWidth + 24), behavior: 'smooth' });
+    if (track && card && !rotateAll) track.scrollTo({ left: target * (card.offsetWidth + 24), behavior: 'smooth' });
     setCurrentIndex(target);
   };
 
@@ -184,7 +190,7 @@ export default function Products({ asPage = false }: { asPage?: boolean }) {
   const handleScroll = () => {
     const track = trackRef.current;
     const first = track?.querySelector<HTMLElement>('[data-product-card]');
-    if (track && first) {
+    if (track && first && !rotateAll) {
       const step = first.offsetWidth + 24;
       setCurrentIndex(Math.min(maxIndex, Math.round(track.scrollLeft / step)));
     }
@@ -272,8 +278,8 @@ export default function Products({ asPage = false }: { asPage?: boolean }) {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-4">
-          <button type="button" onClick={handlePrev} disabled={maxIndex === 0} aria-label="Batería anterior" className={`grid h-10 w-10 shrink-0 place-items-center rounded-full border transition-colors disabled:opacity-40 ${isDark ? 'bg-slate-900 text-white border-slate-700' : 'bg-white text-slate-800 border-slate-300 hover:border-secondary-500'}`}>
+        <div className="relative flex items-center gap-2 sm:gap-4">
+          <button type="button" onClick={handlePrev} disabled={maxIndex === 0} aria-label="Batería anterior" className={`grid h-9 w-9 sm:h-10 sm:w-10 shrink-0 place-items-center rounded-full border transition-colors disabled:opacity-40 ${isDark ? 'bg-slate-900 text-white border-slate-700' : 'bg-white text-slate-800 border-slate-300 hover:border-secondary-500'}`}>
             <ChevronLeft className="w-6 h-6" />
           </button>
           <div 
@@ -281,15 +287,15 @@ export default function Products({ asPage = false }: { asPage?: boolean }) {
             ref={trackRef}
             onScroll={handleScroll}
             aria-label="Tecnologías de baterías; desliza para explorar"
-            className="flex min-w-0 max-w-[760px] flex-1 gap-6 overflow-x-auto overscroll-x-contain snap-x snap-mandatory scroll-smooth pb-6 pt-3 scrollbar-hide"
+            className="flex min-w-0 flex-1 gap-6 overflow-x-auto overscroll-x-contain snap-x snap-mandatory scroll-smooth pb-6 pt-3 scrollbar-hide"
           >
-            {filteredItems.map((item) => {
+            {visibleItems.map((item) => {
               const IconComp = item.icon;
               return (
                 <div
                   key={item.id}
                   data-product-card
-                  className="w-[88%] shrink-0 snap-start sm:w-[calc(50%-12px)]"
+                  className="w-[88%] shrink-0 snap-start sm:w-[calc(50%-12px)] lg:w-[calc((100%-48px)/3)]"
                 >
                   <div 
                     className={`h-full flex flex-col rounded-2xl overflow-hidden border transition-all duration-300 hover:-translate-y-1 ${
@@ -373,7 +379,7 @@ export default function Products({ asPage = false }: { asPage?: boolean }) {
               );
             })}
           </div>
-          <button type="button" onClick={handleNext} disabled={maxIndex === 0} aria-label="Batería siguiente" className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-secondary-500 text-primary-950 transition-colors hover:bg-secondary-400 disabled:opacity-40">
+          <button type="button" onClick={handleNext} disabled={maxIndex === 0} aria-label="Batería siguiente" className="grid h-9 w-9 sm:h-10 sm:w-10 shrink-0 place-items-center rounded-full bg-secondary-500 text-primary-950 transition-colors hover:bg-secondary-400 disabled:opacity-40">
             <ChevronRight className="w-6 h-6" />
           </button>
         </div>

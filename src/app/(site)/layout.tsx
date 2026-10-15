@@ -20,7 +20,6 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import WhatsAppFloatingButton from '@/components/WhatsAppFloatingButton';
-import AnalyticsConsent from '@/components/AnalyticsConsent';
 import { useTheme } from '@/context/ThemeContext';
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
@@ -44,7 +43,6 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
 
       {/* Floating WhatsApp & Direct Call Button */}
       <WhatsAppFloatingButton />
-      <AnalyticsConsent />
     </div>
   );
 }

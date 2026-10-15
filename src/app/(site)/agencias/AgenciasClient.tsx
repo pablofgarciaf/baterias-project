@@ -28,12 +28,12 @@ const PremiumMap = dynamic(() => import('@/components/PremiumMap'), {
 
 // Direcciones publicadas en el directorio de Maresa Parts (consulta: 2026-10-14).
 const officialMaresaLocations = [
-  { name: 'Maresa Center Carlos Julio Arosemena', city: 'Guayaquil', address: 'Av. Carlos Julio Arosemena Tola Km 2 1/2, junto a la gasolinera Primax' },
-  { name: 'Maresa Center Juan Tanca Marengo', city: 'Guayaquil', address: 'Av. Juan Tanca Marengo Km 1 1/2, diagonal al Mall del Sol' },
-  { name: 'Maresa Center Express Granados', city: 'Quito', address: 'Av. de los Granados E11-67 y de las Hiedras, esquina' },
-  { name: 'Maresa Center Granados', city: 'Quito', address: 'E11-124 y Av. 6 de Diciembre, frente a Corporación Maresa' },
-  { name: 'Maresa Center Valle de los Chillos', city: 'Quito', address: 'Av. Gral. Rumiñahui y Giovanni Farina' },
-  { name: 'Maresa Center Manta', city: 'Manta', address: 'Av. 113 Calle 199 N1114' },
+  { name: 'Maresa Center Carlos Julio Arosemena', city: 'Guayaquil', address: 'Av. Carlos Julio Arosemena Tola Km 2 1/2, junto a la gasolinera Primax', latitude: -2.1745, longitude: -79.9185 },
+  { name: 'Maresa Center Juan Tanca Marengo', city: 'Guayaquil', address: 'Av. Juan Tanca Marengo Km 1 1/2, diagonal al Mall del Sol', latitude: -2.1532, longitude: -79.8917 },
+  { name: 'Maresa Center Express Granados', city: 'Quito', address: 'Av. de los Granados E11-67 y de las Hiedras, esquina', latitude: -0.1682, longitude: -78.4739 },
+  { name: 'Maresa Center Granados', city: 'Quito', address: 'E11-124 y Av. 6 de Diciembre, frente a Corporación Maresa', latitude: -0.1742, longitude: -78.4768 },
+  { name: 'Maresa Center Valle de los Chillos', city: 'Quito', address: 'Av. Gral. Rumiñahui y Giovanni Farina', latitude: -0.3118, longitude: -78.4524 },
+  { name: 'Maresa Center Manta', city: 'Manta', address: 'Av. 113 Calle 199 N1114', latitude: -0.9537, longitude: -80.7089 },
 ];
 
 export default function AgenciasClient() {
@@ -48,6 +48,7 @@ export default function AgenciasClient() {
   const [findingNearest, setFindingNearest] = useState(false);
   const [gpsActive, setGpsActive] = useState(false);
   const [mobileView, setMobileView] = useState<'map' | 'list'>('map');
+  const [nearestLocation, setNearestLocation] = useState<{ name: string; city: string; distance: number } | null>(null);
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
 
@@ -102,6 +103,27 @@ export default function AgenciasClient() {
     }
 
     setFindingNearest(true);
+
+    if (distributorsList.length === 0) {
+      navigator.geolocation.getCurrentPosition(
+        ({ coords }) => {
+          const nearest = officialMaresaLocations
+            .map((location) => {
+              const radians = Math.PI / 180;
+              const dLat = (location.latitude - coords.latitude) * radians;
+              const dLon = (location.longitude - coords.longitude) * radians;
+              const a = Math.sin(dLat / 2) ** 2 + Math.cos(coords.latitude * radians) * Math.cos(location.latitude * radians) * Math.sin(dLon / 2) ** 2;
+              return { ...location, distance: 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)) };
+            })
+            .sort((a, b) => a.distance - b.distance)[0];
+          setNearestLocation(nearest ? { name: nearest.name, city: nearest.city, distance: nearest.distance } : null);
+          setFindingNearest(false);
+        },
+        () => setFindingNearest(false),
+        { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 },
+      );
+      return;
+    }
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -183,6 +205,10 @@ export default function AgenciasClient() {
           <p className={`mt-4 max-w-2xl text-base leading-relaxed ${isDark ? 'text-primary-300' : 'text-primary-600'}`}>
             Consulta la dirección que te resulte más conveniente y pregunta directamente al local por la disponibilidad de baterías.
           </p>
+          <button type="button" onClick={handleFindNearest} disabled={findingNearest} className="mt-7 inline-flex min-h-12 items-center gap-2 rounded-xl bg-secondary-500 px-5 font-bold text-primary-950 transition-colors hover:bg-secondary-400 disabled:opacity-60">
+            <Crosshair className="h-4 w-4" />{findingNearest ? 'Buscando ubicación…' : 'Encontrar local más cercano'}
+          </button>
+          {nearestLocation && <p role="status" className="mt-3 text-sm font-semibold">El local más cercano es {nearestLocation.name}, {nearestLocation.city} (distancia geográfica aproximada: {Math.round(nearestLocation.distance)} km). <a className="text-secondary-700 underline" href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${nearestLocation.name}, Ecuador`)}`} target="_blank" rel="noopener noreferrer">Ver ruta en Google Maps</a></p>}
           <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {officialMaresaLocations.map((location) => (
               <article key={location.name} className={`flex h-full flex-col rounded-2xl border p-6 ${isDark ? 'border-primary-700 bg-primary-900' : 'border-primary-200 bg-white'}`}>
@@ -235,10 +261,10 @@ export default function AgenciasClient() {
           </div>
 
           {/* BOTÓN GPS PRINCIPAL: Carga y envía directamente al mapa con feedback háptico active:scale-95 */}
-          <button
+            <button
             type="button"
             onClick={handleFindNearest}
-            disabled={findingNearest || distributorsList.length === 0}
+            disabled={findingNearest}
             className={`w-full sm:w-auto py-3.5 px-6 rounded-2xl text-xs sm:text-sm font-black flex items-center justify-center gap-2.5 transition-all duration-200 shrink-0 disabled:cursor-not-allowed disabled:shadow-none disabled:opacity-60 ${
               findingNearest
                 ? 'bg-secondary-600 text-primary-950 opacity-85'
