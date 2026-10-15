@@ -38,8 +38,11 @@ export function adminError(error: unknown) {
   if (message === 'NO_AUTH' || code.startsWith('auth/id-token') || code === 'auth/user-disabled' || code === 'auth/user-not-found') {
     return Response.json({ error: 'Acceso no autorizado.' }, { status: 403 });
   }
-  if (message.includes('no está configurad')) {
+  if (message.includes('no está configurad') || message.includes('FIREBASE_SERVICE_ACCOUNT_JSON')) {
+    console.error('[admin-api] credencial de servidor:', message);
     return Response.json({ error: 'Servidor de administración sin configurar.' }, { status: 503 });
   }
+  // Deja la causa en los logs del servidor (solo nombre, código y mensaje; nunca credenciales).
+  console.error('[admin-api] error inesperado:', { name: error instanceof Error ? error.name : typeof error, code, message: message.slice(0, 200) });
   return Response.json({ error: 'No se pudo completar la operación.' }, { status: 500 });
 }
